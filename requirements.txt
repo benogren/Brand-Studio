@@ -25,4 +25,4 @@ flake8>=6.1.0
 mypy>=1.7.1
 
 # ADK (Agent Development Kit)
-# Note: ADK installation instructions to be added based on official docs
+google-genai>=0.2.0
