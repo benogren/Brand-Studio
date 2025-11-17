@@ -1,8 +1,15 @@
-"""
-RAG (Retrieval-Augmented Generation) implementation for brand names.
+"""RAG module for brand name retrieval."""
 
-This module contains:
-- Vector Search: Vertex AI Vector Search integration
-- Embeddings: Text-embedding-004 model integration
-- Brand Corpus: Brand name dataset loader and metadata handler
-"""
+from src.rag.brand_retrieval import (
+    BrandRetrieval,
+    get_brand_retrieval,
+    search_similar_brands,
+    create_brand_retrieval_tool
+)
+
+__all__ = [
+    'BrandRetrieval',
+    'get_brand_retrieval',
+    'search_similar_brands',
+    'create_brand_retrieval_tool'
+]
