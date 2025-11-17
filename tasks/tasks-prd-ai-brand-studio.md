@@ -174,13 +174,13 @@ validated: true
   - [x] 4.5 Ensure output format includes brand name, rationale, and suggested tagline
   - [x] 4.6 Test name generator with sample inputs (healthcare app, fintech, e-commerce)
 
-- [ ] 5.0 Create Basic CLI for Testing
-  - [ ] 5.1 Create src/cli.py with argparse or click for command-line interaction
-  - [ ] 5.2 Add command to accept user brief (product description, target audience, brand personality)
-  - [ ] 5.3 Integrate orchestrator agent invocation from CLI
-  - [ ] 5.4 Display generated brand names in formatted output
-  - [ ] 5.5 Add verbose mode for debugging (show agent traces)
-  - [ ] 5.6 Test CLI with end-to-end workflow: input → orchestrator → name generator → output
+- [x] 5.0 Create Basic CLI for Testing
+  - [x] 5.1 Create src/cli.py with argparse or click for command-line interaction
+  - [x] 5.2 Add command to accept user brief (product description, target audience, brand personality)
+  - [x] 5.3 Integrate orchestrator agent invocation from CLI
+  - [x] 5.4 Display generated brand names in formatted output
+  - [x] 5.5 Add verbose mode for debugging (show agent traces)
+  - [x] 5.6 Test CLI with end-to-end workflow: input → orchestrator → name generator → output
 
 ### Phase 2: Core Features
 
