@@ -254,7 +254,11 @@ def create_domain_checker_tool():
         ...     ...
         ... )
     """
-    from google_genai.adk import Tool
+    # Try to import real ADK, fall back to mock for Phase 1
+    try:
+        from google_genai.adk import Tool
+    except ImportError:
+        from src.utils.mock_adk import Tool
 
     return Tool(
         name="check_domain_availability",

@@ -9,7 +9,12 @@ import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from google.cloud import aiplatform
-from google_genai.adk import LlmAgent
+
+# Try to import real ADK, fall back to mock for Phase 1
+try:
+    from google_genai.adk import LlmAgent
+except ImportError:
+    from src.utils.mock_adk import LlmAgent
 
 logger = logging.getLogger('brand_studio.name_generator')
 

@@ -10,7 +10,12 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 from google.cloud import aiplatform
 from google.cloud import logging as cloud_logging
-from google_genai.adk import LlmAgent
+
+# Try to import real ADK, fall back to mock for Phase 1
+try:
+    from google_genai.adk import LlmAgent
+except ImportError:
+    from src.utils.mock_adk import LlmAgent
 
 
 # Orchestrator instruction prompt
