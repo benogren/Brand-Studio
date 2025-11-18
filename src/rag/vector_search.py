@@ -177,18 +177,27 @@ class VectorSearchClient:
             # Generate query embedding
             query_embedding = self.generate_query_embedding(query)
 
-            # Build filter constraints
+            # Build filter constraints using proper Vertex AI types
+            from google.cloud.aiplatform.matching_engine.matching_engine_index_endpoint import (
+                Namespace,
+                NumericNamespace
+            )
+
             restricts = []
             if industry_filter:
-                restricts.append({
-                    "namespace": "industry",
-                    "allow_list": [industry_filter]
-                })
+                restricts.append(
+                    Namespace(
+                        name="industry",
+                        allow_tokens=[industry_filter]
+                    )
+                )
             if category_filter:
-                restricts.append({
-                    "namespace": "category",
-                    "allow_list": [category_filter]
-                })
+                restricts.append(
+                    Namespace(
+                        name="category",
+                        allow_tokens=[category_filter]
+                    )
+                )
 
             # Query Vector Search
             response = self.endpoint.find_neighbors(
@@ -202,14 +211,21 @@ class VectorSearchClient:
             results = []
             if response and len(response) > 0:
                 for neighbor in response[0]:
-                    brand_id = neighbor.id
+                    # Handle both dict and object responses
+                    if isinstance(neighbor, dict):
+                        brand_id = neighbor.get('id')
+                        distance = neighbor.get('distance', 0.0)
+                    else:
+                        brand_id = neighbor.id
+                        distance = neighbor.distance
+
                     metadata = self.metadata.get(brand_id, {})
 
                     results.append(
                         SearchResult(
                             brand_id=brand_id,
                             brand_name=metadata.get('brand_name', brand_id),
-                            distance=neighbor.distance,
+                            distance=distance,
                             metadata=metadata
                         )
                     )
@@ -218,7 +234,9 @@ class VectorSearchClient:
             return results
 
         except Exception as e:
+            import traceback
             logger.error(f"Search failed: {e}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             raise
 
     def batch_search(
@@ -248,13 +266,17 @@ class VectorSearchClient:
             embeddings_response = model.get_embeddings(queries)
             query_embeddings = [emb.values for emb in embeddings_response]
 
-            # Build filter
+            # Build filter using proper Vertex AI types
+            from google.cloud.aiplatform.matching_engine.matching_engine_index_endpoint import Namespace
+
             restricts = []
             if industry_filter:
-                restricts.append({
-                    "namespace": "industry",
-                    "allow_list": [industry_filter]
-                })
+                restricts.append(
+                    Namespace(
+                        name="industry",
+                        allow_tokens=[industry_filter]
+                    )
+                )
 
             # Batch query
             response = self.endpoint.find_neighbors(
@@ -269,14 +291,21 @@ class VectorSearchClient:
             for query_response in response:
                 query_results = []
                 for neighbor in query_response:
-                    brand_id = neighbor.id
+                    # Handle both dict and object responses
+                    if isinstance(neighbor, dict):
+                        brand_id = neighbor.get('id')
+                        distance = neighbor.get('distance', 0.0)
+                    else:
+                        brand_id = neighbor.id
+                        distance = neighbor.distance
+
                     metadata = self.metadata.get(brand_id, {})
 
                     query_results.append(
                         SearchResult(
                             brand_id=brand_id,
                             brand_name=metadata.get('brand_name', brand_id),
-                            distance=neighbor.distance,
+                            distance=distance,
                             metadata=metadata
                         )
                     )
