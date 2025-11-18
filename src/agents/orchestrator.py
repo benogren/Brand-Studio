@@ -517,7 +517,68 @@ class BrandStudioOrchestrator:
                         workflow_result['end_time'] = datetime.utcnow().isoformat()
                         return workflow_result
                 else:
-                    self.logger.info("Validation passed, proceeding to content generation")
+                    self.logger.info("Validation passed")
+
+                    # Interactive post-validation menu (if feedback is enabled)
+                    if self.enable_interactive_feedback:
+                        from src.feedback import collect_post_validation_choice
+
+                        # Prepare validated names with full metadata
+                        validated_names_with_metadata = []
+                        for name_dict in workflow_result['brand_names_full']:
+                            brand_name = name_dict.get('brand_name')
+                            # Add validation results to each name
+                            name_with_validation = name_dict.copy()
+                            if brand_name in workflow_result['validation_results'].get('domain_availability', {}):
+                                name_with_validation['domain_status'] = workflow_result['validation_results']['domain_availability'][brand_name]
+                            if brand_name in workflow_result['validation_results'].get('trademark_results', {}):
+                                name_with_validation['trademark_risk'] = workflow_result['validation_results']['trademark_results'][brand_name]
+                            validated_names_with_metadata.append(name_with_validation)
+
+                        # Display validation results first
+                        self._display_validation_results(
+                            validated_names_with_metadata,
+                            workflow_result['validation_results']
+                        )
+
+                        # Collect user choice
+                        post_validation_choice = collect_post_validation_choice(validated_names_with_metadata)
+
+                        if post_validation_choice['choice'] == 'regenerate':
+                            # User wants completely new names - restart loop
+                            self.logger.info("User chose to regenerate new names")
+                            workflow_result['workflow_stages'].append('user_requested_regenerate')
+                            # Reset feedback history for fresh start
+                            if workflow_result['iteration'] < max_iterations:
+                                continue
+                            else:
+                                self.logger.warning("Max iterations reached, proceeding anyway")
+
+                        elif post_validation_choice['choice'] == 'feedback':
+                            # User wants to refine with feedback - restart loop
+                            self.logger.info("User chose to refine names with feedback")
+                            workflow_result['workflow_stages'].append('user_requested_feedback')
+
+                            # Store feedback for next iteration
+                            feedback = post_validation_choice['feedback']
+                            if 'feedback_session_full' in workflow_result:
+                                workflow_result['feedback_session_full'].add_feedback(feedback)
+
+                            if workflow_result['iteration'] < max_iterations:
+                                continue
+                            else:
+                                self.logger.warning("Max iterations reached, proceeding anyway")
+
+                        elif post_validation_choice['choice'] == 'narrative':
+                            # User selected names for narrative generation
+                            self.logger.info(f"User selected {len(post_validation_choice['selected_names'])} names for narrative")
+                            workflow_result['selected_for_narrative'] = post_validation_choice['selected_names']
+                            # Break out of validation loop and proceed to narrative generation
+                            break
+                    else:
+                        # Non-interactive mode - proceed automatically
+                        self.logger.info("Proceeding to content generation")
+                        break
 
             # Validation passed - proceed to content generation
             # Stage 4: SEO Optimization
@@ -533,31 +594,79 @@ class BrandStudioOrchestrator:
                 self.logger.error(f"SEO optimization stage failed: {e}")
                 raise
 
-            # Stage 5: Story Generation
+            # Stage 5: Brand Narrative Generation
             try:
-                workflow_result['current_stage'] = 'story_generation'
-                workflow_result['workflow_stages'].append('story_generation')
-                self.logger.info("Executing story generation stage")
-                # Select top brand name for story generation
-                top_brand = self._select_top_brand(
-                    workflow_result['brand_names'],
-                    workflow_result['validation_results'],
-                    workflow_result['seo_data']
-                )
-                self.logger.info(f"Selected top brand: {top_brand}")
-                workflow_result['brand_story'] = self._execute_story_generation(
-                    top_brand,
-                    analysis
-                )
-                self.logger.info("Story generation completed")
+                workflow_result['current_stage'] = 'narrative_generation'
+                workflow_result['workflow_stages'].append('narrative_generation')
+                self.logger.info("Executing brand narrative generation stage")
+
+                # Determine which names to generate narratives for
+                if 'selected_for_narrative' in workflow_result:
+                    # User selected specific names
+                    selected_names_data = workflow_result['selected_for_narrative']
+                    self.logger.info(f"Generating narratives for {len(selected_names_data)} user-selected names")
+                else:
+                    # Auto-select top brand (backward compatibility)
+                    top_brand = self._select_top_brand(
+                        workflow_result['brand_names'],
+                        workflow_result['validation_results'],
+                        workflow_result['seo_data']
+                    )
+                    self.logger.info(f"Auto-selected top brand: {top_brand}")
+                    # Find the full metadata for this brand
+                    selected_names_data = [
+                        name for name in workflow_result['brand_names_full']
+                        if name.get('brand_name') == top_brand
+                    ]
+
+                # Generate narratives for all selected names
+                workflow_result['brand_narratives'] = []
+                for name_data in selected_names_data:
+                    brand_name = name_data.get('brand_name')
+                    self.logger.info(f"Generating narrative for {brand_name}")
+
+                    narrative = self._execute_narrative_generation(
+                        brand_name,
+                        analysis
+                    )
+
+                    # Combine name data with narrative
+                    complete_narrative = {
+                        'brand_name': brand_name,
+                        'naming_strategy': name_data.get('naming_strategy'),
+                        'original_tagline': name_data.get('tagline'),
+                        'narrative_taglines': narrative.get('taglines', []),
+                        'brand_story': narrative.get('brand_story', ''),
+                        'value_proposition': narrative.get('value_proposition', ''),
+                        'domain_status': name_data.get('domain_status', {}),
+                        'trademark_risk': name_data.get('trademark_risk', 'unknown')
+                    }
+
+                    workflow_result['brand_narratives'].append(complete_narrative)
+
+                self.logger.info(f"Generated {len(workflow_result['brand_narratives'])} brand narratives")
+
+                # For backward compatibility, also store first narrative as brand_story
+                if workflow_result['brand_narratives']:
+                    workflow_result['brand_story'] = {
+                        'taglines': workflow_result['brand_narratives'][0]['narrative_taglines'],
+                        'brand_story': workflow_result['brand_narratives'][0]['brand_story'],
+                        'value_proposition': workflow_result['brand_narratives'][0]['value_proposition']
+                    }
+
             except Exception as e:
-                self.logger.error(f"Story generation stage failed: {e}")
+                self.logger.error(f"Narrative generation stage failed: {e}")
                 raise
 
             # Mark workflow as completed and populate output fields
             workflow_result['current_stage'] = 'completed'
             workflow_result['status'] = 'completed'
-            workflow_result['selected_brand'] = top_brand
+
+            # Set selected_brand (first narrative's name, or None)
+            if workflow_result.get('brand_narratives'):
+                workflow_result['selected_brand'] = workflow_result['brand_narratives'][0]['brand_name']
+            else:
+                workflow_result['selected_brand'] = None
 
             # Populate domain_status from validation results
             workflow_result['domain_status'] = workflow_result['validation_results'].get(
@@ -572,19 +681,20 @@ class BrandStudioOrchestrator:
             # Populate seo_scores from SEO data
             workflow_result['seo_scores'] = workflow_result['seo_data'].get('seo_scores', {})
 
-            # Populate selected_brands with top 5 recommendations
-            workflow_result['selected_brands'] = [
-                {
-                    'brand_name': top_brand,
-                    'domain_status': workflow_result['domain_status'].get(top_brand, {}),
-                    'trademark_risk': workflow_result['trademark_risk'].get(top_brand, 'unknown'),
-                    'seo_score': workflow_result['seo_scores'].get(top_brand, 0),
-                    'taglines': workflow_result['brand_story'].get('taglines', []),
-                    'brand_story': workflow_result['brand_story'].get('brand_story', ''),
-                    'hero_copy': workflow_result['brand_story'].get('hero_copy', ''),
-                    'value_proposition': workflow_result['brand_story'].get('value_proposition', '')
-                }
-            ]
+            # Populate selected_brands from narratives (instead of legacy single brand)
+            workflow_result['selected_brands'] = []
+            if workflow_result.get('brand_narratives'):
+                for narrative in workflow_result['brand_narratives']:
+                    brand_name = narrative['brand_name']
+                    workflow_result['selected_brands'].append({
+                        'brand_name': brand_name,
+                        'domain_status': workflow_result['domain_status'].get(brand_name, {}),
+                        'trademark_risk': workflow_result['trademark_risk'].get(brand_name, 'unknown'),
+                        'seo_score': workflow_result['seo_scores'].get(brand_name, 0),
+                        'taglines': narrative.get('narrative_taglines', []),
+                        'brand_story': narrative.get('brand_story', ''),
+                        'value_proposition': narrative.get('value_proposition', '')
+                    })
 
             # Generate workflow summary
             feedback_info = ""
@@ -594,12 +704,20 @@ class BrandStudioOrchestrator:
                     f"feedback iteration(s). "
                 )
 
+            # Build summary based on what was generated
+            if workflow_result.get('brand_narratives'):
+                narrative_count = len(workflow_result['brand_narratives'])
+                narrative_names = ', '.join([n['brand_name'] for n in workflow_result['brand_narratives']])
+                selected_info = f"Generated {narrative_count} brand narrative(s) for: {narrative_names}"
+            else:
+                selected_info = f"Selected: {workflow_result.get('selected_brand', 'None')}"
+
             workflow_result['workflow_summary'] = (
                 f"Completed {len(workflow_result['workflow_stages'])} stages "
                 f"in {workflow_result['iteration']} validation iteration(s). "
                 f"{feedback_info}"
                 f"Generated {len(workflow_result['brand_names'])} brand names. "
-                f"Selected: {top_brand}"
+                f"{selected_info}"
             )
 
             workflow_result['end_time'] = datetime.utcnow().isoformat()
@@ -994,16 +1112,72 @@ class BrandStudioOrchestrator:
             'detailed_seo': all_seo_data
         }
 
-    def _execute_story_generation(
+    def _display_validation_results(
+        self,
+        validated_names: List[Dict[str, Any]],
+        validation_results: Dict[str, Any]
+    ) -> None:
+        """
+        Display validation results for user review.
+
+        Args:
+            validated_names: List of validated name dictionaries with metadata
+            validation_results: Validation results from validation agent
+        """
+        print("\n" + "=" * 70)
+        print("VALIDATION RESULTS")
+        print("=" * 70)
+
+        domain_availability = validation_results.get('domain_availability', {})
+        trademark_results = validation_results.get('trademark_results', {})
+
+        for i, name_data in enumerate(validated_names, 1):
+            brand_name = name_data.get('brand_name', 'Unknown')
+            print(f"\n{i}. {brand_name}")
+            print(f"   Strategy: {name_data.get('naming_strategy', 'N/A')}")
+            print(f"   Tagline: \"{name_data.get('tagline', 'N/A')}\"")
+
+            # Domain availability
+            if brand_name in domain_availability:
+                domains = domain_availability[brand_name]
+                available = [ext for ext, avail in domains.items() if avail]
+                if available:
+                    print(f"   ✓ Domains Available: {', '.join(available)}")
+                else:
+                    print(f"   ✗ Domains Available: None")
+
+            # Trademark risk
+            if brand_name in trademark_results:
+                risk = trademark_results[brand_name]
+                risk_icon = "✓" if risk == "low" else ("⚠" if risk == "medium" else "✗")
+                print(f"   {risk_icon} Trademark Risk: {risk.upper()}")
+
+        print("\n" + "=" * 70)
+
+    def _execute_narrative_generation(
         self,
         selected_name: Optional[str],
         analysis: dict
     ) -> dict:
-        """Execute story generation stage with real Story agent."""
+        """
+        Execute brand narrative generation with Story agent.
+
+        Generates:
+        - 3-5 tagline options (5-8 words each)
+        - Brand story (150-300 words)
+        - Value proposition statement (20-30 words)
+
+        Args:
+            selected_name: Brand name to generate narrative for
+            analysis: User brief analysis
+
+        Returns:
+            Dictionary with taglines, brand_story, and value_proposition
+        """
         from src.agents.story_agent import StoryAgent
 
         if not selected_name:
-            self.logger.warning("No brand name selected for story generation")
+            self.logger.warning("No brand name selected for narrative generation")
             return {}
 
         # Initialize story agent
@@ -1012,19 +1186,19 @@ class BrandStudioOrchestrator:
             location=self.location
         )
 
-        self.logger.info(f"Generating brand story for {selected_name}")
+        self.logger.info(f"Generating brand narrative for {selected_name}")
 
-        # Generate story content
-        story_result = story_agent.generate_brand_story(
+        # Generate narrative content
+        narrative_result = story_agent.generate_brand_story(
             brand_name=selected_name,
             product_description=analysis.get('product_description', ''),
             brand_personality=analysis.get('brand_personality', 'professional'),
             target_audience=analysis.get('target_audience', '')
         )
 
-        self.logger.info(f"Brand story generated successfully for {selected_name}")
+        self.logger.info(f"Brand narrative generated successfully for {selected_name}")
 
-        return story_result
+        return narrative_result
 
     def _store_user_preferences(
         self,

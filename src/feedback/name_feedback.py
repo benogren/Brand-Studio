@@ -314,3 +314,150 @@ def build_feedback_summary(feedback_history: List[NameFeedback]) -> str:
         summary_parts.append(feedback.to_prompt_context())
 
     return "\n".join(summary_parts)
+
+
+def collect_post_validation_choice(validated_names: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Collect user choice after validation stage.
+
+    Presents three options:
+    1. Regenerate new names (completely fresh batch)
+    2. Regenerate with feedback (refine existing names)
+    3. Select names for brand narrative generation
+
+    Args:
+        validated_names: List of validated brand name dictionaries with metadata
+
+    Returns:
+        Dictionary with:
+        - choice: 'regenerate', 'feedback', or 'narrative'
+        - selected_names: List of selected names (if choice is 'narrative')
+        - feedback: NameFeedback object (if choice is 'feedback')
+    """
+    print("\n" + "=" * 70)
+    print("VALIDATION COMPLETE")
+    print("=" * 70)
+
+    print("\nWhat would you like to do next?")
+    print("=" * 70)
+    print("1. Generate completely new names (fresh start)")
+    print("2. Regenerate names with feedback (refine these names)")
+    print("3. Select names to create brand narratives")
+    print("=" * 70)
+
+    while True:
+        try:
+            choice = input("\nYour choice (1-3): ").strip()
+
+            if choice == '1':
+                # Regenerate completely new names
+                return {
+                    'choice': 'regenerate',
+                    'feedback': NameFeedback(
+                        feedback_type=FeedbackType.REGENERATE,
+                        general_comments="User requested completely new batch after validation"
+                    )
+                }
+
+            elif choice == '2':
+                # Collect feedback for refinement
+                print("\n" + "=" * 70)
+                print("PROVIDE FEEDBACK FOR REFINEMENT")
+                print("=" * 70)
+
+                # Show current names for reference
+                print("\nCurrent validated names:")
+                for i, name_data in enumerate(validated_names, 1):
+                    brand_name = name_data.get('brand_name', 'Unknown')
+                    print(f"  {i}. {brand_name}")
+
+                # Collect feedback similar to the iterative feedback
+                liked_input = input("\nWhich names do you like? (comma-separated numbers, or press Enter to skip): ").strip()
+                liked_names = []
+                if liked_input:
+                    try:
+                        indices = [int(x.strip()) - 1 for x in liked_input.split(',')]
+                        liked_names = [validated_names[i]['brand_name'] for i in indices if 0 <= i < len(validated_names)]
+                    except (ValueError, IndexError):
+                        print("⚠️  Invalid input, skipping liked names.")
+
+                disliked_input = input("Which names should we avoid? (comma-separated numbers, or press Enter to skip): ").strip()
+                disliked_names = []
+                if disliked_input:
+                    try:
+                        indices = [int(x.strip()) - 1 for x in disliked_input.split(',')]
+                        disliked_names = [validated_names[i]['brand_name'] for i in indices if 0 <= i < len(validated_names)]
+                    except (ValueError, IndexError):
+                        print("⚠️  Invalid input, skipping disliked names.")
+
+                new_directions = input("\nWhat new themes or directions should we explore? (optional): ").strip()
+                tone_adjustment = input("Any tone adjustments? (e.g., 'more professional', 'shorter', 'more creative'): ").strip()
+
+                feedback = NameFeedback(
+                    feedback_type=FeedbackType.REFINE,
+                    liked_names=liked_names if liked_names else None,
+                    disliked_names=disliked_names if disliked_names else None,
+                    new_directions=[new_directions] if new_directions else None,
+                    tone_adjustments=tone_adjustment if tone_adjustment else None
+                )
+
+                return {
+                    'choice': 'feedback',
+                    'feedback': feedback
+                }
+
+            elif choice == '3':
+                # Select names for brand narrative generation
+                print("\n" + "=" * 70)
+                print("SELECT NAMES FOR BRAND NARRATIVE")
+                print("=" * 70)
+
+                print("\nValidated names:")
+                for i, name_data in enumerate(validated_names, 1):
+                    brand_name = name_data.get('brand_name', 'Unknown')
+                    strategy = name_data.get('naming_strategy', 'N/A')
+                    tagline = name_data.get('tagline', 'N/A')
+                    print(f"  {i}. {brand_name} ({strategy})")
+                    print(f"     \"{tagline}\"")
+
+                while True:
+                    selection_input = input("\nEnter numbers of names to create narratives for (comma-separated, e.g., 1,3,5): ").strip()
+
+                    try:
+                        indices = [int(x.strip()) - 1 for x in selection_input.split(',')]
+
+                        # Validate indices
+                        if not all(0 <= i < len(validated_names) for i in indices):
+                            print("⚠️  Some numbers are out of range. Please try again.")
+                            continue
+
+                        if len(indices) == 0:
+                            print("⚠️  Please select at least one name.")
+                            continue
+
+                        # Get selected names
+                        selected_names = [validated_names[i] for i in indices]
+
+                        print(f"\n✓ Selected {len(selected_names)} name(s) for brand narrative generation")
+
+                        return {
+                            'choice': 'narrative',
+                            'selected_names': selected_names
+                        }
+
+                    except (ValueError, IndexError):
+                        print("⚠️  Invalid input. Please enter comma-separated numbers.")
+                        continue
+
+            else:
+                print("⚠️  Please enter 1, 2, or 3.")
+                continue
+
+        except EOFError:
+            raise
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            logger.error(f"Error collecting post-validation choice: {e}")
+            print(f"⚠️  Error: {e}")
+            continue

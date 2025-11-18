@@ -800,6 +800,58 @@ def main():
                     if len(result['brand_names']) > 5:
                         print(f"  ... and {len(result['brand_names']) - 5} more")
 
+                # Show brand narratives if generated
+                if result.get('brand_narratives'):
+                    print(f"\n{'=' * 70}")
+                    print(f"BRAND NARRATIVES ({len(result['brand_narratives'])} generated)")
+                    print("=" * 70)
+
+                    for i, narrative in enumerate(result['brand_narratives'], 1):
+                        brand_name = narrative.get('brand_name', 'Unknown')
+                        print(f"\n{i}. {brand_name}")
+                        print("=" * 70)
+
+                        # Tagline options
+                        taglines = narrative.get('narrative_taglines', [])
+                        if taglines:
+                            print(f"\n   TAGLINE OPTIONS ({len(taglines)}):")
+                            for j, tagline in enumerate(taglines, 1):
+                                print(f"   {j}. \"{tagline}\"")
+
+                        # Brand story
+                        brand_story = narrative.get('brand_story', '')
+                        if brand_story:
+                            print(f"\n   BRAND STORY:")
+                            # Wrap text at 70 characters
+                            import textwrap
+                            wrapped_story = textwrap.fill(
+                                brand_story,
+                                width=66,
+                                initial_indent='   ',
+                                subsequent_indent='   '
+                            )
+                            print(wrapped_story)
+
+                        # Value proposition
+                        value_prop = narrative.get('value_proposition', '')
+                        if value_prop:
+                            print(f"\n   VALUE PROPOSITION:")
+                            print(f"   \"{value_prop}\"")
+
+                        # Domain and trademark info
+                        domain_status = narrative.get('domain_status', {})
+                        if domain_status:
+                            available = [ext for ext, avail in domain_status.items() if avail]
+                            if available:
+                                print(f"\n   Available Domains: {', '.join(available)}")
+
+                        trademark_risk = narrative.get('trademark_risk')
+                        if trademark_risk:
+                            risk_icon = "✓" if trademark_risk == "low" else ("⚠" if trademark_risk == "medium" else "✗")
+                            print(f"   Trademark Risk: {risk_icon} {trademark_risk.upper()}")
+
+                        print()
+
                 # Show workflow summary
                 if result.get('workflow_summary'):
                     print(f"{result['workflow_summary']}")
