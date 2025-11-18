@@ -3,9 +3,9 @@
 ## Project Metadata
 
 **Track:** Enterprise Agents
-**Team Size:** [1-4 members]
+**Team Size:** 1
 **Submission Deadline:** December 1, 2025, 11:59 AM PT
-**Repository:** [To be created]
+**Repository:** https://github.com/benogren/Brand-Agent
 
 ---
 
