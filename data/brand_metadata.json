@@ -1,0 +1,5754 @@
+{
+  "brand_0": {
+    "brand_name": "Notion",
+    "industry": "productivity",
+    "category": "workspace",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_1": {
+    "brand_name": "Airtable",
+    "industry": "productivity",
+    "category": "database",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_2": {
+    "brand_name": "Linear",
+    "industry": "productivity",
+    "category": "project_management",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_3": {
+    "brand_name": "Superhuman",
+    "industry": "productivity",
+    "category": "email",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_4": {
+    "brand_name": "Asana",
+    "industry": "productivity",
+    "category": "project_management",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_5": {
+    "brand_name": "Monday",
+    "industry": "productivity",
+    "category": "work_os",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_6": {
+    "brand_name": "ClickUp",
+    "industry": "productivity",
+    "category": "project_management",
+    "year_founded": 2017,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_7": {
+    "brand_name": "Coda",
+    "industry": "productivity",
+    "category": "documents",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_8": {
+    "brand_name": "Roam",
+    "industry": "productivity",
+    "category": "note_taking",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_9": {
+    "brand_name": "Obsidian",
+    "industry": "productivity",
+    "category": "note_taking",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_10": {
+    "brand_name": "Craft",
+    "industry": "productivity",
+    "category": "documents",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_11": {
+    "brand_name": "Bear",
+    "industry": "productivity",
+    "category": "note_taking",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_12": {
+    "brand_name": "Todoist",
+    "industry": "productivity",
+    "category": "task_management",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_13": {
+    "brand_name": "Things",
+    "industry": "productivity",
+    "category": "task_management",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_14": {
+    "brand_name": "Sunsama",
+    "industry": "productivity",
+    "category": "daily_planner",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_15": {
+    "brand_name": "Motion",
+    "industry": "productivity",
+    "category": "calendar",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_16": {
+    "brand_name": "Akiflow",
+    "industry": "productivity",
+    "category": "task_management",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_17": {
+    "brand_name": "Sorted",
+    "industry": "productivity",
+    "category": "task_management",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_18": {
+    "brand_name": "Heights",
+    "industry": "productivity",
+    "category": "project_management",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_19": {
+    "brand_name": "Taskade",
+    "industry": "productivity",
+    "category": "collaboration",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_20": {
+    "brand_name": "Figma",
+    "industry": "design",
+    "category": "design_tools",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_21": {
+    "brand_name": "Canva",
+    "industry": "design",
+    "category": "graphic_design",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_22": {
+    "brand_name": "Sketch",
+    "industry": "design",
+    "category": "design_tools",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_23": {
+    "brand_name": "Framer",
+    "industry": "design",
+    "category": "prototyping",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_24": {
+    "brand_name": "Spline",
+    "industry": "design",
+    "category": "3d_design",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_25": {
+    "brand_name": "Rive",
+    "industry": "design",
+    "category": "animation",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_26": {
+    "brand_name": "Pixso",
+    "industry": "design",
+    "category": "design_tools",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_27": {
+    "brand_name": "Penpot",
+    "industry": "design",
+    "category": "design_tools",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_28": {
+    "brand_name": "Lunacy",
+    "industry": "design",
+    "category": "design_tools",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_29": {
+    "brand_name": "Excalidraw",
+    "industry": "design",
+    "category": "whiteboard",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_30": {
+    "brand_name": "Miro",
+    "industry": "design",
+    "category": "whiteboard",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_31": {
+    "brand_name": "FigJam",
+    "industry": "design",
+    "category": "whiteboard",
+    "year_founded": 2021,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_32": {
+    "brand_name": "Whimsical",
+    "industry": "design",
+    "category": "whiteboard",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_33": {
+    "brand_name": "Mural",
+    "industry": "design",
+    "category": "whiteboard",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_34": {
+    "brand_name": "Figjam",
+    "industry": "design",
+    "category": "collaboration",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_35": {
+    "brand_name": "Zeplin",
+    "industry": "design",
+    "category": "design_handoff",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_36": {
+    "brand_name": "InVision",
+    "industry": "design",
+    "category": "prototyping",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_37": {
+    "brand_name": "Mockplus",
+    "industry": "design",
+    "category": "prototyping",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_38": {
+    "brand_name": "Balsamiq",
+    "industry": "design",
+    "category": "wireframing",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_39": {
+    "brand_name": "Axure",
+    "industry": "design",
+    "category": "prototyping",
+    "year_founded": 2002,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_40": {
+    "brand_name": "Slack",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_41": {
+    "brand_name": "Loom",
+    "industry": "communication",
+    "category": "video_messaging",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_42": {
+    "brand_name": "Discord",
+    "industry": "communication",
+    "category": "chat",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_43": {
+    "brand_name": "Zoom",
+    "industry": "communication",
+    "category": "video_conferencing",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_44": {
+    "brand_name": "Teams",
+    "industry": "communication",
+    "category": "collaboration",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_45": {
+    "brand_name": "Twist",
+    "industry": "communication",
+    "category": "async_communication",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_46": {
+    "brand_name": "Flock",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_47": {
+    "brand_name": "Chanty",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_48": {
+    "brand_name": "Pumble",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_49": {
+    "brand_name": "Mattermost",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_50": {
+    "brand_name": "Rocket.Chat",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_51": {
+    "brand_name": "Zulip",
+    "industry": "communication",
+    "category": "team_chat",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_52": {
+    "brand_name": "Element",
+    "industry": "communication",
+    "category": "secure_chat",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_53": {
+    "brand_name": "Wire",
+    "industry": "communication",
+    "category": "secure_chat",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_54": {
+    "brand_name": "Signal",
+    "industry": "communication",
+    "category": "secure_messaging",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_55": {
+    "brand_name": "Telegram",
+    "industry": "communication",
+    "category": "messaging",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_56": {
+    "brand_name": "WhatsApp",
+    "industry": "communication",
+    "category": "messaging",
+    "year_founded": 2009,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_57": {
+    "brand_name": "Viber",
+    "industry": "communication",
+    "category": "messaging",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_58": {
+    "brand_name": "Line",
+    "industry": "communication",
+    "category": "messaging",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_59": {
+    "brand_name": "WeChat",
+    "industry": "communication",
+    "category": "messaging",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_60": {
+    "brand_name": "Webflow",
+    "industry": "web_development",
+    "category": "website_builder",
+    "year_founded": 2013,
+    "naming_strategy": "descriptive",
+    "syllables": 2
+  },
+  "brand_61": {
+    "brand_name": "Vercel",
+    "industry": "web_development",
+    "category": "hosting",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_62": {
+    "brand_name": "Netlify",
+    "industry": "web_development",
+    "category": "hosting",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_63": {
+    "brand_name": "Railway",
+    "industry": "web_development",
+    "category": "hosting",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_64": {
+    "brand_name": "Render",
+    "industry": "web_development",
+    "category": "hosting",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_65": {
+    "brand_name": "Fly.io",
+    "industry": "web_development",
+    "category": "hosting",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_66": {
+    "brand_name": "Supabase",
+    "industry": "web_development",
+    "category": "backend",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_67": {
+    "brand_name": "PlanetScale",
+    "industry": "web_development",
+    "category": "database",
+    "year_founded": 2018,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_68": {
+    "brand_name": "Neon",
+    "industry": "web_development",
+    "category": "database",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_69": {
+    "brand_name": "Convex",
+    "industry": "web_development",
+    "category": "backend",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_70": {
+    "brand_name": "Xata",
+    "industry": "web_development",
+    "category": "database",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_71": {
+    "brand_name": "Upstash",
+    "industry": "web_development",
+    "category": "database",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_72": {
+    "brand_name": "Turso",
+    "industry": "web_development",
+    "category": "database",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_73": {
+    "brand_name": "Cloudflare",
+    "industry": "web_development",
+    "category": "cdn",
+    "year_founded": 2009,
+    "naming_strategy": "descriptive",
+    "syllables": 2
+  },
+  "brand_74": {
+    "brand_name": "Fastly",
+    "industry": "web_development",
+    "category": "cdn",
+    "year_founded": 2011,
+    "naming_strategy": "descriptive",
+    "syllables": 1
+  },
+  "brand_75": {
+    "brand_name": "BunnyCDN",
+    "industry": "web_development",
+    "category": "cdn",
+    "year_founded": 2016,
+    "naming_strategy": "portmanteau",
+    "syllables": 1
+  },
+  "brand_76": {
+    "brand_name": "Wix",
+    "industry": "web_development",
+    "category": "website_builder",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_77": {
+    "brand_name": "Squarespace",
+    "industry": "web_development",
+    "category": "website_builder",
+    "year_founded": 2003,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_78": {
+    "brand_name": "WordPress",
+    "industry": "web_development",
+    "category": "cms",
+    "year_founded": 2003,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_79": {
+    "brand_name": "Midjourney",
+    "industry": "ai",
+    "category": "image_generation",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_80": {
+    "brand_name": "Runway",
+    "industry": "ai",
+    "category": "video_generation",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_81": {
+    "brand_name": "Replicate",
+    "industry": "ai",
+    "category": "ml_platform",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_82": {
+    "brand_name": "Perplexity",
+    "industry": "ai",
+    "category": "search",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_83": {
+    "brand_name": "Claude",
+    "industry": "ai",
+    "category": "assistant",
+    "year_founded": 2023,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_84": {
+    "brand_name": "ChatGPT",
+    "industry": "ai",
+    "category": "assistant",
+    "year_founded": 2022,
+    "naming_strategy": "portmanteau",
+    "syllables": 1
+  },
+  "brand_85": {
+    "brand_name": "Gemini",
+    "industry": "ai",
+    "category": "assistant",
+    "year_founded": 2023,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_86": {
+    "brand_name": "Copilot",
+    "industry": "ai",
+    "category": "coding_assistant",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_87": {
+    "brand_name": "Cursor",
+    "industry": "ai",
+    "category": "code_editor",
+    "year_founded": 2023,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_88": {
+    "brand_name": "Replit",
+    "industry": "ai",
+    "category": "code_platform",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_89": {
+    "brand_name": "Codeium",
+    "industry": "ai",
+    "category": "coding_assistant",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_90": {
+    "brand_name": "Tabnine",
+    "industry": "ai",
+    "category": "coding_assistant",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_91": {
+    "brand_name": "Krea",
+    "industry": "ai",
+    "category": "image_generation",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_92": {
+    "brand_name": "Leonardo",
+    "industry": "ai",
+    "category": "image_generation",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_93": {
+    "brand_name": "Playground",
+    "industry": "ai",
+    "category": "image_generation",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_94": {
+    "brand_name": "DreamStudio",
+    "industry": "ai",
+    "category": "image_generation",
+    "year_founded": 2022,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_95": {
+    "brand_name": "Pika",
+    "industry": "ai",
+    "category": "video_generation",
+    "year_founded": 2023,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_96": {
+    "brand_name": "Gen-2",
+    "industry": "ai",
+    "category": "video_generation",
+    "year_founded": 2023,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_97": {
+    "brand_name": "Sora",
+    "industry": "ai",
+    "category": "video_generation",
+    "year_founded": 2024,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_98": {
+    "brand_name": "ElevenLabs",
+    "industry": "ai",
+    "category": "voice_generation",
+    "year_founded": 2022,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_99": {
+    "brand_name": "Resemble",
+    "industry": "ai",
+    "category": "voice_cloning",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_100": {
+    "brand_name": "Descript",
+    "industry": "ai",
+    "category": "video_editing",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_101": {
+    "brand_name": "Jasper",
+    "industry": "ai",
+    "category": "content_generation",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_102": {
+    "brand_name": "Copy.ai",
+    "industry": "ai",
+    "category": "content_generation",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_103": {
+    "brand_name": "Writesonic",
+    "industry": "ai",
+    "category": "content_generation",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_104": {
+    "brand_name": "Stripe",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_105": {
+    "brand_name": "Wise",
+    "industry": "fintech",
+    "category": "money_transfer",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_106": {
+    "brand_name": "Revolut",
+    "industry": "fintech",
+    "category": "banking",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_107": {
+    "brand_name": "Plaid",
+    "industry": "fintech",
+    "category": "banking_api",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_108": {
+    "brand_name": "Mercury",
+    "industry": "fintech",
+    "category": "banking",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_109": {
+    "brand_name": "Ramp",
+    "industry": "fintech",
+    "category": "corporate_cards",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_110": {
+    "brand_name": "Brex",
+    "industry": "fintech",
+    "category": "corporate_cards",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_111": {
+    "brand_name": "Gusto",
+    "industry": "fintech",
+    "category": "payroll",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_112": {
+    "brand_name": "Rippling",
+    "industry": "fintech",
+    "category": "hr_payroll",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_113": {
+    "brand_name": "Deel",
+    "industry": "fintech",
+    "category": "global_payroll",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_114": {
+    "brand_name": "Remote",
+    "industry": "fintech",
+    "category": "global_payroll",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_115": {
+    "brand_name": "Oyster",
+    "industry": "fintech",
+    "category": "global_hr",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_116": {
+    "brand_name": "Pilot",
+    "industry": "fintech",
+    "category": "accounting",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_117": {
+    "brand_name": "Bench",
+    "industry": "fintech",
+    "category": "accounting",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_118": {
+    "brand_name": "Carta",
+    "industry": "fintech",
+    "category": "equity_management",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_119": {
+    "brand_name": "AngelList",
+    "industry": "fintech",
+    "category": "investing",
+    "year_founded": 2010,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_120": {
+    "brand_name": "Wealthfront",
+    "industry": "fintech",
+    "category": "investing",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_121": {
+    "brand_name": "Betterment",
+    "industry": "fintech",
+    "category": "investing",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_122": {
+    "brand_name": "Robinhood",
+    "industry": "fintech",
+    "category": "investing",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_123": {
+    "brand_name": "Acorns",
+    "industry": "fintech",
+    "category": "micro_investing",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_124": {
+    "brand_name": "GitHub",
+    "industry": "developer_tools",
+    "category": "version_control",
+    "year_founded": 2008,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_125": {
+    "brand_name": "GitLab",
+    "industry": "developer_tools",
+    "category": "devops",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_126": {
+    "brand_name": "Bitbucket",
+    "industry": "developer_tools",
+    "category": "version_control",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_127": {
+    "brand_name": "CircleCI",
+    "industry": "developer_tools",
+    "category": "ci_cd",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_128": {
+    "brand_name": "Travis",
+    "industry": "developer_tools",
+    "category": "ci_cd",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_129": {
+    "brand_name": "Jenkins",
+    "industry": "developer_tools",
+    "category": "ci_cd",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_130": {
+    "brand_name": "Buildkite",
+    "industry": "developer_tools",
+    "category": "ci_cd",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_131": {
+    "brand_name": "Semaphore",
+    "industry": "developer_tools",
+    "category": "ci_cd",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_132": {
+    "brand_name": "Datadog",
+    "industry": "developer_tools",
+    "category": "monitoring",
+    "year_founded": 2010,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_133": {
+    "brand_name": "Sentry",
+    "industry": "developer_tools",
+    "category": "error_tracking",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_134": {
+    "brand_name": "LogRocket",
+    "industry": "developer_tools",
+    "category": "session_replay",
+    "year_founded": 2016,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_135": {
+    "brand_name": "FullStory",
+    "industry": "developer_tools",
+    "category": "session_replay",
+    "year_founded": 2012,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_136": {
+    "brand_name": "Mixpanel",
+    "industry": "developer_tools",
+    "category": "analytics",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_137": {
+    "brand_name": "Amplitude",
+    "industry": "developer_tools",
+    "category": "analytics",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_138": {
+    "brand_name": "Segment",
+    "industry": "developer_tools",
+    "category": "customer_data",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_139": {
+    "brand_name": "RudderStack",
+    "industry": "developer_tools",
+    "category": "customer_data",
+    "year_founded": 2019,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_140": {
+    "brand_name": "PostHog",
+    "industry": "developer_tools",
+    "category": "product_analytics",
+    "year_founded": 2020,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_141": {
+    "brand_name": "Heap",
+    "industry": "developer_tools",
+    "category": "analytics",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_142": {
+    "brand_name": "Pendo",
+    "industry": "developer_tools",
+    "category": "product_analytics",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_143": {
+    "brand_name": "Retool",
+    "industry": "developer_tools",
+    "category": "internal_tools",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_144": {
+    "brand_name": "HubSpot",
+    "industry": "marketing",
+    "category": "crm",
+    "year_founded": 2006,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_145": {
+    "brand_name": "Mailchimp",
+    "industry": "marketing",
+    "category": "email_marketing",
+    "year_founded": 2001,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_146": {
+    "brand_name": "ConvertKit",
+    "industry": "marketing",
+    "category": "email_marketing",
+    "year_founded": 2013,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_147": {
+    "brand_name": "Beehiiv",
+    "industry": "marketing",
+    "category": "newsletter",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_148": {
+    "brand_name": "Substack",
+    "industry": "marketing",
+    "category": "newsletter",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_149": {
+    "brand_name": "Ghost",
+    "industry": "marketing",
+    "category": "publishing",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_150": {
+    "brand_name": "Medium",
+    "industry": "marketing",
+    "category": "publishing",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_151": {
+    "brand_name": "Buffer",
+    "industry": "marketing",
+    "category": "social_media",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_152": {
+    "brand_name": "Hootsuite",
+    "industry": "marketing",
+    "category": "social_media",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_153": {
+    "brand_name": "Later",
+    "industry": "marketing",
+    "category": "social_media",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_154": {
+    "brand_name": "Sprout",
+    "industry": "marketing",
+    "category": "social_media",
+    "year_founded": 2010,
+    "naming_strategy": "descriptive",
+    "syllables": 1
+  },
+  "brand_155": {
+    "brand_name": "Ahrefs",
+    "industry": "marketing",
+    "category": "seo",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_156": {
+    "brand_name": "SEMrush",
+    "industry": "marketing",
+    "category": "seo",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_157": {
+    "brand_name": "Moz",
+    "industry": "marketing",
+    "category": "seo",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_158": {
+    "brand_name": "Screaming Frog",
+    "industry": "marketing",
+    "category": "seo",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_159": {
+    "brand_name": "Clearbit",
+    "industry": "marketing",
+    "category": "data_enrichment",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_160": {
+    "brand_name": "Intercom",
+    "industry": "marketing",
+    "category": "customer_messaging",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_161": {
+    "brand_name": "Drift",
+    "industry": "marketing",
+    "category": "conversational_marketing",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_162": {
+    "brand_name": "Qualified",
+    "industry": "marketing",
+    "category": "conversational_marketing",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_163": {
+    "brand_name": "Calendly",
+    "industry": "marketing",
+    "category": "scheduling",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_164": {
+    "brand_name": "Shopify",
+    "industry": "ecommerce",
+    "category": "ecommerce_platform",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_165": {
+    "brand_name": "WooCommerce",
+    "industry": "ecommerce",
+    "category": "ecommerce_plugin",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_166": {
+    "brand_name": "BigCommerce",
+    "industry": "ecommerce",
+    "category": "ecommerce_platform",
+    "year_founded": 2009,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_167": {
+    "brand_name": "Magento",
+    "industry": "ecommerce",
+    "category": "ecommerce_platform",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_168": {
+    "brand_name": "PrestaShop",
+    "industry": "ecommerce",
+    "category": "ecommerce_platform",
+    "year_founded": 2007,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_169": {
+    "brand_name": "Volusion",
+    "industry": "ecommerce",
+    "category": "ecommerce_platform",
+    "year_founded": 1999,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_170": {
+    "brand_name": "Shift4Shop",
+    "industry": "ecommerce",
+    "category": "ecommerce_platform",
+    "year_founded": 1997,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_171": {
+    "brand_name": "Square",
+    "industry": "ecommerce",
+    "category": "point_of_sale",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_172": {
+    "brand_name": "Toast",
+    "industry": "ecommerce",
+    "category": "restaurant_pos",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_173": {
+    "brand_name": "Clover",
+    "industry": "ecommerce",
+    "category": "point_of_sale",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_174": {
+    "brand_name": "Lightspeed",
+    "industry": "ecommerce",
+    "category": "point_of_sale",
+    "year_founded": 2005,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_175": {
+    "brand_name": "Vend",
+    "industry": "ecommerce",
+    "category": "point_of_sale",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_176": {
+    "brand_name": "Klarna",
+    "industry": "ecommerce",
+    "category": "bnpl",
+    "year_founded": 2005,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_177": {
+    "brand_name": "Affirm",
+    "industry": "ecommerce",
+    "category": "bnpl",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_178": {
+    "brand_name": "Afterpay",
+    "industry": "ecommerce",
+    "category": "bnpl",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_179": {
+    "brand_name": "Sezzle",
+    "industry": "ecommerce",
+    "category": "bnpl",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_180": {
+    "brand_name": "Gorgias",
+    "industry": "ecommerce",
+    "category": "customer_support",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_181": {
+    "brand_name": "Klaviyo",
+    "industry": "ecommerce",
+    "category": "email_marketing",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_182": {
+    "brand_name": "Attentive",
+    "industry": "ecommerce",
+    "category": "sms_marketing",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_183": {
+    "brand_name": "Postscript",
+    "industry": "ecommerce",
+    "category": "sms_marketing",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_184": {
+    "brand_name": "Coursera",
+    "industry": "education",
+    "category": "online_courses",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_185": {
+    "brand_name": "Udemy",
+    "industry": "education",
+    "category": "online_courses",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_186": {
+    "brand_name": "Skillshare",
+    "industry": "education",
+    "category": "online_courses",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_187": {
+    "brand_name": "Masterclass",
+    "industry": "education",
+    "category": "online_courses",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_188": {
+    "brand_name": "Pluralsight",
+    "industry": "education",
+    "category": "tech_training",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_189": {
+    "brand_name": "Datacamp",
+    "industry": "education",
+    "category": "data_science",
+    "year_founded": 2013,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_190": {
+    "brand_name": "Codecademy",
+    "industry": "education",
+    "category": "coding",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_191": {
+    "brand_name": "FreeCodeCamp",
+    "industry": "education",
+    "category": "coding",
+    "year_founded": 2014,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_192": {
+    "brand_name": "Khan Academy",
+    "industry": "education",
+    "category": "k12",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_193": {
+    "brand_name": "Duolingo",
+    "industry": "education",
+    "category": "language_learning",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_194": {
+    "brand_name": "Babbel",
+    "industry": "education",
+    "category": "language_learning",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_195": {
+    "brand_name": "Busuu",
+    "industry": "education",
+    "category": "language_learning",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_196": {
+    "brand_name": "Memrise",
+    "industry": "education",
+    "category": "language_learning",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_197": {
+    "brand_name": "Lingoda",
+    "industry": "education",
+    "category": "language_learning",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_198": {
+    "brand_name": "Preply",
+    "industry": "education",
+    "category": "tutoring",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_199": {
+    "brand_name": "Cambly",
+    "industry": "education",
+    "category": "tutoring",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_200": {
+    "brand_name": "Italki",
+    "industry": "education",
+    "category": "language_tutoring",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_201": {
+    "brand_name": "VIPKid",
+    "industry": "education",
+    "category": "teaching",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_202": {
+    "brand_name": "Outschool",
+    "industry": "education",
+    "category": "k12_classes",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_203": {
+    "brand_name": "ClassDojo",
+    "industry": "education",
+    "category": "classroom_management",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_204": {
+    "brand_name": "Calm",
+    "industry": "health",
+    "category": "meditation",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_205": {
+    "brand_name": "Headspace",
+    "industry": "health",
+    "category": "meditation",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_206": {
+    "brand_name": "Peloton",
+    "industry": "health",
+    "category": "fitness",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_207": {
+    "brand_name": "Strava",
+    "industry": "health",
+    "category": "fitness_tracking",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_208": {
+    "brand_name": "MyFitnessPal",
+    "industry": "health",
+    "category": "nutrition",
+    "year_founded": 2005,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_209": {
+    "brand_name": "Fitbit",
+    "industry": "health",
+    "category": "wearables",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_210": {
+    "brand_name": "Whoop",
+    "industry": "health",
+    "category": "wearables",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_211": {
+    "brand_name": "Oura",
+    "industry": "health",
+    "category": "wearables",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_212": {
+    "brand_name": "Eight Sleep",
+    "industry": "health",
+    "category": "sleep_tracking",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_213": {
+    "brand_name": "Withings",
+    "industry": "health",
+    "category": "health_devices",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_214": {
+    "brand_name": "Noom",
+    "industry": "health",
+    "category": "weight_loss",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_215": {
+    "brand_name": "Flo",
+    "industry": "health",
+    "category": "period_tracking",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_216": {
+    "brand_name": "Clue",
+    "industry": "health",
+    "category": "period_tracking",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_217": {
+    "brand_name": "BetterHelp",
+    "industry": "health",
+    "category": "therapy",
+    "year_founded": 2013,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_218": {
+    "brand_name": "Talkspace",
+    "industry": "health",
+    "category": "therapy",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_219": {
+    "brand_name": "Cerebral",
+    "industry": "health",
+    "category": "mental_health",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_220": {
+    "brand_name": "K Health",
+    "industry": "health",
+    "category": "telehealth",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_221": {
+    "brand_name": "Ro",
+    "industry": "health",
+    "category": "telehealth",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_222": {
+    "brand_name": "Hims",
+    "industry": "health",
+    "category": "telehealth",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_223": {
+    "brand_name": "Nurx",
+    "industry": "health",
+    "category": "telehealth",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_224": {
+    "brand_name": "Apple",
+    "industry": "technology",
+    "category": "consumer_electronics",
+    "year_founded": 1976,
+    "naming_strategy": "descriptive",
+    "syllables": 1
+  },
+  "brand_225": {
+    "brand_name": "Microsoft",
+    "industry": "technology",
+    "category": "software",
+    "year_founded": 1975,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_226": {
+    "brand_name": "Amazon",
+    "industry": "ecommerce",
+    "category": "retail",
+    "year_founded": 1994,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_227": {
+    "brand_name": "Google",
+    "industry": "technology",
+    "category": "search",
+    "year_founded": 1998,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_228": {
+    "brand_name": "Meta",
+    "industry": "technology",
+    "category": "social_media",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_229": {
+    "brand_name": "Intel",
+    "industry": "technology",
+    "category": "semiconductors",
+    "year_founded": 1968,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_230": {
+    "brand_name": "IBM",
+    "industry": "technology",
+    "category": "enterprise_software",
+    "year_founded": 1911,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_231": {
+    "brand_name": "Cisco",
+    "industry": "technology",
+    "category": "networking",
+    "year_founded": 1984,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_232": {
+    "brand_name": "Oracle",
+    "industry": "technology",
+    "category": "database",
+    "year_founded": 1977,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_233": {
+    "brand_name": "Salesforce",
+    "industry": "technology",
+    "category": "crm",
+    "year_founded": 1999,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_234": {
+    "brand_name": "Dell",
+    "industry": "technology",
+    "category": "computers",
+    "year_founded": 1984,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_235": {
+    "brand_name": "HP",
+    "industry": "technology",
+    "category": "computers",
+    "year_founded": 1939,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_236": {
+    "brand_name": "Adobe",
+    "industry": "technology",
+    "category": "software",
+    "year_founded": 1982,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_237": {
+    "brand_name": "SAP",
+    "industry": "technology",
+    "category": "enterprise_software",
+    "year_founded": 1972,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_238": {
+    "brand_name": "VMware",
+    "industry": "technology",
+    "category": "virtualization",
+    "year_founded": 1998,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_239": {
+    "brand_name": "Broadcom",
+    "industry": "technology",
+    "category": "semiconductors",
+    "year_founded": 1961,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_240": {
+    "brand_name": "Qualcomm",
+    "industry": "technology",
+    "category": "semiconductors",
+    "year_founded": 1985,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_241": {
+    "brand_name": "Texas Instruments",
+    "industry": "technology",
+    "category": "semiconductors",
+    "year_founded": 1930,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_242": {
+    "brand_name": "Nvidia",
+    "industry": "technology",
+    "category": "graphics_chips",
+    "year_founded": 1993,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_243": {
+    "brand_name": "AMD",
+    "industry": "technology",
+    "category": "semiconductors",
+    "year_founded": 1969,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_244": {
+    "brand_name": "Micron",
+    "industry": "technology",
+    "category": "memory_chips",
+    "year_founded": 1978,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_245": {
+    "brand_name": "Applied Materials",
+    "industry": "technology",
+    "category": "semiconductor_equipment",
+    "year_founded": 1967,
+    "naming_strategy": "descriptive",
+    "syllables": 5
+  },
+  "brand_246": {
+    "brand_name": "Intuit",
+    "industry": "technology",
+    "category": "financial_software",
+    "year_founded": 1983,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_247": {
+    "brand_name": "ServiceNow",
+    "industry": "technology",
+    "category": "cloud_software",
+    "year_founded": 2004,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_248": {
+    "brand_name": "Snowflake",
+    "industry": "technology",
+    "category": "data_warehouse",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_249": {
+    "brand_name": "Workday",
+    "industry": "technology",
+    "category": "hr_software",
+    "year_founded": 2005,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_250": {
+    "brand_name": "Splunk",
+    "industry": "technology",
+    "category": "data_analytics",
+    "year_founded": 2003,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_251": {
+    "brand_name": "NetApp",
+    "industry": "technology",
+    "category": "storage",
+    "year_founded": 1992,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_252": {
+    "brand_name": "Western Digital",
+    "industry": "technology",
+    "category": "storage",
+    "year_founded": 1970,
+    "naming_strategy": "descriptive",
+    "syllables": 5
+  },
+  "brand_253": {
+    "brand_name": "Seagate",
+    "industry": "technology",
+    "category": "storage",
+    "year_founded": 1979,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_254": {
+    "brand_name": "Tesla",
+    "industry": "automotive",
+    "category": "electric_vehicles",
+    "year_founded": 2003,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_255": {
+    "brand_name": "Ford",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1903,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_256": {
+    "brand_name": "GM",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1908,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_257": {
+    "brand_name": "Stellantis",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_258": {
+    "brand_name": "Toyota",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1937,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_259": {
+    "brand_name": "Honda",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1948,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_260": {
+    "brand_name": "Nissan",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1933,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_261": {
+    "brand_name": "Hyundai",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1967,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_262": {
+    "brand_name": "Kia",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1944,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_263": {
+    "brand_name": "Subaru",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1953,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_264": {
+    "brand_name": "Mazda",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1920,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_265": {
+    "brand_name": "BMW",
+    "industry": "automotive",
+    "category": "luxury_automobiles",
+    "year_founded": 1916,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_266": {
+    "brand_name": "Mercedes",
+    "industry": "automotive",
+    "category": "luxury_automobiles",
+    "year_founded": 1926,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_267": {
+    "brand_name": "Audi",
+    "industry": "automotive",
+    "category": "luxury_automobiles",
+    "year_founded": 1909,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_268": {
+    "brand_name": "Volkswagen",
+    "industry": "automotive",
+    "category": "automobiles",
+    "year_founded": 1937,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_269": {
+    "brand_name": "Porsche",
+    "industry": "automotive",
+    "category": "sports_cars",
+    "year_founded": 1931,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_270": {
+    "brand_name": "Ferrari",
+    "industry": "automotive",
+    "category": "sports_cars",
+    "year_founded": 1939,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_271": {
+    "brand_name": "Rivian",
+    "industry": "automotive",
+    "category": "electric_vehicles",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_272": {
+    "brand_name": "Lucid",
+    "industry": "automotive",
+    "category": "electric_vehicles",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_273": {
+    "brand_name": "Polestar",
+    "industry": "automotive",
+    "category": "electric_vehicles",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_274": {
+    "brand_name": "Walmart",
+    "industry": "retail",
+    "category": "general_merchandise",
+    "year_founded": 1962,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_275": {
+    "brand_name": "Target",
+    "industry": "retail",
+    "category": "general_merchandise",
+    "year_founded": 1902,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_276": {
+    "brand_name": "Costco",
+    "industry": "retail",
+    "category": "wholesale",
+    "year_founded": 1983,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_277": {
+    "brand_name": "Home Depot",
+    "industry": "retail",
+    "category": "home_improvement",
+    "year_founded": 1978,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_278": {
+    "brand_name": "Lowe's",
+    "industry": "retail",
+    "category": "home_improvement",
+    "year_founded": 1946,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_279": {
+    "brand_name": "Best Buy",
+    "industry": "retail",
+    "category": "electronics",
+    "year_founded": 1966,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_280": {
+    "brand_name": "Kroger",
+    "industry": "retail",
+    "category": "grocery",
+    "year_founded": 1883,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_281": {
+    "brand_name": "Albertsons",
+    "industry": "retail",
+    "category": "grocery",
+    "year_founded": 1939,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_282": {
+    "brand_name": "Publix",
+    "industry": "retail",
+    "category": "grocery",
+    "year_founded": 1930,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_283": {
+    "brand_name": "Whole Foods",
+    "industry": "retail",
+    "category": "organic_grocery",
+    "year_founded": 1980,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_284": {
+    "brand_name": "Trader Joe's",
+    "industry": "retail",
+    "category": "grocery",
+    "year_founded": 1967,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_285": {
+    "brand_name": "Nordstrom",
+    "industry": "retail",
+    "category": "department_store",
+    "year_founded": 1901,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_286": {
+    "brand_name": "Macy's",
+    "industry": "retail",
+    "category": "department_store",
+    "year_founded": 1858,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_287": {
+    "brand_name": "Kohl's",
+    "industry": "retail",
+    "category": "department_store",
+    "year_founded": 1962,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_288": {
+    "brand_name": "Dillard's",
+    "industry": "retail",
+    "category": "department_store",
+    "year_founded": 1938,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_289": {
+    "brand_name": "TJX",
+    "industry": "retail",
+    "category": "discount_retail",
+    "year_founded": 1956,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_290": {
+    "brand_name": "Ross",
+    "industry": "retail",
+    "category": "discount_retail",
+    "year_founded": 1982,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_291": {
+    "brand_name": "Dollar General",
+    "industry": "retail",
+    "category": "discount_retail",
+    "year_founded": 1939,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_292": {
+    "brand_name": "Dollar Tree",
+    "industry": "retail",
+    "category": "discount_retail",
+    "year_founded": 1986,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_293": {
+    "brand_name": "Gap",
+    "industry": "retail",
+    "category": "apparel",
+    "year_founded": 1969,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_294": {
+    "brand_name": "Old Navy",
+    "industry": "retail",
+    "category": "apparel",
+    "year_founded": 1994,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_295": {
+    "brand_name": "Banana Republic",
+    "industry": "retail",
+    "category": "apparel",
+    "year_founded": 1978,
+    "naming_strategy": "invented",
+    "syllables": 6
+  },
+  "brand_296": {
+    "brand_name": "Lululemon",
+    "industry": "retail",
+    "category": "athletic_apparel",
+    "year_founded": 1998,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_297": {
+    "brand_name": "Nike",
+    "industry": "retail",
+    "category": "athletic_apparel",
+    "year_founded": 1964,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_298": {
+    "brand_name": "Adidas",
+    "industry": "retail",
+    "category": "athletic_apparel",
+    "year_founded": 1949,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_299": {
+    "brand_name": "Under Armour",
+    "industry": "retail",
+    "category": "athletic_apparel",
+    "year_founded": 1996,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_300": {
+    "brand_name": "Foot Locker",
+    "industry": "retail",
+    "category": "athletic_footwear",
+    "year_founded": 1974,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_301": {
+    "brand_name": "Dick's",
+    "industry": "retail",
+    "category": "sporting_goods",
+    "year_founded": 1948,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_302": {
+    "brand_name": "Bed Bath & Beyond",
+    "industry": "retail",
+    "category": "home_goods",
+    "year_founded": 1971,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_303": {
+    "brand_name": "Williams-Sonoma",
+    "industry": "retail",
+    "category": "home_goods",
+    "year_founded": 1956,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_304": {
+    "brand_name": "UnitedHealth",
+    "industry": "healthcare",
+    "category": "insurance",
+    "year_founded": 1977,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_305": {
+    "brand_name": "CVS",
+    "industry": "healthcare",
+    "category": "pharmacy",
+    "year_founded": 1963,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_306": {
+    "brand_name": "Walgreens",
+    "industry": "healthcare",
+    "category": "pharmacy",
+    "year_founded": 1901,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_307": {
+    "brand_name": "Cigna",
+    "industry": "healthcare",
+    "category": "insurance",
+    "year_founded": 1982,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_308": {
+    "brand_name": "Anthem",
+    "industry": "healthcare",
+    "category": "insurance",
+    "year_founded": 1940,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_309": {
+    "brand_name": "Humana",
+    "industry": "healthcare",
+    "category": "insurance",
+    "year_founded": 1961,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_310": {
+    "brand_name": "Centene",
+    "industry": "healthcare",
+    "category": "insurance",
+    "year_founded": 1984,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_311": {
+    "brand_name": "Pfizer",
+    "industry": "healthcare",
+    "category": "pharmaceuticals",
+    "year_founded": 1849,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_312": {
+    "brand_name": "Johnson & Johnson",
+    "industry": "healthcare",
+    "category": "pharmaceuticals",
+    "year_founded": 1886,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_313": {
+    "brand_name": "Merck",
+    "industry": "healthcare",
+    "category": "pharmaceuticals",
+    "year_founded": 1891,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_314": {
+    "brand_name": "AbbVie",
+    "industry": "healthcare",
+    "category": "pharmaceuticals",
+    "year_founded": 2013,
+    "naming_strategy": "portmanteau",
+    "syllables": 1
+  },
+  "brand_315": {
+    "brand_name": "Bristol Myers",
+    "industry": "healthcare",
+    "category": "pharmaceuticals",
+    "year_founded": 1887,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_316": {
+    "brand_name": "Eli Lilly",
+    "industry": "healthcare",
+    "category": "pharmaceuticals",
+    "year_founded": 1876,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_317": {
+    "brand_name": "Amgen",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 1980,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_318": {
+    "brand_name": "Gilead",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 1987,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_319": {
+    "brand_name": "Biogen",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 1978,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_320": {
+    "brand_name": "Regeneron",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 1988,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_321": {
+    "brand_name": "Vertex",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 1989,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_322": {
+    "brand_name": "Moderna",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_323": {
+    "brand_name": "Novavax",
+    "industry": "healthcare",
+    "category": "biotechnology",
+    "year_founded": 1987,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_324": {
+    "brand_name": "Abbott",
+    "industry": "healthcare",
+    "category": "medical_devices",
+    "year_founded": 1888,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_325": {
+    "brand_name": "Medtronic",
+    "industry": "healthcare",
+    "category": "medical_devices",
+    "year_founded": 1949,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_326": {
+    "brand_name": "Stryker",
+    "industry": "healthcare",
+    "category": "medical_devices",
+    "year_founded": 1941,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_327": {
+    "brand_name": "Boston Scientific",
+    "industry": "healthcare",
+    "category": "medical_devices",
+    "year_founded": 1979,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_328": {
+    "brand_name": "Baxter",
+    "industry": "healthcare",
+    "category": "medical_products",
+    "year_founded": 1931,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_329": {
+    "brand_name": "Becton Dickinson",
+    "industry": "healthcare",
+    "category": "medical_technology",
+    "year_founded": 1897,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_330": {
+    "brand_name": "Zimmer",
+    "industry": "healthcare",
+    "category": "orthopedics",
+    "year_founded": 1927,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_331": {
+    "brand_name": "HCA",
+    "industry": "healthcare",
+    "category": "hospitals",
+    "year_founded": 1968,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_332": {
+    "brand_name": "Tenet",
+    "industry": "healthcare",
+    "category": "hospitals",
+    "year_founded": 1967,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_333": {
+    "brand_name": "Quest",
+    "industry": "healthcare",
+    "category": "diagnostic_services",
+    "year_founded": 1967,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_334": {
+    "brand_name": "ExxonMobil",
+    "industry": "energy",
+    "category": "oil_gas",
+    "year_founded": 1999,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_335": {
+    "brand_name": "Chevron",
+    "industry": "energy",
+    "category": "oil_gas",
+    "year_founded": 1879,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_336": {
+    "brand_name": "ConocoPhillips",
+    "industry": "energy",
+    "category": "oil_gas",
+    "year_founded": 2002,
+    "naming_strategy": "portmanteau",
+    "syllables": 5
+  },
+  "brand_337": {
+    "brand_name": "Marathon",
+    "industry": "energy",
+    "category": "oil_refining",
+    "year_founded": 1887,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_338": {
+    "brand_name": "Valero",
+    "industry": "energy",
+    "category": "oil_refining",
+    "year_founded": 1980,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_339": {
+    "brand_name": "Phillips 66",
+    "industry": "energy",
+    "category": "oil_refining",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_340": {
+    "brand_name": "Occidental",
+    "industry": "energy",
+    "category": "oil_gas",
+    "year_founded": 1920,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_341": {
+    "brand_name": "Schlumberger",
+    "industry": "energy",
+    "category": "oilfield_services",
+    "year_founded": 1926,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_342": {
+    "brand_name": "Halliburton",
+    "industry": "energy",
+    "category": "oilfield_services",
+    "year_founded": 1919,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_343": {
+    "brand_name": "Baker Hughes",
+    "industry": "energy",
+    "category": "oilfield_services",
+    "year_founded": 1907,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_344": {
+    "brand_name": "Duke Energy",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1904,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_345": {
+    "brand_name": "Southern Company",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1945,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_346": {
+    "brand_name": "NextEra",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1984,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_347": {
+    "brand_name": "Dominion",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1983,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_348": {
+    "brand_name": "Exelon",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 2000,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_349": {
+    "brand_name": "PG&E",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1905,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_350": {
+    "brand_name": "Sempra",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1998,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_351": {
+    "brand_name": "Consolidated Edison",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1823,
+    "naming_strategy": "invented",
+    "syllables": 8
+  },
+  "brand_352": {
+    "brand_name": "AES",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1981,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_353": {
+    "brand_name": "NRG",
+    "industry": "energy",
+    "category": "utilities",
+    "year_founded": 1989,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_354": {
+    "brand_name": "JPMorgan",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 2000,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_355": {
+    "brand_name": "Bank of America",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1998,
+    "naming_strategy": "invented",
+    "syllables": 6
+  },
+  "brand_356": {
+    "brand_name": "Wells Fargo",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1852,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_357": {
+    "brand_name": "Citigroup",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1998,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_358": {
+    "brand_name": "Goldman Sachs",
+    "industry": "financial_services",
+    "category": "investment_banking",
+    "year_founded": 1869,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_359": {
+    "brand_name": "Morgan Stanley",
+    "industry": "financial_services",
+    "category": "investment_banking",
+    "year_founded": 1935,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_360": {
+    "brand_name": "US Bancorp",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1863,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_361": {
+    "brand_name": "PNC",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1845,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_362": {
+    "brand_name": "Truist",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_363": {
+    "brand_name": "Capital One",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1994,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_364": {
+    "brand_name": "TD Bank",
+    "industry": "financial_services",
+    "category": "banking",
+    "year_founded": 1855,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_365": {
+    "brand_name": "Charles Schwab",
+    "industry": "financial_services",
+    "category": "brokerage",
+    "year_founded": 1971,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_366": {
+    "brand_name": "Fidelity",
+    "industry": "financial_services",
+    "category": "investment_management",
+    "year_founded": 1946,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_367": {
+    "brand_name": "BlackRock",
+    "industry": "financial_services",
+    "category": "asset_management",
+    "year_founded": 1988,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_368": {
+    "brand_name": "State Street",
+    "industry": "financial_services",
+    "category": "asset_management",
+    "year_founded": 1792,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_369": {
+    "brand_name": "BNY Mellon",
+    "industry": "financial_services",
+    "category": "asset_management",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_370": {
+    "brand_name": "American Express",
+    "industry": "financial_services",
+    "category": "credit_cards",
+    "year_founded": 1850,
+    "naming_strategy": "invented",
+    "syllables": 6
+  },
+  "brand_371": {
+    "brand_name": "Discover",
+    "industry": "financial_services",
+    "category": "credit_cards",
+    "year_founded": 1985,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_372": {
+    "brand_name": "Synchrony",
+    "industry": "financial_services",
+    "category": "consumer_finance",
+    "year_founded": 2003,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_373": {
+    "brand_name": "Ally",
+    "industry": "financial_services",
+    "category": "consumer_finance",
+    "year_founded": 1919,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_374": {
+    "brand_name": "Berkshire Hathaway",
+    "industry": "financial_services",
+    "category": "conglomerate",
+    "year_founded": 1839,
+    "naming_strategy": "invented",
+    "syllables": 6
+  },
+  "brand_375": {
+    "brand_name": "Prudential",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1875,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_376": {
+    "brand_name": "MetLife",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1868,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_377": {
+    "brand_name": "AIG",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1919,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_378": {
+    "brand_name": "Allstate",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1931,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_379": {
+    "brand_name": "Progressive",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1937,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_380": {
+    "brand_name": "Travelers",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1853,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_381": {
+    "brand_name": "Hartford",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1810,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_382": {
+    "brand_name": "Chubb",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1882,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_383": {
+    "brand_name": "Liberty Mutual",
+    "industry": "financial_services",
+    "category": "insurance",
+    "year_founded": 1912,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_384": {
+    "brand_name": "Procter & Gamble",
+    "industry": "consumer_goods",
+    "category": "household_products",
+    "year_founded": 1837,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_385": {
+    "brand_name": "Coca-Cola",
+    "industry": "consumer_goods",
+    "category": "beverages",
+    "year_founded": 1892,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_386": {
+    "brand_name": "PepsiCo",
+    "industry": "consumer_goods",
+    "category": "beverages",
+    "year_founded": 1965,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_387": {
+    "brand_name": "Mondelez",
+    "industry": "consumer_goods",
+    "category": "snacks",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_388": {
+    "brand_name": "General Mills",
+    "industry": "consumer_goods",
+    "category": "food",
+    "year_founded": 1928,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_389": {
+    "brand_name": "Kellogg",
+    "industry": "consumer_goods",
+    "category": "cereal",
+    "year_founded": 1906,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_390": {
+    "brand_name": "Kraft Heinz",
+    "industry": "consumer_goods",
+    "category": "food",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_391": {
+    "brand_name": "Tyson",
+    "industry": "consumer_goods",
+    "category": "meat_products",
+    "year_founded": 1935,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_392": {
+    "brand_name": "Hormel",
+    "industry": "consumer_goods",
+    "category": "meat_products",
+    "year_founded": 1891,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_393": {
+    "brand_name": "Campbell's",
+    "industry": "consumer_goods",
+    "category": "soup",
+    "year_founded": 1869,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_394": {
+    "brand_name": "Conagra",
+    "industry": "consumer_goods",
+    "category": "packaged_foods",
+    "year_founded": 1919,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_395": {
+    "brand_name": "Hershey",
+    "industry": "consumer_goods",
+    "category": "chocolate",
+    "year_founded": 1894,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_396": {
+    "brand_name": "Mars",
+    "industry": "consumer_goods",
+    "category": "confectionery",
+    "year_founded": 1911,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_397": {
+    "brand_name": "Colgate",
+    "industry": "consumer_goods",
+    "category": "oral_care",
+    "year_founded": 1806,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_398": {
+    "brand_name": "Unilever",
+    "industry": "consumer_goods",
+    "category": "consumer_products",
+    "year_founded": 1930,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_399": {
+    "brand_name": "Estee Lauder",
+    "industry": "consumer_goods",
+    "category": "cosmetics",
+    "year_founded": 1946,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_400": {
+    "brand_name": "L'Oreal",
+    "industry": "consumer_goods",
+    "category": "cosmetics",
+    "year_founded": 1909,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_401": {
+    "brand_name": "Clorox",
+    "industry": "consumer_goods",
+    "category": "cleaning_products",
+    "year_founded": 1913,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_402": {
+    "brand_name": "Kimberly-Clark",
+    "industry": "consumer_goods",
+    "category": "personal_care",
+    "year_founded": 1872,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_403": {
+    "brand_name": "Church & Dwight",
+    "industry": "consumer_goods",
+    "category": "household_products",
+    "year_founded": 1846,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_404": {
+    "brand_name": "AT&T",
+    "industry": "telecommunications",
+    "category": "telecom",
+    "year_founded": 1983,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_405": {
+    "brand_name": "Verizon",
+    "industry": "telecommunications",
+    "category": "telecom",
+    "year_founded": 2000,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_406": {
+    "brand_name": "T-Mobile",
+    "industry": "telecommunications",
+    "category": "wireless",
+    "year_founded": 1994,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_407": {
+    "brand_name": "Comcast",
+    "industry": "telecommunications",
+    "category": "cable",
+    "year_founded": 1963,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_408": {
+    "brand_name": "Charter",
+    "industry": "telecommunications",
+    "category": "cable",
+    "year_founded": 1993,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_409": {
+    "brand_name": "Dish",
+    "industry": "telecommunications",
+    "category": "satellite",
+    "year_founded": 1980,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_410": {
+    "brand_name": "Lumen",
+    "industry": "telecommunications",
+    "category": "telecom",
+    "year_founded": 1968,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_411": {
+    "brand_name": "Frontier",
+    "industry": "telecommunications",
+    "category": "telecom",
+    "year_founded": 1935,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_412": {
+    "brand_name": "Windstream",
+    "industry": "telecommunications",
+    "category": "telecom",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_413": {
+    "brand_name": "Cogent",
+    "industry": "telecommunications",
+    "category": "internet",
+    "year_founded": 1999,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_414": {
+    "brand_name": "Boeing",
+    "industry": "aerospace",
+    "category": "aircraft",
+    "year_founded": 1916,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_415": {
+    "brand_name": "Lockheed Martin",
+    "industry": "aerospace",
+    "category": "defense",
+    "year_founded": 1995,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_416": {
+    "brand_name": "Raytheon",
+    "industry": "aerospace",
+    "category": "defense",
+    "year_founded": 1922,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_417": {
+    "brand_name": "General Dynamics",
+    "industry": "aerospace",
+    "category": "defense",
+    "year_founded": 1952,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_418": {
+    "brand_name": "Northrop Grumman",
+    "industry": "aerospace",
+    "category": "defense",
+    "year_founded": 1994,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_419": {
+    "brand_name": "Caterpillar",
+    "industry": "industrial",
+    "category": "construction_equipment",
+    "year_founded": 1925,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_420": {
+    "brand_name": "Deere",
+    "industry": "industrial",
+    "category": "agricultural_equipment",
+    "year_founded": 1837,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_421": {
+    "brand_name": "3M",
+    "industry": "industrial",
+    "category": "conglomerate",
+    "year_founded": 1902,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_422": {
+    "brand_name": "General Electric",
+    "industry": "industrial",
+    "category": "conglomerate",
+    "year_founded": 1892,
+    "naming_strategy": "invented",
+    "syllables": 6
+  },
+  "brand_423": {
+    "brand_name": "Honeywell",
+    "industry": "industrial",
+    "category": "conglomerate",
+    "year_founded": 1906,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_424": {
+    "brand_name": "Emerson",
+    "industry": "industrial",
+    "category": "automation",
+    "year_founded": 1890,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_425": {
+    "brand_name": "Eaton",
+    "industry": "industrial",
+    "category": "power_management",
+    "year_founded": 1911,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_426": {
+    "brand_name": "Parker Hannifin",
+    "industry": "industrial",
+    "category": "motion_control",
+    "year_founded": 1917,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_427": {
+    "brand_name": "Rockwell",
+    "industry": "industrial",
+    "category": "automation",
+    "year_founded": 1903,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_428": {
+    "brand_name": "Illinois Tool",
+    "industry": "industrial",
+    "category": "manufacturing",
+    "year_founded": 1912,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_429": {
+    "brand_name": "Stanley Black & Decker",
+    "industry": "industrial",
+    "category": "tools",
+    "year_founded": 1843,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_430": {
+    "brand_name": "Snap-on",
+    "industry": "industrial",
+    "category": "tools",
+    "year_founded": 1920,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_431": {
+    "brand_name": "Ingersoll Rand",
+    "industry": "industrial",
+    "category": "equipment",
+    "year_founded": 1871,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_432": {
+    "brand_name": "Oshkosh",
+    "industry": "industrial",
+    "category": "trucks",
+    "year_founded": 1917,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_433": {
+    "brand_name": "Paccar",
+    "industry": "industrial",
+    "category": "trucks",
+    "year_founded": 1905,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_434": {
+    "brand_name": "Airbnb",
+    "industry": "travel",
+    "category": "accommodation",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_435": {
+    "brand_name": "Dropbox",
+    "industry": "technology",
+    "category": "cloud_storage",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_436": {
+    "brand_name": "Reddit",
+    "industry": "social_media",
+    "category": "community",
+    "year_founded": 2005,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_437": {
+    "brand_name": "Twitch",
+    "industry": "entertainment",
+    "category": "streaming",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_438": {
+    "brand_name": "Instacart",
+    "industry": "retail",
+    "category": "grocery_delivery",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_439": {
+    "brand_name": "DoorDash",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2013,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_440": {
+    "brand_name": "Coinbase",
+    "industry": "fintech",
+    "category": "cryptocurrency",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_441": {
+    "brand_name": "Gitlab",
+    "industry": "developer_tools",
+    "category": "devops",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_442": {
+    "brand_name": "Docker",
+    "industry": "developer_tools",
+    "category": "containers",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_443": {
+    "brand_name": "Cruise",
+    "industry": "automotive",
+    "category": "autonomous_vehicles",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_444": {
+    "brand_name": "Faire",
+    "industry": "ecommerce",
+    "category": "wholesale",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_445": {
+    "brand_name": "Rappi",
+    "industry": "delivery",
+    "category": "on_demand",
+    "year_founded": 2015,
+    "naming_strategy": "descriptive",
+    "syllables": 2
+  },
+  "brand_446": {
+    "brand_name": "Ginkgo Bioworks",
+    "industry": "biotech",
+    "category": "synthetic_biology",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_447": {
+    "brand_name": "Weebly",
+    "industry": "web_development",
+    "category": "website_builder",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_448": {
+    "brand_name": "Heroku",
+    "industry": "developer_tools",
+    "category": "hosting",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_449": {
+    "brand_name": "Scribd",
+    "industry": "media",
+    "category": "digital_library",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_450": {
+    "brand_name": "Zenefits",
+    "industry": "hr_tech",
+    "category": "benefits",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_451": {
+    "brand_name": "Checkr",
+    "industry": "hr_tech",
+    "category": "background_checks",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_452": {
+    "brand_name": "Razorpay",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_453": {
+    "brand_name": "Melio",
+    "industry": "fintech",
+    "category": "bill_pay",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_454": {
+    "brand_name": "Jeeves",
+    "industry": "fintech",
+    "category": "corporate_cards",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_455": {
+    "brand_name": "Pave",
+    "industry": "fintech",
+    "category": "compensation",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_456": {
+    "brand_name": "Lattice",
+    "industry": "hr_tech",
+    "category": "performance_management",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_457": {
+    "brand_name": "Clipboard Health",
+    "industry": "healthcare",
+    "category": "staffing",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_458": {
+    "brand_name": "Flexport",
+    "industry": "logistics",
+    "category": "freight",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_459": {
+    "brand_name": "Shippo",
+    "industry": "logistics",
+    "category": "shipping",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_460": {
+    "brand_name": "Samsara",
+    "industry": "iot",
+    "category": "fleet_management",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_461": {
+    "brand_name": "Benchling",
+    "industry": "biotech",
+    "category": "lab_software",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_462": {
+    "brand_name": "mParticle",
+    "industry": "data",
+    "category": "customer_data",
+    "year_founded": 2013,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_463": {
+    "brand_name": "Posthog",
+    "industry": "developer_tools",
+    "category": "product_analytics",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_464": {
+    "brand_name": "Airbyte",
+    "industry": "data",
+    "category": "data_integration",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_465": {
+    "brand_name": "dbt Labs",
+    "industry": "data",
+    "category": "data_transformation",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_466": {
+    "brand_name": "Hex",
+    "industry": "data",
+    "category": "data_notebooks",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_467": {
+    "brand_name": "Modal",
+    "industry": "developer_tools",
+    "category": "cloud_compute",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_468": {
+    "brand_name": "Merge",
+    "industry": "developer_tools",
+    "category": "api_integration",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_469": {
+    "brand_name": "Doppler",
+    "industry": "developer_tools",
+    "category": "secrets_management",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_470": {
+    "brand_name": "WarpStream",
+    "industry": "data",
+    "category": "streaming",
+    "year_founded": 2022,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_471": {
+    "brand_name": "Clerk",
+    "industry": "developer_tools",
+    "category": "authentication",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_472": {
+    "brand_name": "WorkOS",
+    "industry": "developer_tools",
+    "category": "enterprise_features",
+    "year_founded": 2019,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_473": {
+    "brand_name": "Stytch",
+    "industry": "developer_tools",
+    "category": "authentication",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_474": {
+    "brand_name": "Tigris",
+    "industry": "developer_tools",
+    "category": "object_storage",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_475": {
+    "brand_name": "Statsig",
+    "industry": "developer_tools",
+    "category": "feature_flags",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_476": {
+    "brand_name": "Zapier",
+    "industry": "productivity",
+    "category": "automation",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_477": {
+    "brand_name": "Front",
+    "industry": "communication",
+    "category": "shared_inbox",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_478": {
+    "brand_name": "Height",
+    "industry": "productivity",
+    "category": "project_management",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_479": {
+    "brand_name": "Gamma",
+    "industry": "productivity",
+    "category": "presentations",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_480": {
+    "brand_name": "Puzzle",
+    "industry": "fintech",
+    "category": "accounting",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_481": {
+    "brand_name": "Causal",
+    "industry": "productivity",
+    "category": "spreadsheets",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_482": {
+    "brand_name": "Almanac",
+    "industry": "productivity",
+    "category": "documentation",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_483": {
+    "brand_name": "Luma",
+    "industry": "productivity",
+    "category": "event_management",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_484": {
+    "brand_name": "Cal.com",
+    "industry": "productivity",
+    "category": "scheduling",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_485": {
+    "brand_name": "Reclaim",
+    "industry": "productivity",
+    "category": "calendar",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_486": {
+    "brand_name": "Vanta",
+    "industry": "security",
+    "category": "compliance",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_487": {
+    "brand_name": "Drata",
+    "industry": "security",
+    "category": "compliance",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_488": {
+    "brand_name": "Poshmark",
+    "industry": "ecommerce",
+    "category": "fashion_marketplace",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_489": {
+    "brand_name": "Gumroad",
+    "industry": "ecommerce",
+    "category": "creator_platform",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_490": {
+    "brand_name": "Patreon",
+    "industry": "creator_economy",
+    "category": "subscriptions",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_491": {
+    "brand_name": "Podium",
+    "industry": "marketing",
+    "category": "messaging",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_492": {
+    "brand_name": "Pipe",
+    "industry": "fintech",
+    "category": "revenue_financing",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_493": {
+    "brand_name": "Clearco",
+    "industry": "fintech",
+    "category": "revenue_financing",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_494": {
+    "brand_name": "Carts",
+    "industry": "ecommerce",
+    "category": "checkout",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_495": {
+    "brand_name": "Italic",
+    "industry": "ecommerce",
+    "category": "manufacturing",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_496": {
+    "brand_name": "Mighty",
+    "industry": "technology",
+    "category": "browser",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_497": {
+    "brand_name": "Teachable",
+    "industry": "education",
+    "category": "course_platform",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_498": {
+    "brand_name": "Lambda School",
+    "industry": "education",
+    "category": "coding_bootcamp",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_499": {
+    "brand_name": "Omada",
+    "industry": "healthcare",
+    "category": "chronic_care",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_500": {
+    "brand_name": "Carbon Health",
+    "industry": "healthcare",
+    "category": "primary_care",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_501": {
+    "brand_name": "Cedar",
+    "industry": "healthcare",
+    "category": "billing",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_502": {
+    "brand_name": "Cityblock",
+    "industry": "healthcare",
+    "category": "community_health",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_503": {
+    "brand_name": "Ginger",
+    "industry": "healthcare",
+    "category": "mental_health",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_504": {
+    "brand_name": "Spring Health",
+    "industry": "healthcare",
+    "category": "mental_health",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_505": {
+    "brand_name": "Lyra",
+    "industry": "healthcare",
+    "category": "mental_health",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_506": {
+    "brand_name": "Headway",
+    "industry": "healthcare",
+    "category": "mental_health",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_507": {
+    "brand_name": "Modern Fertility",
+    "industry": "healthcare",
+    "category": "fertility",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_508": {
+    "brand_name": "Kindbody",
+    "industry": "healthcare",
+    "category": "fertility",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_509": {
+    "brand_name": "Tempus",
+    "industry": "healthcare",
+    "category": "precision_medicine",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_510": {
+    "brand_name": "Color",
+    "industry": "healthcare",
+    "category": "genetic_testing",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_511": {
+    "brand_name": "Freenome",
+    "industry": "biotech",
+    "category": "cancer_detection",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_512": {
+    "brand_name": "Zymergen",
+    "industry": "biotech",
+    "category": "materials",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_513": {
+    "brand_name": "Recursion",
+    "industry": "biotech",
+    "category": "drug_discovery",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_514": {
+    "brand_name": "Insitro",
+    "industry": "biotech",
+    "category": "drug_discovery",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_515": {
+    "brand_name": "Anthropic",
+    "industry": "ai",
+    "category": "ai_safety",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_516": {
+    "brand_name": "Scale AI",
+    "industry": "ai",
+    "category": "data_labeling",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_517": {
+    "brand_name": "Hugging Face",
+    "industry": "ai",
+    "category": "ml_platform",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_518": {
+    "brand_name": "Weights & Biases",
+    "industry": "ai",
+    "category": "ml_ops",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_519": {
+    "brand_name": "Roboflow",
+    "industry": "ai",
+    "category": "computer_vision",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_520": {
+    "brand_name": "Snorkel",
+    "industry": "ai",
+    "category": "data_labeling",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_521": {
+    "brand_name": "Labelbox",
+    "industry": "ai",
+    "category": "data_labeling",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_522": {
+    "brand_name": "Viable",
+    "industry": "ai",
+    "category": "text_analysis",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_523": {
+    "brand_name": "Harvey",
+    "industry": "ai",
+    "category": "legal_ai",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_524": {
+    "brand_name": "Glean",
+    "industry": "ai",
+    "category": "enterprise_search",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_525": {
+    "brand_name": "Typeface",
+    "industry": "ai",
+    "category": "content_generation",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_526": {
+    "brand_name": "Tome",
+    "industry": "ai",
+    "category": "presentations",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_527": {
+    "brand_name": "Mem",
+    "industry": "ai",
+    "category": "note_taking",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_528": {
+    "brand_name": "Fireflies",
+    "industry": "ai",
+    "category": "meeting_notes",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_529": {
+    "brand_name": "Otter",
+    "industry": "ai",
+    "category": "transcription",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_530": {
+    "brand_name": "Pachama",
+    "industry": "climate",
+    "category": "carbon_credits",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_531": {
+    "brand_name": "Watershed",
+    "industry": "climate",
+    "category": "carbon_accounting",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_532": {
+    "brand_name": "Terraformation",
+    "industry": "climate",
+    "category": "reforestation",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_533": {
+    "brand_name": "Twelve",
+    "industry": "climate",
+    "category": "carbon_transformation",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_534": {
+    "brand_name": "CarbonCure",
+    "industry": "climate",
+    "category": "concrete",
+    "year_founded": 2012,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_535": {
+    "brand_name": "Redwood Materials",
+    "industry": "climate",
+    "category": "battery_recycling",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_536": {
+    "brand_name": "Charm Industrial",
+    "industry": "climate",
+    "category": "carbon_removal",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_537": {
+    "brand_name": "Turntide",
+    "industry": "climate",
+    "category": "electric_motors",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_538": {
+    "brand_name": "Impossible Foods",
+    "industry": "food",
+    "category": "plant_based_meat",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_539": {
+    "brand_name": "Memphis Meats",
+    "industry": "food",
+    "category": "cultured_meat",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_540": {
+    "brand_name": "Apeel",
+    "industry": "food",
+    "category": "food_preservation",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_541": {
+    "brand_name": "Pivot Bio",
+    "industry": "agriculture",
+    "category": "crop_nutrition",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_542": {
+    "brand_name": "Indigo Ag",
+    "industry": "agriculture",
+    "category": "crop_science",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_543": {
+    "brand_name": "Farmers Business Network",
+    "industry": "agriculture",
+    "category": "farm_platform",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 7
+  },
+  "brand_544": {
+    "brand_name": "Bowery",
+    "industry": "agriculture",
+    "category": "vertical_farming",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_545": {
+    "brand_name": "OpenDoor",
+    "industry": "real_estate",
+    "category": "ibuying",
+    "year_founded": 2014,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_546": {
+    "brand_name": "Divvy",
+    "industry": "real_estate",
+    "category": "rent_to_own",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_547": {
+    "brand_name": "Properly",
+    "industry": "real_estate",
+    "category": "property_management",
+    "year_founded": 2018,
+    "naming_strategy": "descriptive",
+    "syllables": 2
+  },
+  "brand_548": {
+    "brand_name": "Belong",
+    "industry": "real_estate",
+    "category": "rental_management",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_549": {
+    "brand_name": "Latch",
+    "industry": "real_estate",
+    "category": "smart_locks",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_550": {
+    "brand_name": "SmartRent",
+    "industry": "real_estate",
+    "category": "property_automation",
+    "year_founded": 2017,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_551": {
+    "brand_name": "Zillow",
+    "industry": "real_estate",
+    "category": "marketplace",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_552": {
+    "brand_name": "Trulia",
+    "industry": "real_estate",
+    "category": "marketplace",
+    "year_founded": 2005,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_553": {
+    "brand_name": "Redfin",
+    "industry": "real_estate",
+    "category": "brokerage",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_554": {
+    "brand_name": "Compass",
+    "industry": "real_estate",
+    "category": "brokerage",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_555": {
+    "brand_name": "OpenAI",
+    "industry": "ai",
+    "category": "ai_research",
+    "year_founded": 2015,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_556": {
+    "brand_name": "Stability AI",
+    "industry": "ai",
+    "category": "generative_ai",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_557": {
+    "brand_name": "Cohere",
+    "industry": "ai",
+    "category": "language_ai",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_558": {
+    "brand_name": "Adept",
+    "industry": "ai",
+    "category": "ai_automation",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_559": {
+    "brand_name": "Character.AI",
+    "industry": "ai",
+    "category": "conversational_ai",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_560": {
+    "brand_name": "Inflection",
+    "industry": "ai",
+    "category": "personal_ai",
+    "year_founded": 2022,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_561": {
+    "brand_name": "Cerebras",
+    "industry": "ai",
+    "category": "ai_chips",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_562": {
+    "brand_name": "SambaNova",
+    "industry": "ai",
+    "category": "ai_infrastructure",
+    "year_founded": 2017,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_563": {
+    "brand_name": "Graphcore",
+    "industry": "ai",
+    "category": "ai_processors",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_564": {
+    "brand_name": "Databricks",
+    "industry": "data",
+    "category": "analytics",
+    "year_founded": 2013,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_565": {
+    "brand_name": "Confluent",
+    "industry": "data",
+    "category": "streaming",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_566": {
+    "brand_name": "ThoughtSpot",
+    "industry": "data",
+    "category": "analytics",
+    "year_founded": 2012,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_567": {
+    "brand_name": "Collibra",
+    "industry": "data",
+    "category": "data_governance",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_568": {
+    "brand_name": "Alation",
+    "industry": "data",
+    "category": "data_catalog",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_569": {
+    "brand_name": "Monte Carlo",
+    "industry": "data",
+    "category": "data_observability",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_570": {
+    "brand_name": "Fivetran",
+    "industry": "data",
+    "category": "data_integration",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_571": {
+    "brand_name": "Astronomer",
+    "industry": "data",
+    "category": "data_orchestration",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_572": {
+    "brand_name": "CrowdStrike",
+    "industry": "security",
+    "category": "endpoint_security",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_573": {
+    "brand_name": "SentinelOne",
+    "industry": "security",
+    "category": "endpoint_security",
+    "year_founded": 2013,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_574": {
+    "brand_name": "Wiz",
+    "industry": "security",
+    "category": "cloud_security",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_575": {
+    "brand_name": "Lacework",
+    "industry": "security",
+    "category": "cloud_security",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_576": {
+    "brand_name": "Snyk",
+    "industry": "security",
+    "category": "application_security",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_577": {
+    "brand_name": "Abnormal Security",
+    "industry": "security",
+    "category": "email_security",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 6
+  },
+  "brand_578": {
+    "brand_name": "Arctic Wolf",
+    "industry": "security",
+    "category": "managed_security",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_579": {
+    "brand_name": "Tanium",
+    "industry": "security",
+    "category": "endpoint_management",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_580": {
+    "brand_name": "Zscaler",
+    "industry": "security",
+    "category": "network_security",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_581": {
+    "brand_name": "Okta",
+    "industry": "security",
+    "category": "identity_management",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_582": {
+    "brand_name": "Spotify",
+    "industry": "entertainment",
+    "category": "music_streaming",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_583": {
+    "brand_name": "Netflix",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 1997,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_584": {
+    "brand_name": "Hulu",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_585": {
+    "brand_name": "Disney+",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 2019,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_586": {
+    "brand_name": "HBO Max",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_587": {
+    "brand_name": "Paramount+",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 2021,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_588": {
+    "brand_name": "Peacock",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_589": {
+    "brand_name": "Apple TV+",
+    "industry": "entertainment",
+    "category": "video_streaming",
+    "year_founded": 2019,
+    "naming_strategy": "descriptive",
+    "syllables": 2
+  },
+  "brand_590": {
+    "brand_name": "YouTube",
+    "industry": "entertainment",
+    "category": "video_platform",
+    "year_founded": 2005,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_591": {
+    "brand_name": "TikTok",
+    "industry": "social_media",
+    "category": "short_video",
+    "year_founded": 2016,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_592": {
+    "brand_name": "Uber",
+    "industry": "transportation",
+    "category": "rideshare",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_593": {
+    "brand_name": "Lyft",
+    "industry": "transportation",
+    "category": "rideshare",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_594": {
+    "brand_name": "Lime",
+    "industry": "transportation",
+    "category": "micromobility",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_595": {
+    "brand_name": "Bird",
+    "industry": "transportation",
+    "category": "scooters",
+    "year_founded": 2017,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_596": {
+    "brand_name": "Bolt",
+    "industry": "transportation",
+    "category": "rideshare",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_597": {
+    "brand_name": "Grab",
+    "industry": "transportation",
+    "category": "super_app",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_598": {
+    "brand_name": "Gojek",
+    "industry": "transportation",
+    "category": "super_app",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_599": {
+    "brand_name": "Didi",
+    "industry": "transportation",
+    "category": "rideshare",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_600": {
+    "brand_name": "Ola",
+    "industry": "transportation",
+    "category": "rideshare",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_601": {
+    "brand_name": "Via",
+    "industry": "transportation",
+    "category": "shared_rides",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_602": {
+    "brand_name": "Uber Eats",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_603": {
+    "brand_name": "Grubhub",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_604": {
+    "brand_name": "Postmates",
+    "industry": "food",
+    "category": "delivery",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_605": {
+    "brand_name": "Deliveroo",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_606": {
+    "brand_name": "Just Eat",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2001,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_607": {
+    "brand_name": "Swiggy",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_608": {
+    "brand_name": "Zomato",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_609": {
+    "brand_name": "Seamless",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 1999,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_610": {
+    "brand_name": "Caviar",
+    "industry": "food",
+    "category": "food_delivery",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_611": {
+    "brand_name": "N26",
+    "industry": "fintech",
+    "category": "mobile_banking",
+    "year_founded": 2013,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_612": {
+    "brand_name": "Monzo",
+    "industry": "fintech",
+    "category": "mobile_banking",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_613": {
+    "brand_name": "Starling",
+    "industry": "fintech",
+    "category": "mobile_banking",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_614": {
+    "brand_name": "TransferWise",
+    "industry": "fintech",
+    "category": "money_transfer",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_615": {
+    "brand_name": "Adyen",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_616": {
+    "brand_name": "Checkout.com",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_617": {
+    "brand_name": "Mollie",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_618": {
+    "brand_name": "SumUp",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_619": {
+    "brand_name": "ByteDance",
+    "industry": "social_media",
+    "category": "content_platform",
+    "year_founded": 2012,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_620": {
+    "brand_name": "Meituan",
+    "industry": "ecommerce",
+    "category": "local_services",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_621": {
+    "brand_name": "Pinduoduo",
+    "industry": "ecommerce",
+    "category": "social_commerce",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_622": {
+    "brand_name": "Coupang",
+    "industry": "ecommerce",
+    "category": "ecommerce",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_623": {
+    "brand_name": "Flipkart",
+    "industry": "ecommerce",
+    "category": "ecommerce",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_624": {
+    "brand_name": "Paytm",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_625": {
+    "brand_name": "PhonePe",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2015,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_626": {
+    "brand_name": "Lazada",
+    "industry": "ecommerce",
+    "category": "ecommerce",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_627": {
+    "brand_name": "Tokopedia",
+    "industry": "ecommerce",
+    "category": "marketplace",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_628": {
+    "brand_name": "Bukalapak",
+    "industry": "ecommerce",
+    "category": "marketplace",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_629": {
+    "brand_name": "Nubank",
+    "industry": "fintech",
+    "category": "digital_banking",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_630": {
+    "brand_name": "Mercado Libre",
+    "industry": "ecommerce",
+    "category": "marketplace",
+    "year_founded": 1999,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_631": {
+    "brand_name": "Kavak",
+    "industry": "automotive",
+    "category": "used_cars",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_632": {
+    "brand_name": "Quinto Andar",
+    "industry": "real_estate",
+    "category": "rental_platform",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_633": {
+    "brand_name": "Creditas",
+    "industry": "fintech",
+    "category": "lending",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_634": {
+    "brand_name": "Loft",
+    "industry": "real_estate",
+    "category": "prop_tech",
+    "year_founded": 2018,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_635": {
+    "brand_name": "Bitso",
+    "industry": "fintech",
+    "category": "crypto_exchange",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_636": {
+    "brand_name": "Clip",
+    "industry": "fintech",
+    "category": "payments",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_637": {
+    "brand_name": "Konfio",
+    "industry": "fintech",
+    "category": "lending",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_638": {
+    "brand_name": "Marketo",
+    "industry": "marketing",
+    "category": "automation",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_639": {
+    "brand_name": "Pardot",
+    "industry": "marketing",
+    "category": "b2b_marketing",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_640": {
+    "brand_name": "Eloqua",
+    "industry": "marketing",
+    "category": "automation",
+    "year_founded": 1999,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_641": {
+    "brand_name": "Outreach",
+    "industry": "sales",
+    "category": "sales_engagement",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_642": {
+    "brand_name": "Salesloft",
+    "industry": "sales",
+    "category": "sales_engagement",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_643": {
+    "brand_name": "Gong",
+    "industry": "sales",
+    "category": "revenue_intelligence",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_644": {
+    "brand_name": "Chorus",
+    "industry": "sales",
+    "category": "conversation_intelligence",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_645": {
+    "brand_name": "Clari",
+    "industry": "sales",
+    "category": "revenue_operations",
+    "year_founded": 2013,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_646": {
+    "brand_name": "ADP",
+    "industry": "hr_tech",
+    "category": "payroll",
+    "year_founded": 1949,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_647": {
+    "brand_name": "Paychex",
+    "industry": "hr_tech",
+    "category": "payroll",
+    "year_founded": 1971,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_648": {
+    "brand_name": "BambooHR",
+    "industry": "hr_tech",
+    "category": "hris",
+    "year_founded": 2008,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_649": {
+    "brand_name": "Namely",
+    "industry": "hr_tech",
+    "category": "hris",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_650": {
+    "brand_name": "Greenhouse",
+    "industry": "hr_tech",
+    "category": "recruiting",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_651": {
+    "brand_name": "Lever",
+    "industry": "hr_tech",
+    "category": "recruiting",
+    "year_founded": 2012,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_652": {
+    "brand_name": "SmartRecruiters",
+    "industry": "hr_tech",
+    "category": "recruiting",
+    "year_founded": 2010,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_653": {
+    "brand_name": "iCIMS",
+    "industry": "hr_tech",
+    "category": "recruiting",
+    "year_founded": 2000,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_654": {
+    "brand_name": "Zendesk",
+    "industry": "customer_support",
+    "category": "help_desk",
+    "year_founded": 2007,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_655": {
+    "brand_name": "Freshdesk",
+    "industry": "customer_support",
+    "category": "help_desk",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_656": {
+    "brand_name": "Freshworks",
+    "industry": "customer_support",
+    "category": "customer_engagement",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_657": {
+    "brand_name": "LiveChat",
+    "industry": "customer_support",
+    "category": "live_chat",
+    "year_founded": 2002,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_658": {
+    "brand_name": "Olark",
+    "industry": "customer_support",
+    "category": "live_chat",
+    "year_founded": 2009,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_659": {
+    "brand_name": "Help Scout",
+    "industry": "customer_support",
+    "category": "help_desk",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_660": {
+    "brand_name": "Kustomer",
+    "industry": "customer_support",
+    "category": "crm",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_661": {
+    "brand_name": "Roblox",
+    "industry": "gaming",
+    "category": "game_platform",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_662": {
+    "brand_name": "Epic Games",
+    "industry": "gaming",
+    "category": "game_developer",
+    "year_founded": 1991,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_663": {
+    "brand_name": "Unity",
+    "industry": "gaming",
+    "category": "game_engine",
+    "year_founded": 2004,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_664": {
+    "brand_name": "Riot Games",
+    "industry": "gaming",
+    "category": "game_developer",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_665": {
+    "brand_name": "Supercell",
+    "industry": "gaming",
+    "category": "mobile_games",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_666": {
+    "brand_name": "Niantic",
+    "industry": "gaming",
+    "category": "ar_games",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_667": {
+    "brand_name": "Steam",
+    "industry": "gaming",
+    "category": "game_distribution",
+    "year_founded": 2003,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_668": {
+    "brand_name": "EA",
+    "industry": "gaming",
+    "category": "game_publisher",
+    "year_founded": 1982,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_669": {
+    "brand_name": "Activision",
+    "industry": "gaming",
+    "category": "game_publisher",
+    "year_founded": 1979,
+    "naming_strategy": "invented",
+    "syllables": 4
+  },
+  "brand_670": {
+    "brand_name": "Apple Music",
+    "industry": "audio",
+    "category": "music_streaming",
+    "year_founded": 2015,
+    "naming_strategy": "descriptive",
+    "syllables": 4
+  },
+  "brand_671": {
+    "brand_name": "SoundCloud",
+    "industry": "audio",
+    "category": "audio_platform",
+    "year_founded": 2007,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_672": {
+    "brand_name": "Anchor",
+    "industry": "audio",
+    "category": "podcast_hosting",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_673": {
+    "brand_name": "Audible",
+    "industry": "audio",
+    "category": "audiobooks",
+    "year_founded": 1995,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_674": {
+    "brand_name": "Stitcher",
+    "industry": "audio",
+    "category": "podcasts",
+    "year_founded": 2008,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_675": {
+    "brand_name": "Castbox",
+    "industry": "audio",
+    "category": "podcast_app",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_676": {
+    "brand_name": "Overcast",
+    "industry": "audio",
+    "category": "podcast_app",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_677": {
+    "brand_name": "Pocket Casts",
+    "industry": "audio",
+    "category": "podcast_app",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_678": {
+    "brand_name": "RadioPublic",
+    "industry": "audio",
+    "category": "podcast_app",
+    "year_founded": 2016,
+    "naming_strategy": "portmanteau",
+    "syllables": 4
+  },
+  "brand_679": {
+    "brand_name": "Instagram",
+    "industry": "social_media",
+    "category": "photo_sharing",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_680": {
+    "brand_name": "Snapchat",
+    "industry": "social_media",
+    "category": "messaging",
+    "year_founded": 2011,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_681": {
+    "brand_name": "Pinterest",
+    "industry": "social_media",
+    "category": "visual_discovery",
+    "year_founded": 2010,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_682": {
+    "brand_name": "LinkedIn",
+    "industry": "social_media",
+    "category": "professional_network",
+    "year_founded": 2003,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_683": {
+    "brand_name": "Twitter",
+    "industry": "social_media",
+    "category": "microblogging",
+    "year_founded": 2006,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_684": {
+    "brand_name": "Mastodon",
+    "industry": "social_media",
+    "category": "decentralized_social",
+    "year_founded": 2016,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_685": {
+    "brand_name": "Clubhouse",
+    "industry": "social_media",
+    "category": "audio_social",
+    "year_founded": 2020,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_686": {
+    "brand_name": "BeReal",
+    "industry": "social_media",
+    "category": "authentic_sharing",
+    "year_founded": 2020,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_687": {
+    "brand_name": "Vero",
+    "industry": "social_media",
+    "category": "ad_free_social",
+    "year_founded": 2015,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_688": {
+    "brand_name": "Ello",
+    "industry": "social_media",
+    "category": "creator_network",
+    "year_founded": 2014,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_689": {
+    "brand_name": "McDonald's",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1955,
+    "naming_strategy": "portmanteau",
+    "syllables": 2
+  },
+  "brand_690": {
+    "brand_name": "Burger King",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1954,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_691": {
+    "brand_name": "Wendy's",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1969,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_692": {
+    "brand_name": "Taco Bell",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1962,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_693": {
+    "brand_name": "KFC",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1952,
+    "naming_strategy": "acronym",
+    "syllables": 1
+  },
+  "brand_694": {
+    "brand_name": "Subway",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1965,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_695": {
+    "brand_name": "Chick-fil-A",
+    "industry": "food",
+    "category": "fast_food",
+    "year_founded": 1946,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_696": {
+    "brand_name": "Chipotle",
+    "industry": "food",
+    "category": "fast_casual",
+    "year_founded": 1993,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_697": {
+    "brand_name": "Panera",
+    "industry": "food",
+    "category": "fast_casual",
+    "year_founded": 1987,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_698": {
+    "brand_name": "Five Guys",
+    "industry": "food",
+    "category": "fast_casual",
+    "year_founded": 1986,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_699": {
+    "brand_name": "Starbucks",
+    "industry": "food",
+    "category": "coffee",
+    "year_founded": 1971,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_700": {
+    "brand_name": "Dunkin'",
+    "industry": "food",
+    "category": "coffee_donuts",
+    "year_founded": 1950,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_701": {
+    "brand_name": "Peet's",
+    "industry": "food",
+    "category": "coffee",
+    "year_founded": 1966,
+    "naming_strategy": "invented",
+    "syllables": 1
+  },
+  "brand_702": {
+    "brand_name": "Blue Bottle",
+    "industry": "food",
+    "category": "specialty_coffee",
+    "year_founded": 2002,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_703": {
+    "brand_name": "Intelligentsia",
+    "industry": "food",
+    "category": "specialty_coffee",
+    "year_founded": 1995,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_704": {
+    "brand_name": "La Colombe",
+    "industry": "food",
+    "category": "coffee",
+    "year_founded": 1994,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_705": {
+    "brand_name": "Dutch Bros",
+    "industry": "food",
+    "category": "coffee",
+    "year_founded": 1992,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_706": {
+    "brand_name": "Tim Hortons",
+    "industry": "food",
+    "category": "coffee_donuts",
+    "year_founded": 1964,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_707": {
+    "brand_name": "Costa",
+    "industry": "food",
+    "category": "coffee",
+    "year_founded": 1971,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_708": {
+    "brand_name": "Lavazza",
+    "industry": "food",
+    "category": "coffee",
+    "year_founded": 1895,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_709": {
+    "brand_name": "Red Bull",
+    "industry": "beverage",
+    "category": "energy_drinks",
+    "year_founded": 1987,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_710": {
+    "brand_name": "Monster",
+    "industry": "beverage",
+    "category": "energy_drinks",
+    "year_founded": 2002,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_711": {
+    "brand_name": "Rockstar",
+    "industry": "beverage",
+    "category": "energy_drinks",
+    "year_founded": 2001,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_712": {
+    "brand_name": "Gatorade",
+    "industry": "beverage",
+    "category": "sports_drinks",
+    "year_founded": 1965,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_713": {
+    "brand_name": "Powerade",
+    "industry": "beverage",
+    "category": "sports_drinks",
+    "year_founded": 1988,
+    "naming_strategy": "invented",
+    "syllables": 3
+  },
+  "brand_714": {
+    "brand_name": "BodyArmor",
+    "industry": "beverage",
+    "category": "sports_drinks",
+    "year_founded": 2011,
+    "naming_strategy": "portmanteau",
+    "syllables": 3
+  },
+  "brand_715": {
+    "brand_name": "Vitaminwater",
+    "industry": "beverage",
+    "category": "enhanced_water",
+    "year_founded": 2000,
+    "naming_strategy": "invented",
+    "syllables": 5
+  },
+  "brand_716": {
+    "brand_name": "Smartwater",
+    "industry": "beverage",
+    "category": "premium_water",
+    "year_founded": 1996,
+    "naming_strategy": "descriptive",
+    "syllables": 3
+  },
+  "brand_717": {
+    "brand_name": "Fiji",
+    "industry": "beverage",
+    "category": "premium_water",
+    "year_founded": 1996,
+    "naming_strategy": "invented",
+    "syllables": 2
+  },
+  "brand_718": {
+    "brand_name": "Perrier",
+    "industry": "beverage",
+    "category": "sparkling_water",
+    "year_founded": 1863,
+    "naming_strategy": "invented",
+    "syllables": 2
+  }
+}
