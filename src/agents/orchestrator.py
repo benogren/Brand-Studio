@@ -550,6 +550,7 @@ class BrandStudioOrchestrator:
                             workflow_result['workflow_stages'].append('user_requested_regenerate')
                             # Reset feedback history for fresh start
                             if workflow_result['iteration'] < max_iterations:
+                                validation_passed = False  # Reset to continue loop
                                 continue
                             else:
                                 self.logger.warning("Max iterations reached, proceeding anyway")
@@ -565,6 +566,7 @@ class BrandStudioOrchestrator:
                                 workflow_result['feedback_session_full'].add_feedback(feedback)
 
                             if workflow_result['iteration'] < max_iterations:
+                                validation_passed = False  # Reset to continue loop
                                 continue
                             else:
                                 self.logger.warning("Max iterations reached, proceeding anyway")
