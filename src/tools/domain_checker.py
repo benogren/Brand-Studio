@@ -12,12 +12,16 @@ import logging
 import time
 import sys
 import os
+import requests
 from typing import Dict, Optional, List, Set
 from datetime import datetime, timedelta
 import whois
 
 # Configure logger
 logger = logging.getLogger('brand_studio.domain_checker')
+
+# Namecheap API configuration
+NAMECHEAP_API_ENDPOINT = "https://api.namecheap.com/xml.response"
 
 # Default domain extensions to check
 DEFAULT_EXTENSIONS = ['.com', '.ai', '.io', '.so', '.app', '.co', '.is', '.me', '.net', '.to']
@@ -86,6 +90,77 @@ class DomainCache:
 
 # Global cache instance
 _domain_cache = DomainCache(ttl_minutes=5)
+
+
+def _check_namecheap_availability(domain: str) -> Optional[bool]:
+    """
+    Check domain availability using Namecheap API.
+
+    Args:
+        domain: Full domain name (e.g., 'example.com')
+
+    Returns:
+        True if available, False if taken, None if API call failed
+
+    Note:
+        Requires NAMECHEAP_API_KEY, NAMECHEAP_API_USER, and NAMECHEAP_USERNAME
+        environment variables to be set.
+    """
+    try:
+        # Get Namecheap credentials from environment
+        api_key = os.getenv('NAMECHEAP_API_KEY')
+        api_user = os.getenv('NAMECHEAP_API_USER')
+        username = os.getenv('NAMECHEAP_USERNAME')
+        client_ip = os.getenv('NAMECHEAP_CLIENT_IP', '0.0.0.0')
+
+        # If credentials not available, return None to fall back to WHOIS
+        if not all([api_key, api_user, username]):
+            logger.debug("Namecheap credentials not configured, skipping API check")
+            return None
+
+        logger.debug(f"Checking {domain} via Namecheap API")
+
+        # Build Namecheap API request
+        params = {
+            'ApiUser': api_user,
+            'ApiKey': api_key,
+            'UserName': username,
+            'Command': 'namecheap.domains.check',
+            'ClientIp': client_ip,
+            'DomainList': domain
+        }
+
+        # Make API request
+        response = requests.get(NAMECHEAP_API_ENDPOINT, params=params, timeout=5)
+        response.raise_for_status()
+
+        # Parse XML response
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(response.text)
+
+        # Find the domain check result
+        # Namecheap XML structure: <DomainCheckResult Domain="example.com" Available="true/false" />
+        namespace = {'nc': 'http://api.namecheap.com/xml.response'}
+        domain_result = root.find(f".//nc:DomainCheckResult[@Domain='{domain}']", namespace)
+
+        if domain_result is None:
+            # Try without namespace
+            domain_result = root.find(f".//*[@Domain='{domain}']")
+
+        if domain_result is not None:
+            available = domain_result.get('Available', '').lower() == 'true'
+            logger.debug(f"Namecheap API: {domain} is {'available' if available else 'taken'}")
+            return available
+
+        logger.warning(f"Could not parse Namecheap response for {domain}")
+        return None
+
+    except requests.RequestException as e:
+        logger.debug(f"Namecheap API request failed for {domain}: {e}")
+        return None
+    except Exception as e:
+        logger.debug(f"Namecheap API error for {domain}: {e}")
+        return None
 
 
 def check_domain_availability(
@@ -176,7 +251,9 @@ def check_domain_availability(
 
 def _check_single_domain(domain: str) -> bool:
     """
-    Check availability of a single domain using WHOIS.
+    Check availability of a single domain.
+
+    Tries Namecheap API first (if configured), then falls back to WHOIS.
 
     Args:
         domain: Full domain name (e.g., 'example.com')
@@ -185,10 +262,16 @@ def _check_single_domain(domain: str) -> bool:
         True if domain is available, False if taken
 
     Note:
-        On WHOIS lookup failure or exception, assumes domain is available
+        On lookup failure or exception, assumes domain is available
         (defensive approach to avoid false negatives that could eliminate
         valid name candidates).
     """
+    # First, try Namecheap API if configured
+    namecheap_result = _check_namecheap_availability(domain)
+    if namecheap_result is not None:
+        return namecheap_result
+
+    # Fall back to WHOIS
     try:
         logger.debug(f"Performing WHOIS lookup for {domain}")
 
