@@ -410,9 +410,667 @@ id (SERIAL, PK), session_id (FK), brand_name, tagline, story, domain_status (JSO
 - **Nice Classification:** Do we need to ask users for their industry category (Nice class) for trademark search specificity?
 - **Domain Alternatives:** If .com unavailable, should agent suggest alternative TLDs automatically or require user input?
 
+## Environment Setup Guide
+
+### Prerequisites
+
+- Python 3.9 or higher (tested with 3.14.0)
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (gcloud CLI)
+- Git
+- A Google Cloud account with billing enabled
+
+### Quick Setup for Local Testing
+
+For local testing with Google AI API (no full Google Cloud required):
+
+```bash
+# 1. Clone repository and setup Python environment
+git clone <repository-url>
+cd Brand-Agent
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2. Configure minimal environment variables
+cp .env.example .env
+# Edit .env with:
+GOOGLE_CLOUD_PROJECT=test-project-local
+GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_GENAI_USE_VERTEXAI=1
+LOG_LEVEL=INFO
+ENABLE_TRACING=false
+MAX_NAME_CANDIDATES=50
+MIN_NAME_CANDIDATES=20
+MAX_LOOP_ITERATIONS=3
+DOMAIN_CACHE_TTL_SECONDS=300
+
+# 3. Test that it works
+python -m src.cli --help
+```
+
+### Full Google Cloud Setup (Production)
+
+#### Option A: Automated Setup (Recommended)
+
+```bash
+./scripts/setup_gcp.sh
+```
+
+This script will:
+1. Create or configure your Google Cloud project
+2. Enable all required APIs (Vertex AI, Cloud SQL, Vector Search, Secret Manager, Logging)
+3. Set up Application Default Credentials
+4. Configure default region (us-central1)
+
+#### Option B: Manual Setup
+
+1. **Create a Google Cloud Project:**
+   ```bash
+   export PROJECT_ID="your-project-id"
+   gcloud projects create $PROJECT_ID
+   gcloud config set project $PROJECT_ID
+   ```
+
+2. **Enable Billing:**
+   - Visit https://console.cloud.google.com/billing
+   - Link billing account to your project
+
+3. **Enable Required APIs:**
+   ```bash
+   gcloud services enable \
+     aiplatform.googleapis.com \
+     storage.googleapis.com \
+     sql-component.googleapis.com \
+     sqladmin.googleapis.com \
+     logging.googleapis.com \
+     monitoring.googleapis.com \
+     cloudtrace.googleapis.com \
+     secretmanager.googleapis.com
+   ```
+
+4. **Set Default Region:**
+   ```bash
+   gcloud config set compute/region us-central1
+   ```
+
+5. **Authenticate:**
+   ```bash
+   gcloud auth login
+   gcloud auth application-default login
+   ```
+
+### Database Setup (Optional for Phase 1)
+
+#### Cloud SQL PostgreSQL Instance
+
+Run the automated setup script:
+
+```bash
+./scripts/setup_cloud_sql.sh
+```
+
+This creates:
+- Cloud SQL PostgreSQL instance (f1-micro tier for free tier)
+- `brandstudio` database
+- Database user with password
+- Connection details for .env configuration
+
+#### Local Development with Cloud SQL Proxy
+
+```bash
+# Download Cloud SQL Proxy
+curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.8.0/cloud-sql-proxy.darwin.amd64
+chmod +x cloud-sql-proxy
+
+# Run the proxy
+./cloud-sql-proxy PROJECT_ID:REGION:INSTANCE_NAME
+
+# Update .env with local connection
+DATABASE_URL=postgresql://brandstudio-user:PASSWORD@localhost:5432/brandstudio
+```
+
+### Secret Manager Configuration
+
+Configure API keys securely in Google Cloud Secret Manager:
+
+```bash
+./scripts/setup_secrets.sh
+```
+
+Prompts for (all optional for Phase 1):
+- **Namecheap API Key** - for domain availability checking
+- **USPTO API Key** - for trademark search
+- **Twitter/X API credentials** - for social media handle checking
+- **Instagram API Key** - for handle checking
+- **LinkedIn API Key** - for handle checking
+- **Database Password** - for Cloud SQL access
+
+### Environment Variables Reference
+
+**Minimal .env (Phase 1 - Local Testing):**
+```bash
+GOOGLE_CLOUD_PROJECT=test-project-local
+GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_GENAI_USE_VERTEXAI=1
+LOG_LEVEL=INFO
+```
+
+**Full .env (Phase 2+ - Production Ready):**
+```bash
+GOOGLE_CLOUD_PROJECT=my-real-gcp-project
+GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_GENAI_USE_VERTEXAI=1
+DATABASE_URL=postgresql://user:pass@localhost:5432/brandstudio
+VECTOR_SEARCH_INDEX_ENDPOINT=projects/.../indexEndpoints/...
+VECTOR_SEARCH_DEPLOYED_INDEX_ID=brand_names_deployed
+LOG_LEVEL=INFO
+ENABLE_TRACING=true
+
+# Optional API Keys (stored in Secret Manager for production)
+NAMECHEAP_API_KEY=your-key  # Optional, falls back to python-whois
+USPTO_API_KEY=your-key      # Optional, falls back to simulation
+TWITTER_API_KEY=your-key    # Optional
+INSTAGRAM_API_KEY=your-key  # Optional
+LINKEDIN_API_KEY=your-key   # Optional
+```
+
+## Current Implementation Status
+
+### ✅ Phase 1: Foundation (100% Complete)
+
+**Completed Features:**
+- [x] Project structure and Google Cloud setup
+- [x] Orchestrator Agent (basic coordination with Gemini 2.5 Flash)
+- [x] Domain Availability Checker (enhanced: 10 TLDs + 6 prefix variations)
+- [x] Name Generator Agent (working with Google AI API)
+- [x] Basic CLI for testing (interactive and command-line modes)
+- [x] Environment configuration and secrets management
+
+**Enhancement: Extended Domain Checking (User-Requested)**
+- Original spec: .com, .ai, .io (3 TLDs)
+- **Current: 10 TLDs** - .com, .ai, .io, .so, .app, .co, .is, .me, .net, .to
+- **6 prefix variations** - get, try, your, my, hello, use
+- Smart alternative suggestions when base domains are taken
+
+### 🚀 Phase 3: Interactive Workflow (Implemented Ahead of Schedule)
+
+**Major Enhancement: Interactive 3-Phase Workflow (User-Requested)**
+
+**Why Changed:** Original Phase 3 validated ALL 20-30 generated names, which was:
+- ⏰ Slow (5-10 minutes)
+- 💸 Expensive (~90 API calls)
+- 🚫 Wasteful (validating names users might not like)
+
+**New Workflow:**
+1. **Generate 20 names** - AI creates initial brand candidates
+2. **User selects 5-10 favorites** - Interactive selection
+3. **Validate selected only** - Domain, trademark, SEO checks on picks
+4. **Regenerate if needed** - Not satisfied? Try again with context preserved
+
+**Benefits:**
+- ⚡ **70% faster** - Validate 5-10 instead of 20-30 names
+- 💰 **70% cheaper** - ~15-30 API calls vs ~90
+- ♻️ **Iterative** - Regenerate with context preserved
+- 🎯 **User-driven** - Control what gets validated
+
+**Completed Features:**
+- [x] SEO Optimizer Agent (Gemini 2.5 Flash)
+- [x] Interactive selection interface
+- [x] Selective validation (domain + trademark + SEO)
+- [x] Regeneration loop with context preservation
+- [x] Enhanced results display with grouping
+- [x] USPTO TSDR API integration (with fallback to simulation)
+
+### 🔄 Phase 2: Core Features (In Progress)
+
+**Not Yet Started:**
+- [ ] Task 6.0: Curate Brand Name Dataset (5,000+ brands)
+- [ ] Task 7.0: Setup Vertex AI Vector Search for RAG
+- [ ] Task 8.0: Integrate RAG into Name Generator
+- [ ] Task 9.0: Implement Validation Agent (coordination layer)
+- [ ] Task 10.0: Social Media Handle Checker
+- [ ] Task 11.0: Research Agent
+- [ ] Task 12.0: Session Management with Cloud SQL
+
+### ⏭️ Phase 3 & 4: Remaining Tasks
+
+**Phase 3 Remaining:**
+- [ ] Task 14.0: Story Generator Agent
+- [ ] Task 15.0: Vertex AI Memory Bank
+- [ ] Task 16.0: Workflow Patterns (Parallel, Sequential, Loop)
+- [ ] Task 17.0: Context Compaction
+- [ ] Task 18.0: Agent Evaluation Test Suite
+- [ ] Task 19.0: Improve Agent Prompt Engineering
+- [ ] Task 20.0: Observability with Cloud Logging
+
+**Phase 4: Deployment**
+- [ ] Task 21.0: Vertex AI Agent Engine Deployment
+- [ ] Task 22.0: Complete Feature Documentation
+- [ ] Task 23.0: Demo Video and Kaggle Submission
+
+## Usage Guide
+
+### Running the Application
+
+#### Interactive Mode (Recommended)
+
+```bash
+# Activate virtual environment
+cd /Users/benogren/Desktop/projects/Brand-Agent
+source venv/bin/activate
+
+# Start interactive mode
+python -m src.cli
+```
+
+**What happens:**
+
+**Phase 1 - Generate:**
+```
+Generating 20 brand names...
+
+GENERATED BRAND NAMES (20 total)
+======================================================================
+ 1. MealMind             - Intelligent meal planning...
+ 2. NutriNest            - Warm, family-oriented brand...
+ ...
+ 20. KitchenIQ           - Smart kitchen solutions...
+```
+
+**Phase 2 - Select:**
+```
+SELECT YOUR FAVORITE NAMES (5-10 names)
+======================================================================
+Enter the numbers of your favorite names (comma-separated)
+Example: 1,5,7,12,18
+Or type 'regenerate' to start over with new names
+
+Your selection (5-10 names): 1,2,5,7,12
+
+You selected 5 names:
+  - MealMind
+  - NutriNest
+  - PlateWise
+  - FamilyFeast
+  - KitchenIQ
+
+Confirm selection? (y/n): y
+```
+
+**Phase 3 - Validate:**
+```
+PHASE 3: VALIDATING SELECTED NAMES
+======================================================================
+
+[1/5] Validating: MealMind
+----------------------------------------------------------------------
+  Checking domain availability...
+  Checking trademark conflicts...
+  Optimizing for SEO...
+  ✓ Domains available: mealmind.com, mealmind.ai, mealmind.io
+  ✓ Trademark risk: low
+  ✓ SEO score: 87/100
+
+[Results for other 4 names...]
+```
+
+#### Command-Line Mode
+
+```bash
+# Direct command-line with automatic interactive workflow
+python -m src.cli \
+  --product "AI-powered meal planning app for busy parents" \
+  --audience "Parents aged 28-40" \
+  --personality professional \
+  --industry food_tech
+
+# Quick generation with minimal output
+python -m src.cli \
+  --product "Healthcare telemedicine app" \
+  --personality professional \
+  --quiet
+
+# Save to JSON file
+python -m src.cli \
+  --product "E-commerce sustainable fashion marketplace" \
+  --personality playful \
+  --json output.json
+```
+
+#### CLI Options Reference
+
+| Flag | Description | Example |
+|------|-------------|---------|
+| `--product, -p` | Product description (required in direct mode) | `--product "AI app"` |
+| `--audience, -a` | Target audience | `--audience "Millennials"` |
+| `--personality, -P` | Brand tone (playful/professional/innovative/luxury) | `--personality innovative` |
+| `--industry, -i` | Industry category | `--industry tech` |
+| `--count, -c` | Number of names (20-50) | `--count 25` |
+| `--verbose, -v` | Detailed output | `--verbose` |
+| `--quiet, -q` | Minimal output (names only) | `--quiet` |
+| `--json, -j` | Save to JSON file | `--json results.json` |
+
+### Testing the Application
+
+```bash
+# Run comprehensive Phase 2 tests
+python test_phase2.py
+
+# This tests:
+# - Research Agent
+# - RAG Brand Retrieval
+# - Validation Agent (domain + trademark)
+# - SEO Optimizer
+# - Brand Story Generator (real LLM)
+# - Session Management
+# - Integrated Name Generation
+```
+
+### Performance Expectations
+
+- **Name Generation**: ~10-15 seconds for 20 names
+- **Validation**: ~2-3 seconds per name (domain + trademark)
+- **Story Generation**: ~5-8 seconds (real LLM)
+- **Full Test Suite**: ~30-40 seconds
+- **Interactive Workflow**: 1-3 minutes total (vs 5-10 min old workflow)
+
+## Deployment Guide
+
+### Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    VERTEX AI AGENT ENGINE                 │
+│  ┌───────────────────────────────────────────────────┐   │
+│  │   Orchestrator Agent (gemini-2.5-flash)          │   │
+│  │   ├── Research Agent                              │   │
+│  │   ├── Name Generator Agent (gemini-2.5-pro)      │   │
+│  │   ├── Validation Agent                            │   │
+│  │   ├── SEO Optimizer Agent                         │   │
+│  │   └── Story Generator Agent (gemini-2.5-pro)     │   │
+│  └───────────────────────────────────────────────────┘   │
+└────────────────┬─────────────────────────────────────────┘
+                 │
+        ┌────────┴────────┬────────────────┬────────────┐
+        ↓                 ↓                ↓            ↓
+┌──────────────┐  ┌──────────────┐  ┌──────────┐  ┌────────┐
+│ CLOUD SQL    │  │ VECTOR       │  │ CLOUD    │  │ CLOUD  │
+│ (PostgreSQL) │  │ SEARCH       │  │ STORAGE  │  │ LOGGING│
+│              │  │              │  │          │  │        │
+│ - Sessions   │  │ - Brand DB   │  │ -Datasets│  │ -Traces│
+│ - Events     │  │ - Embeddings │  │ - Exports│  │ -Metrics│
+└──────────────┘  └──────────────┘  └──────────┘  └────────┘
+```
+
+### Step-by-Step Deployment Process
+
+#### Step 1: Initial Google Cloud Setup (10-15 minutes)
+
+```bash
+# 1. Clone repository
+git clone https://github.com/your-username/Brand-Agent.git
+cd Brand-Agent
+
+# 2. Install dependencies
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 3. Run GCP setup script
+./scripts/setup_gcp.sh
+```
+
+This script will:
+- ✅ Enable required Google Cloud APIs
+- ✅ Create Cloud Storage bucket
+- ✅ Set up service accounts with proper IAM roles
+- ✅ Configure authentication
+- ✅ Generate `.env` file
+
+#### Step 2: Cloud SQL Database Setup (Optional, 15-20 minutes)
+
+```bash
+# Run database migrations
+./scripts/run_migrations.py
+```
+
+Creates:
+- Sessions table
+- Events table
+- Generated brands table
+- Brand stories table
+- Indexes and constraints
+
+**Note**: For Phase 2 testing, file-based session storage works fine.
+
+#### Step 3: Vector Search Setup (30-45 minutes)
+
+```bash
+# Generate embeddings and create Vector Search index
+python scripts/setup_vector_search.py
+```
+
+This script:
+1. Generates embeddings for brand names dataset
+2. Uploads embeddings to Cloud Storage
+3. Creates Vertex AI Vector Search index
+4. Deploys index to endpoint
+
+**What's created:**
+- Embeddings file in Cloud Storage
+- Vector Search index (768 dimensions)
+- Index endpoint for queries
+- Configuration saved to `.env`
+
+#### Step 4: Test Locally with Production Config (5 minutes)
+
+```bash
+# Run Phase 2 tests with production config
+python test_phase2.py
+
+# Test CLI with production RAG
+python -m src.cli --product "AI fitness app" --count 10
+```
+
+Verify that:
+- ✅ All tests pass
+- ✅ Names are generated successfully
+- ✅ Domain and trademark validation works
+- ✅ Cloud Logging is capturing events
+
+#### Step 5: Deploy to Vertex AI Agent Engine (10-15 minutes)
+
+```bash
+# Deploy the multi-agent system
+./scripts/deploy.sh
+```
+
+This script:
+1. ✅ Runs tests before deployment
+2. ✅ Packages source code and dependencies
+3. ✅ Deploys to Vertex AI Agent Engine
+4. ✅ Creates agent endpoint
+5. ✅ Tests deployed agent
+
+**Deployment config** (`.agent_engine_config.json`):
+- Min instances: 0 (scale to zero)
+- Max instances: 5 (auto-scaling)
+- Resources: 2 CPU, 4GB memory
+- Timeout: 600s (10 minutes)
+
+#### Step 6: Test Deployed Agent (5 minutes)
+
+```bash
+# Test via gcloud CLI
+gcloud ai agents query brand_studio_agent \
+  --region=us-central1 \
+  --query="I need a brand name for an AI-powered fitness app"
+
+# View deployment info
+cat deployment/deployment_info.json
+```
+
+#### Step 7: Run Evaluation Suite (10 minutes)
+
+```bash
+# Run comprehensive evaluation tests
+adk eval brand_studio_agent tests/integration.evalset.json \
+  --config_file_path=tests/eval_config.json \
+  --print_detailed_results
+```
+
+**Success criteria:**
+- ✅ 80%+ test cases passing
+- ✅ Average name quality score >75/100
+- ✅ Domain availability >50%
+- ✅ Response time <2 minutes
+
+### Monitoring and Observability
+
+#### Cloud Logging
+
+```bash
+# View agent logs
+gcloud logging read "resource.type=aiplatform.googleapis.com/Agent" \
+  --limit=50 \
+  --format=json
+
+# View specific events
+gcloud logging read "jsonPayload.event_type=agent_event" \
+  --limit=20
+```
+
+Or use **Cloud Console**: https://console.cloud.google.com/logs
+
+#### Cost Monitoring
+
+Set up billing alerts:
+
+```bash
+# Create billing alert at $10
+gcloud alpha billing budgets create \
+  --billing-account=YOUR_BILLING_ACCOUNT \
+  --display-name="Brand Studio Budget" \
+  --budget-amount=10USD \
+  --threshold-rule=percent=50 \
+  --threshold-rule=percent=90
+```
+
+### Cost Estimation
+
+#### Free Tier (First Month)
+- Vertex AI Agent Engine: 10 agents free
+- Cloud SQL: f1-micro instance free (us-central1)
+- Cloud Storage: 5 GB free
+- Cloud Logging: 50 GB free
+
+#### Expected Monthly Costs
+
+**Light Usage (100 generations/month):**
+
+| Service | Usage | Monthly Cost |
+|---------|-------|--------------|
+| Gemini 2.5 Flash | 500K tokens | ~$1.25 |
+| Gemini 2.5 Pro | 100K tokens | ~$2.50 |
+| Vector Search | 1M queries | $0.00 (free tier) |
+| Cloud SQL | f1-micro | $0.00 (free tier) |
+| Cloud Storage | 2 GB | $0.00 (free tier) |
+| Cloud Logging | 10 GB | $0.00 (free tier) |
+| **Total** | | **~$4-5/month** |
+
+**Scale Pricing (1000 generations/month):**
+
+| Service | Usage | Monthly Cost |
+|---------|-------|--------------|
+| Gemini Models | 5M tokens | ~$35 |
+| Vector Search | 10M queries | ~$10 |
+| Cloud SQL | db-n1-standard-1 | ~$50 |
+| Cloud Storage | 20 GB | ~$0.50 |
+| **Total** | | **~$95/month** |
+
+## Troubleshooting
+
+### Common Issues
+
+#### "Vertex AI 404 NOT_FOUND" warning
+**This is normal!** The app automatically falls back to Google AI API. You can safely ignore this.
+
+#### "GOOGLE_CLOUD_PROJECT environment variable is required"
+**Solution:** Add to `.env`:
+```bash
+GOOGLE_CLOUD_PROJECT=test-project-local
+```
+
+#### "Could not automatically determine credentials"
+**For Phase 1 (placeholder mode):** This is fine! The CLI will use placeholder data.
+
+**For Phase 2 (real LLM calls):** Run:
+```bash
+gcloud auth application-default login
+```
+
+#### "Database connection failed"
+**For Phase 1:** Comment out `DATABASE_URL` - database features aren't used yet.
+
+**For Phase 2:** Verify your Cloud SQL instance is running:
+```bash
+gcloud sql instances list
+```
+
+#### Vector Search index creation timeout
+**Solution:**
+- Vector Search index creation is asynchronous and takes 30-45 minutes
+- Check status: `gcloud ai indexes list --region=us-central1`
+- Script will wait automatically
+
+#### Agent deployment fails
+**Solution:**
+- Check `.agent_engine_config.json` is valid JSON
+- Ensure all dependencies in `requirements.txt`
+- Verify service account has `roles/aiplatform.user`
+- Check logs: `gcloud logging read "resource.type=aiplatform.googleapis.com" --limit=50`
+
+## Documentation References
+
+### Key Documentation Files
+
+- **README.md** - Project overview, setup instructions, usage guide
+- **QUICKSTART.md** - Quick start guide with interactive workflow details
+- **DEPLOYMENT.md** - Complete deployment guide for Vertex AI Agent Engine
+- **INTERACTIVE_WORKFLOW.md** - Detailed interactive workflow documentation
+- **RUN_LOCALLY.md** - Local running guide
+- **ENV_SETUP_GUIDE.md** - Environment variable setup guide
+- **PHASE3_SUMMARY.md** - Phase 3 implementation summary
+- **ENHANCED_DOMAIN_CHECKING.md** - Enhanced domain checking features
+- **USPTO_API_RECOMMENDATIONS.md** - USPTO TSDR API integration guide
+
+### Project Structure
+
+```
+Brand-Agent/
+├── src/
+│   ├── agents/          # All AI agents
+│   │   ├── orchestrator.py
+│   │   ├── name_generator.py
+│   │   ├── research_agent.py
+│   │   ├── validation_agent.py
+│   │   ├── seo_agent.py
+│   │   └── story_agent.py
+│   ├── tools/           # Utilities
+│   │   ├── domain_checker.py
+│   │   └── trademark_checker.py
+│   ├── rag/             # RAG brand retrieval
+│   ├── data/            # Brand dataset
+│   ├── database/        # Session management
+│   └── cli.py           # Main interface
+├── test_phase2.py       # Comprehensive tests
+├── .env                 # Your config
+└── scripts/             # Setup and deployment scripts
+```
+
 ## Document Status
 
-✅ **PRD Complete and Validated:** This document has been validated and contains all necessary information:
+✅ **PRD Complete and Validated:** This document has been consolidated and contains all necessary information:
 - All required sections are present and complete
 - Codebase analysis findings have been incorporated (new project - technical patterns from spec)
 - YAML front-matter is complete and accurate with fidelity settings
@@ -422,4 +1080,9 @@ id (SERIAL, PK), session_id (FK), brand_name, tagline, story, domain_status (JSO
 - Social media handle checking included (exception to section 13 exclusions)
 - All section 13 optional enhancements excluded except social handles
 - Standard security practices defined, no enhanced requirements
+- **NEW: Consolidated setup, deployment, and usage documentation**
+- **NEW: Current implementation status and progress tracking**
+- **NEW: Interactive workflow documentation and benefits**
+- **NEW: Comprehensive troubleshooting guide**
+- **NEW: Cost estimation and monitoring guidance**
 - Ready for handoff to task generation via `/prd:2:gen-tasks prd-ai-brand-studio.md`
