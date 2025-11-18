@@ -9,7 +9,7 @@ across multiple sessions.
 import logging
 import os
 from typing import Dict, List, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger('brand_studio.memory_bank')
 
@@ -110,7 +110,7 @@ class MemoryBankClient:
                 "user_id": user_id,
                 "preference_type": preference_type,
                 "preference_value": preference_value,
-                "stored_at": datetime.utcnow().isoformat(),
+                "stored_at": datetime.now(timezone.utc).isoformat(),
                 "metadata": metadata or {}
             }
 
@@ -186,7 +186,7 @@ class MemoryBankClient:
                 "brand_name": brand_name,
                 "feedback_type": feedback_type,
                 "feedback_data": feedback_data,
-                "stored_at": datetime.utcnow().isoformat()
+                "stored_at": datetime.now(timezone.utc).isoformat()
             }
 
             if self.memory_bank:
