@@ -258,15 +258,7 @@ class BrandCollisionAgent:
         Returns:
             Dictionary with search results
         """
-        try:
-            from vertexai.generative_models import Tool, grounding
-
-            # Create search tool - use the non-preview API
-            search_tool = Tool.from_google_search_retrieval(
-                grounding.GoogleSearchRetrieval()
-            )
-
-            search_prompt = f"""
+        search_prompt = f"""
 Search for "{brand_name}" and analyze what companies, products, or entities currently exist with this name.
 
 Focus on:
@@ -285,6 +277,13 @@ Provide a summary of the top search results with:
 If no significant entities are found, state that clearly.
 """
 
+        # Try the new google_search field first (for Gemini 2.0+)
+        try:
+            from vertexai.generative_models import Tool, GoogleSearch
+
+            # Use the new google_search field for Gemini 2.0+
+            search_tool = Tool(google_search=GoogleSearch())
+
             response = self.model.generate_content(
                 search_prompt,
                 tools=[search_tool],
@@ -293,7 +292,7 @@ If no significant entities are found, state that clearly.
 
             search_summary = response.text if hasattr(response, 'text') else str(response)
 
-            logger.info(f"Google Search grounding successful for '{brand_name}'")
+            logger.info(f"Google Search grounding successful for '{brand_name}' (google_search field)")
 
             return {
                 'query': brand_name,
@@ -302,10 +301,36 @@ If no significant entities are found, state that clearly.
                 'search_method': 'google_search_grounding'
             }
 
-        except Exception as e:
-            logger.warning(f"Google Search grounding failed: {e}. Using model knowledge only.")
-            # Fallback to model knowledge without live search
-            return self._perform_knowledge_based_search(brand_name, industry)
+        except (ImportError, AttributeError, Exception) as e:
+            # Try the old google_search_retrieval field (for older Gemini models)
+            try:
+                from vertexai.generative_models import Tool, grounding
+
+                search_tool = Tool.from_google_search_retrieval(
+                    grounding.GoogleSearchRetrieval()
+                )
+
+                response = self.model.generate_content(
+                    search_prompt,
+                    tools=[search_tool],
+                    generation_config={"temperature": 1.0}
+                )
+
+                search_summary = response.text if hasattr(response, 'text') else str(response)
+
+                logger.info(f"Google Search grounding successful for '{brand_name}' (google_search_retrieval field)")
+
+                return {
+                    'query': brand_name,
+                    'search_summary': search_summary,
+                    'grounding_metadata': {},
+                    'search_method': 'google_search_grounding_legacy'
+                }
+
+            except Exception as e2:
+                logger.warning(f"Google Search grounding failed: {e2}. Using model knowledge only.")
+                # Fallback to model knowledge without live search
+                return self._perform_knowledge_based_search(brand_name, industry)
 
     def _perform_knowledge_based_search(
         self,
