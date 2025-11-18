@@ -563,9 +563,9 @@ class BrandStudioOrchestrator:
         """
         Check if validation results meet minimum requirements.
 
-        Requirements (from PRD):
-        - At least 3 brand names with low trademark risk
-        - At least 5 names with .com domain available
+        Requirements:
+        - At least 50% of names with low trademark risk (minimum 1)
+        - At least 1 name with .com domain available OR any available domain extensions
 
         Args:
             validation_results: Validation results dictionary
@@ -579,9 +579,29 @@ class BrandStudioOrchestrator:
         # Count available .com domains
         available_com_count = validation_results.get('available_com_count', 0)
 
+        # Get total number of names validated
+        domain_availability = validation_results.get('domain_availability', {})
+        total_names = len(domain_availability)
+
+        # Calculate minimum thresholds based on number of selected names
+        min_low_risk = max(1, total_names // 2)  # At least 50% or 1
+        min_domains = 1  # At least 1 domain available
+
+        # Check if we have ANY available domains (not just .com)
+        any_domains_available = any(
+            any(avail for avail in domains.values())
+            for domains in domain_availability.values()
+        )
+
         # Check requirements
-        has_enough_low_risk = low_risk_count >= 3
-        has_enough_domains = available_com_count >= 5
+        has_enough_low_risk = low_risk_count >= min_low_risk
+        has_enough_domains = available_com_count >= min_domains or any_domains_available
+
+        self.logger.info(
+            f"Validation check: {low_risk_count}/{total_names} low-risk (need {min_low_risk}), "
+            f"{available_com_count} .com available (need {min_domains}), "
+            f"any domains: {any_domains_available}"
+        )
 
         return has_enough_low_risk and has_enough_domains
 

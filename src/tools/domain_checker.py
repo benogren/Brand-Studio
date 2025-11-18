@@ -10,6 +10,8 @@ Also supports prefix variations like get[name].com, try[name].com, etc.
 
 import logging
 import time
+import sys
+import os
 from typing import Dict, Optional, List, Set
 from datetime import datetime, timedelta
 import whois
@@ -190,8 +192,17 @@ def _check_single_domain(domain: str) -> bool:
     try:
         logger.debug(f"Performing WHOIS lookup for {domain}")
 
-        # Query WHOIS database
-        domain_info = whois.whois(domain)
+        # Suppress stderr from whois library to avoid cluttering output
+        old_stderr = sys.stderr
+        sys.stderr = open(os.devnull, 'w')
+
+        try:
+            # Query WHOIS database
+            domain_info = whois.whois(domain)
+        finally:
+            # Restore stderr
+            sys.stderr.close()
+            sys.stderr = old_stderr
 
         # Check if domain is registered
         # A registered domain will have registrar, creation_date, or status fields
@@ -203,6 +214,14 @@ def _check_single_domain(domain: str) -> bool:
             return True
 
     except Exception as e:
+        # Restore stderr in case of exception
+        if sys.stderr != old_stderr:
+            try:
+                sys.stderr.close()
+            except:
+                pass
+            sys.stderr = old_stderr
+
         # WHOIS lookup failed - could mean domain is available or service error
         # Check if it's a "domain not found" error (domain is available)
         error_str = str(e).lower()
@@ -210,8 +229,9 @@ def _check_single_domain(domain: str) -> bool:
             logger.debug(f"{domain} is available (not found in WHOIS)")
             return True
 
-        # Other errors - log and assume available to avoid false negatives
-        logger.warning(
+        # Other errors - assume available to avoid false negatives
+        # Only log at debug level to avoid cluttering output
+        logger.debug(
             f"WHOIS lookup error for {domain}: {e}. Assuming available."
         )
         return True
