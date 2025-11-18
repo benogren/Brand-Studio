@@ -301,6 +301,8 @@ class BrandStudioOrchestrator:
         # Analyze user brief
         try:
             analysis = self.analyze_user_brief(user_brief)
+            # Store analysis for access by sub-methods
+            self.current_analysis = analysis
         except Exception as e:
             self.logger.error(f"Failed to analyze user brief: {e}")
             return {
@@ -807,10 +809,21 @@ class BrandStudioOrchestrator:
             if domain_results.get(exact_com, False):
                 available_com_count += 1
 
-        # For trademark checking, use placeholder for now
-        # TODO: Implement real USPTO API checking
-        trademark_results = {name: 'low' for name in brand_names}
-        low_risk_count = num_names  # Assume all are low risk for now
+        # Trademark checking with USPTO
+        from src.tools.trademark_checker import search_trademarks_uspto
+
+        trademark_results = {}
+        low_risk_count = 0
+
+        self.logger.info(f"Checking trademarks for {num_names} brand names")
+
+        for brand_name in brand_names:
+            tm_result = search_trademarks_uspto(brand_name=brand_name)
+            risk_level = tm_result['risk_level']
+            trademark_results[brand_name] = risk_level
+
+            if risk_level == 'low':
+                low_risk_count += 1
 
         self.logger.info(
             f"Validation complete: {available_com_count} .com domains available, "
@@ -826,16 +839,45 @@ class BrandStudioOrchestrator:
         }
 
     def _execute_seo_optimization(self, brand_names: List[str]) -> dict:
-        """Execute SEO optimization stage (placeholder)."""
-        # Placeholder: Will be implemented in Phase 2 with SEO Optimizer Agent
-        # For MVP testing, return sample SEO data
+        """Execute SEO optimization stage with real SEO agent."""
+        from src.agents.seo_agent import SEOAgent
+
+        # Get product description from analysis (passed through workflow_result)
+        product_description = self.current_analysis.get('product_description', '')
+        industry = self.current_analysis.get('industry', 'general')
+
+        # Initialize SEO agent
+        seo_agent = SEOAgent(
+            project_id=self.project_id,
+            location=self.location
+        )
+
+        seo_scores = {}
+        meta_titles = {}
+        meta_descriptions = {}
+        all_seo_data = {}
+
+        self.logger.info(f"Optimizing SEO for {len(brand_names)} brand names")
+
+        for brand_name in brand_names:
+            seo_result = seo_agent.optimize_brand_seo(
+                brand_name=brand_name,
+                product_description=product_description,
+                industry=industry
+            )
+
+            seo_scores[brand_name] = seo_result['seo_score']
+            meta_titles[brand_name] = seo_result['meta_title']
+            meta_descriptions[brand_name] = seo_result['meta_description']
+            all_seo_data[brand_name] = seo_result
+
+        self.logger.info("SEO optimization completed for all names")
+
         return {
-            'seo_scores': {name: 75.0 for name in brand_names},
-            'meta_titles': {name: f"{name} | Brand Studio" for name in brand_names},
-            'meta_descriptions': {
-                name: f"Discover {name}, your innovative solution"
-                for name in brand_names
-            }
+            'seo_scores': seo_scores,
+            'meta_titles': meta_titles,
+            'meta_descriptions': meta_descriptions,
+            'detailed_seo': all_seo_data
         }
 
     def _execute_story_generation(
@@ -843,16 +885,29 @@ class BrandStudioOrchestrator:
         selected_name: Optional[str],
         analysis: dict
     ) -> dict:
-        """Execute story generation stage (placeholder)."""
-        # Placeholder: Will be implemented in Phase 2 with Story Generator Agent
-        # For MVP testing, return sample brand story content
-        return {
-            'taglines': [
-                f"{selected_name}: Innovation meets simplicity",
-                f"Power your vision with {selected_name}",
-                f"The future of branding starts here"
-            ],
-            'brand_story': f"{selected_name} is your partner in building memorable brands.",
-            'hero_copy': f"Welcome to {selected_name}, where creativity meets strategy.",
-            'value_proposition': f"{selected_name} delivers complete brand solutions"
-        }
+        """Execute story generation stage with real Story agent."""
+        from src.agents.story_agent import StoryAgent
+
+        if not selected_name:
+            self.logger.warning("No brand name selected for story generation")
+            return {}
+
+        # Initialize story agent
+        story_agent = StoryAgent(
+            project_id=self.project_id,
+            location=self.location
+        )
+
+        self.logger.info(f"Generating brand story for {selected_name}")
+
+        # Generate story content
+        story_result = story_agent.generate_brand_story(
+            brand_name=selected_name,
+            product_description=analysis.get('product_description', ''),
+            brand_personality=analysis.get('brand_personality', 'professional'),
+            target_audience=analysis.get('target_audience', '')
+        )
+
+        self.logger.info(f"Brand story generated successfully for {selected_name}")
+
+        return story_result
