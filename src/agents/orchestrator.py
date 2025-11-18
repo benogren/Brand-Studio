@@ -781,30 +781,48 @@ class BrandStudioOrchestrator:
         ]
 
     def _execute_validation(self, brand_names: List[str]) -> dict:
-        """Execute validation stage (placeholder)."""
-        # Placeholder: Will be implemented in Phase 2 with Validation Agent
-        # For MVP testing, return sample data that ALWAYS meets validation requirements
-        # regardless of how many names were selected:
-        # - Min 3 brands with low trademark risk
-        # - Min 5 brands with .com domain available
-        num_names = len(brand_names)
+        """Execute validation stage with real domain checking."""
+        from src.tools.domain_checker import check_domain_availability
 
-        # Ensure we always meet minimum requirements for validation to pass
-        # (even if user selected fewer names)
-        low_risk_count = max(3, min(3, num_names))  # At least 3, or num_names if less
-        available_com_count = max(5, min(num_names, num_names))  # Always 5+ to pass
+        num_names = len(brand_names)
+        domain_availability = {}
+        available_com_count = 0
+
+        self.logger.info(f"Checking domain availability for {num_names} brand names")
+
+        # Check domains for each brand name
+        for brand_name in brand_names:
+            # Check with prefix variations for better alternatives
+            domain_results = check_domain_availability(
+                brand_name=brand_name,
+                extensions=['.com', '.ai', '.io', '.app', '.co'],
+                include_prefixes=True
+            )
+
+            # Store full results for this brand
+            domain_availability[brand_name] = domain_results
+
+            # Count if .com is available (for validation check)
+            exact_com = f"{brand_name.lower().replace(' ', '').replace('-', '')}.com"
+            if domain_results.get(exact_com, False):
+                available_com_count += 1
+
+        # For trademark checking, use placeholder for now
+        # TODO: Implement real USPTO API checking
+        trademark_results = {name: 'low' for name in brand_names}
+        low_risk_count = num_names  # Assume all are low risk for now
+
+        self.logger.info(
+            f"Validation complete: {available_com_count} .com domains available, "
+            f"{low_risk_count} low-risk trademarks"
+        )
 
         return {
-            'domain_availability': {
-                name: {'.com': True, '.ai': True, '.io': True}
-                for name in brand_names
-            },
-            'trademark_results': {
-                name: 'low' for name in brand_names
-            },
+            'domain_availability': domain_availability,
+            'trademark_results': trademark_results,
             'risk_assessment': {},
-            'low_risk_count': low_risk_count if num_names >= 3 else 3,  # Force pass
-            'available_com_count': available_com_count if num_names >= 5 else 5  # Force pass
+            'low_risk_count': low_risk_count,
+            'available_com_count': available_com_count
         }
 
     def _execute_seo_optimization(self, brand_names: List[str]) -> dict:
