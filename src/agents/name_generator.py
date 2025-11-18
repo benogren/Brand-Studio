@@ -206,7 +206,8 @@ class NameGeneratorAgent:
         industry: str = "general",
         num_names: int = 30,
         feedback_context: Optional[str] = None,
-        previous_names: Optional[List[str]] = None
+        previous_names: Optional[List[str]] = None,
+        user_preferences: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
         Generate brand name candidates based on user brief.
@@ -219,6 +220,7 @@ class NameGeneratorAgent:
             num_names: Number of names to generate (default: 30, min: 20, max: 50)
             feedback_context: Optional feedback from previous iteration (from NameFeedback.to_prompt_context())
             previous_names: Optional list of previously generated names to avoid duplicates
+            user_preferences: Optional user preferences from Memory Bank (preferred industries, personalities, etc.)
 
         Returns:
             List of brand name candidates, each containing:
@@ -289,7 +291,8 @@ class NameGeneratorAgent:
             num_names=num_names,
             feedback_context=feedback_context,
             previous_names=previous_names,
-            rag_examples=rag_examples
+            rag_examples=rag_examples,
+            user_preferences=user_preferences
         )
 
         # Try to use real Vertex AI, fall back to placeholders
@@ -333,7 +336,8 @@ class NameGeneratorAgent:
         num_names: int,
         feedback_context: Optional[str] = None,
         previous_names: Optional[List[str]] = None,
-        rag_examples: Optional[List[Dict[str, Any]]] = None
+        rag_examples: Optional[List[Dict[str, Any]]] = None,
+        user_preferences: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         Format the user brief for the LLM agent.
@@ -347,6 +351,7 @@ class NameGeneratorAgent:
             feedback_context: Optional user feedback from previous iteration
             previous_names: Optional list of previously generated names
             rag_examples: Optional list of similar brand examples from RAG
+            user_preferences: Optional user preferences from Memory Bank
 
         Returns:
             Formatted user brief string
@@ -361,6 +366,38 @@ Generate {num_names} brand name candidates for the following product:
 **Brand Personality:** {brand_personality}
 
 **Industry:** {industry}
+"""
+
+        # Add user preferences from Memory Bank if available
+        if user_preferences:
+            learning_insights = user_preferences.get('learning_insights', {})
+            preferred_industries = user_preferences.get('preferred_industries', [])
+            preferred_personalities = user_preferences.get('preferred_personalities', [])
+
+            if preferred_industries or preferred_personalities or learning_insights:
+                brief += """
+
+=== USER PREFERENCES FROM PAST SESSIONS ===
+
+"""
+                if preferred_industries:
+                    brief += f"**Past Industries:** {', '.join(preferred_industries)}\n"
+
+                if preferred_personalities:
+                    brief += f"**Preferred Brand Personalities:** {', '.join(preferred_personalities)}\n"
+
+                if learning_insights:
+                    if learning_insights.get('liked_naming_strategies'):
+                        strategies = ', '.join(learning_insights['liked_naming_strategies'])
+                        brief += f"**Preferred Naming Strategies:** {strategies}\n"
+
+                    if learning_insights.get('common_themes'):
+                        themes = ', '.join(learning_insights['common_themes'])
+                        brief += f"**Common Themes User Likes:** {themes}\n"
+
+                brief += """
+Use these preferences as context to generate names that align with this user's taste
+and past successful selections. However, prioritize the current brief's requirements.
 """
 
         # Add RAG examples if provided

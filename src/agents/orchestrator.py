@@ -325,9 +325,24 @@ class BrandStudioOrchestrator:
         workflow_start_time = datetime.utcnow()
         self.logger.info("Starting brand creation workflow")
 
+        # Retrieve user preferences from Memory Bank (if enabled)
+        user_preferences = {}
+        if self.memory_bank_client:
+            try:
+                user_preferences = self._retrieve_user_preferences()
+                self.logger.info(
+                    f"Retrieved user preferences: {len(user_preferences.get('preferred_industries', []))} "
+                    f"industries, {len(user_preferences.get('preferred_personalities', []))} personalities"
+                )
+            except Exception as e:
+                self.logger.warning(f"Failed to retrieve user preferences: {e}")
+                user_preferences = {}
+
         # Analyze user brief
         try:
             analysis = self.analyze_user_brief(user_brief)
+            # Enrich analysis with user preferences
+            analysis['user_preferences'] = user_preferences
             # Store analysis for access by sub-methods
             self.current_analysis = analysis
         except Exception as e:
@@ -725,6 +740,9 @@ class BrandStudioOrchestrator:
 
             if name_generator_agent:
                 # Use actual name generator agent
+                # Extract user preferences if available
+                user_prefs = analysis.get('user_preferences', {})
+
                 generated_names = name_generator_agent.generate_names(
                     product_description=analysis.get('product_description', ''),
                     target_audience=analysis.get('target_audience', ''),
@@ -732,7 +750,8 @@ class BrandStudioOrchestrator:
                     industry=analysis.get('industry', 'general'),
                     num_names=30,
                     feedback_context=feedback_context,
-                    previous_names=previous_names
+                    previous_names=previous_names,
+                    user_preferences=user_prefs  # Pass user preferences from Memory Bank
                 )
             else:
                 # Placeholder for testing
@@ -1066,3 +1085,83 @@ class BrandStudioOrchestrator:
             )
             # Don't raise - this is not critical to workflow success
             pass
+
+    def _retrieve_user_preferences(self) -> Dict[str, Any]:
+        """
+        Retrieve user preferences from Memory Bank.
+
+        Returns:
+            Dictionary with user preferences:
+            - preferred_industries: List of industries the user has worked with
+            - preferred_personalities: List of brand personalities the user prefers
+            - past_accepted_names: List of brand names the user has accepted
+            - past_rejected_names: List of brand names the user has rejected
+            - learning_insights: Aggregated insights from past sessions
+        """
+        if not self.memory_bank_client:
+            self.logger.debug("Memory Bank not available, returning empty preferences")
+            return {
+                'preferred_industries': [],
+                'preferred_personalities': [],
+                'past_accepted_names': [],
+                'past_rejected_names': [],
+                'learning_insights': {}
+            }
+
+        self.logger.info(f"Retrieving user preferences for user {self.user_id}")
+
+        try:
+            # Retrieve all preferences for this user
+            all_preferences = self.memory_bank_client.retrieve_user_preferences(
+                user_id=self.user_id
+            )
+
+            # Parse preferences by type
+            industries = []
+            personalities = []
+            accepted_names = []
+            rejected_names = []
+
+            for pref in all_preferences:
+                pref_type = pref.get('preference_type', '')
+                pref_value = pref.get('preference_value', '')
+
+                if pref_type == 'industry' and pref_value not in industries:
+                    industries.append(pref_value)
+                elif pref_type == 'personality' and pref_value not in personalities:
+                    personalities.append(pref_value)
+
+            # Get learning insights (aggregated patterns from past sessions)
+            learning_insights = self.memory_bank_client.get_learning_insights(
+                user_id=self.user_id,
+                limit=20  # Look at last 20 interactions
+            )
+
+            preferences = {
+                'preferred_industries': industries,
+                'preferred_personalities': personalities,
+                'past_accepted_names': accepted_names,
+                'past_rejected_names': rejected_names,
+                'learning_insights': learning_insights
+            }
+
+            self.logger.info(
+                f"Retrieved preferences for {self.user_id}: "
+                f"{len(industries)} industries, {len(personalities)} personalities"
+            )
+
+            return preferences
+
+        except Exception as e:
+            self.logger.error(
+                f"Error retrieving user preferences: {e}",
+                extra={'error_type': type(e).__name__}
+            )
+            # Return empty preferences on error
+            return {
+                'preferred_industries': [],
+                'preferred_personalities': [],
+                'past_accepted_names': [],
+                'past_rejected_names': [],
+                'learning_insights': {}
+            }
