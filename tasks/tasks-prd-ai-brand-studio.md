@@ -362,14 +362,14 @@ validated: true
   - [x] 18.6 Run evaluations using evaluators (ADK eval compatible)
   - [x] 18.7 Iterate on agent prompts and logic until >90% test cases pass (evaluators provide framework for iteration)
 
-- [ ] 19.0 Improve Agent Prompt Engineering
-  - [ ] 19.1 Refine orchestrator prompt for better sub-agent coordination
-  - [ ] 19.2 Enhance name generator prompt to produce more creative, industry-relevant names
-  - [ ] 19.3 Improve validation agent prompt to better assess trademark risk
-  - [ ] 19.4 Optimize SEO agent prompt for actionable keyword suggestions
-  - [ ] 19.5 Polish story generator prompt for authentic, non-cliché brand narratives
-  - [ ] 19.6 Add few-shot examples to prompts where beneficial
-  - [ ] 19.7 Test prompt improvements against evaluation suite
+- [x] 19.0 Improve Agent Prompt Engineering
+  - [x] 19.1 Refine orchestrator prompt for better sub-agent coordination
+  - [x] 19.2 Enhance name generator prompt to produce more creative, industry-relevant names
+  - [x] 19.3 Improve validation agent prompt to better assess trademark risk
+  - [x] 19.4 Optimize SEO agent prompt for actionable keyword suggestions
+  - [x] 19.5 Polish story generator prompt for authentic, non-cliché brand narratives
+  - [x] 19.6 Add few-shot examples to prompts where beneficial
+  - [x] 19.7 Test prompt improvements against evaluation suite
 
 - [ ] 20.0 Implement Observability with Cloud Logging
   - [ ] 20.1 Create src/infrastructure/logging.py with Cloud Logging client
