@@ -25,6 +25,13 @@ try:
 except ImportError:
     VERTEXAI_AVAILABLE = False
 
+# Import RAG vector search
+try:
+    from src.rag.vector_search import VectorSearchClient
+    RAG_AVAILABLE = True
+except ImportError:
+    RAG_AVAILABLE = False
+
 logger = logging.getLogger('brand_studio.name_generator')
 
 
@@ -176,6 +183,21 @@ class NameGeneratorAgent:
         )
         logger.info("Name Generator LlmAgent initialized")
 
+        # Initialize RAG Vector Search client (optional)
+        self.rag_client = None
+        if RAG_AVAILABLE:
+            try:
+                self.rag_client = VectorSearchClient(
+                    project_id=project_id,
+                    location=location
+                )
+                logger.info("RAG Vector Search client initialized successfully")
+            except Exception as e:
+                logger.warning(f"RAG initialization failed: {e}. Will proceed without RAG enhancement.")
+                self.rag_client = None
+        else:
+            logger.info("RAG not available, proceeding without RAG enhancement")
+
     def generate_names(
         self,
         product_description: str,
@@ -245,6 +267,19 @@ class NameGeneratorAgent:
             }
         )
 
+        # Retrieve similar brands from RAG (if available)
+        rag_examples = None
+        if self.rag_client:
+            try:
+                rag_examples = self._retrieve_similar_brands(
+                    product_description=product_description,
+                    industry=industry
+                )
+                logger.info(f"Retrieved {len(rag_examples)} similar brands via RAG")
+            except Exception as e:
+                logger.warning(f"RAG retrieval failed: {e}. Proceeding without RAG enhancement.")
+                rag_examples = None
+
         # Construct the user brief for the agent
         user_brief = self._format_user_brief(
             product_description=product_description,
@@ -253,7 +288,8 @@ class NameGeneratorAgent:
             industry=industry,
             num_names=num_names,
             feedback_context=feedback_context,
-            previous_names=previous_names
+            previous_names=previous_names,
+            rag_examples=rag_examples
         )
 
         # Try to use real Vertex AI, fall back to placeholders
@@ -296,7 +332,8 @@ class NameGeneratorAgent:
         industry: str,
         num_names: int,
         feedback_context: Optional[str] = None,
-        previous_names: Optional[List[str]] = None
+        previous_names: Optional[List[str]] = None,
+        rag_examples: Optional[List[Dict[str, Any]]] = None
     ) -> str:
         """
         Format the user brief for the LLM agent.
@@ -309,6 +346,7 @@ class NameGeneratorAgent:
             num_names: Number of names to generate
             feedback_context: Optional user feedback from previous iteration
             previous_names: Optional list of previously generated names
+            rag_examples: Optional list of similar brand examples from RAG
 
         Returns:
             Formatted user brief string
@@ -323,6 +361,28 @@ Generate {num_names} brand name candidates for the following product:
 **Brand Personality:** {brand_personality}
 
 **Industry:** {industry}
+"""
+
+        # Add RAG examples if provided
+        if rag_examples and len(rag_examples) > 0:
+            brief += f"""
+
+=== SIMILAR SUCCESSFUL BRANDS FOR INSPIRATION ===
+
+Here are {len(rag_examples)} successful brands from similar industries/contexts.
+Use these as inspiration for naming patterns, styles, and strategies:
+
+"""
+            for example in rag_examples[:10]:  # Limit to top 10 examples
+                brand_name = example.get('brand_name', 'Unknown')
+                industry_cat = example.get('industry', 'General')
+                strategy = example.get('naming_strategy', 'Unknown')
+                brief += f"- **{brand_name}** (Industry: {industry_cat}, Strategy: {strategy})\n"
+
+            brief += """
+Analyze these examples to understand successful naming patterns in this space,
+but ensure your generated names are UNIQUE and NOT similar to these examples.
+Use them for inspiration on style and strategy, not for copying.
 """
 
         # Add feedback context if provided
@@ -357,6 +417,56 @@ Please provide {num_names} creative brand names using a mix of naming strategies
 For each name, provide: brand_name, naming_strategy, rationale, tagline, syllables, memorable_score.
 """
         return brief.strip()
+
+    def _retrieve_similar_brands(
+        self,
+        product_description: str,
+        industry: str
+    ) -> List[Dict[str, Any]]:
+        """
+        Retrieve similar brands from RAG vector search.
+
+        Args:
+            product_description: Product description for semantic search
+            industry: Industry category for filtering
+
+        Returns:
+            List of similar brand dictionaries with metadata
+
+        Raises:
+            Exception: If RAG retrieval fails
+        """
+        if not self.rag_client:
+            return []
+
+        try:
+            # Create search query from product description
+            query = f"{industry} {product_description}"
+
+            # Search for similar brands (K=50 as per spec)
+            results = self.rag_client.search(
+                query=query,
+                num_neighbors=50,
+                industry_filter=industry if industry != "general" else None
+            )
+
+            # Convert SearchResult objects to dictionaries
+            brand_examples = []
+            for result in results:
+                brand_examples.append({
+                    'brand_name': result.brand_name,
+                    'industry': result.metadata.get('industry', 'Unknown'),
+                    'naming_strategy': result.metadata.get('naming_strategy', 'Unknown'),
+                    'category': result.metadata.get('category', 'Unknown'),
+                    'distance': result.distance
+                })
+
+            logger.info(f"Retrieved {len(brand_examples)} similar brands from RAG")
+            return brand_examples
+
+        except Exception as e:
+            logger.error(f"RAG retrieval failed: {e}")
+            raise
 
     def _generate_with_vertexai(self, user_brief: str, num_names: int) -> List[Dict[str, Any]]:
         """
