@@ -340,7 +340,7 @@ validated: true
 
 - [ ] 16.0 Implement Workflow Patterns (Parallel, Sequential, Loop)
   - [x] 16.1 Create src/workflows/parallel.py for parallel execution (research + initial name generation)
-  - [ ] 16.2 Create src/workflows/sequential.py for pipeline (generation → validation → SEO → story)
+  - [x] 16.2 Create src/workflows/sequential.py for pipeline (generation → validation → SEO → story)
   - [ ] 16.3 Create src/workflows/loop.py for loop refinement (regenerate if validation fails, max 3 iterations)
   - [ ] 16.4 Update orchestrator.py to use workflow patterns based on stage
   - [ ] 16.5 Add workflow state management and error recovery
