@@ -184,14 +184,14 @@ validated: true
 
 ### Phase 2: Core Features
 
-- [ ] 6.0 Curate Brand Name Dataset
-  - [ ] 6.1 Create data/scripts/curate_brands.py to collect brand names
-  - [ ] 6.2 Scrape/collect 1,000+ brands from Product Hunt (via API or manual curation)
-  - [ ] 6.3 Add 500+ Fortune 500 company names with metadata
-  - [ ] 6.4 Add 500+ Y Combinator startup names
-  - [ ] 6.5 Add 3,000+ additional brands from other sources (TechCrunch, curated lists)
-  - [ ] 6.6 Create data/brand_names.json with metadata schema (brand_name, industry, category, year_founded, naming_strategy, syllables)
-  - [ ] 6.7 Validate dataset completeness (5,000+ brands minimum)
+- [x] 6.0 Curate Brand Name Dataset
+  - [x] 6.1 Create data/scripts/curate_brands.py to collect brand names
+  - [x] 6.2 Scrape/collect 1,000+ brands from Product Hunt (via API or manual curation)
+  - [x] 6.3 Add 500+ Fortune 500 company names with metadata
+  - [x] 6.4 Add 500+ Y Combinator startup names
+  - [x] 6.5 Add 3,000+ additional brands from other sources (TechCrunch, curated lists)
+  - [x] 6.6 Create data/brand_names.json with metadata schema (brand_name, industry, category, year_founded, naming_strategy, syllables)
+  - [x] 6.7 Validate dataset completeness (5,000+ brands minimum)
 
 - [ ] 7.0 Setup Vertex AI Vector Search for RAG
   - [ ] 7.1 Create src/rag/embeddings.py to generate embeddings using text-embedding-004
