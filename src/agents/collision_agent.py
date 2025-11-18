@@ -10,7 +10,6 @@ import logging
 import os
 from typing import Dict, Any, List
 from google.cloud import aiplatform
-from vertexai.preview.generative_models import GenerativeModel
 
 logger = logging.getLogger('brand_studio.collision_agent')
 
@@ -188,12 +187,35 @@ class BrandCollisionAgent:
         # Initialize Vertex AI
         aiplatform.init(project=project_id, location=location)
 
-        # Initialize Gemini model
-        self.model = GenerativeModel(model_name)
+        # Initialize Gen AI client with Vertex AI backend
+        try:
+            from google import genai
+            from google.genai.types import HttpOptions
 
-        logger.info(
-            f"BrandCollisionAgent initialized with model {model_name}"
-        )
+            # Set up environment for Vertex AI
+            os.environ['GOOGLE_CLOUD_PROJECT'] = project_id
+            os.environ['GOOGLE_CLOUD_LOCATION'] = location
+            os.environ['GOOGLE_GENAI_USE_VERTEXAI'] = 'True'
+
+            # Initialize client
+            self.client = genai.Client(
+                http_options=HttpOptions(api_version="v1alpha")
+            )
+            self.use_genai_sdk = True
+            logger.info(
+                f"BrandCollisionAgent initialized with google.genai SDK (model: {model_name})"
+            )
+        except ImportError:
+            logger.warning(
+                "google.genai SDK not available, falling back to vertexai SDK"
+            )
+            # Fallback to old SDK
+            from vertexai.preview.generative_models import GenerativeModel
+            self.model = GenerativeModel(model_name)
+            self.use_genai_sdk = False
+            logger.info(
+                f"BrandCollisionAgent initialized with vertexai SDK (model: {model_name})"
+            )
 
     def analyze_brand_collision(
         self,
@@ -257,15 +279,17 @@ class BrandCollisionAgent:
         Returns:
             Dictionary with search results
         """
-        try:
-            # Use the updated Gemini API with Google Search grounding
-            from google.genai.types import Tool, GoogleSearch
+        # Use the new google.genai SDK if available
+        if self.use_genai_sdk:
+            try:
+                from google.genai.types import (
+                    GenerateContentConfig,
+                    GoogleSearch,
+                    Tool,
+                )
 
-            # Create grounding config
-            google_search_tool = Tool(google_search=GoogleSearch())
-
-            # Perform search with grounding
-            search_prompt = f"""
+                # Perform search with grounding
+                search_prompt = f"""
 Search for "{brand_name}" and analyze what companies, products, or entities exist with this name.
 
 Focus on:
@@ -282,23 +306,34 @@ Provide a summary of the top search results with:
 - Relevance to {industry} industry
 """
 
-            response = self.model.generate_content(
-                search_prompt,
-                tools=[google_search_tool]
-            )
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=search_prompt,
+                    config=GenerateContentConfig(
+                        tools=[Tool(google_search=GoogleSearch())],
+                        temperature=1.0  # Recommended for grounding
+                    )
+                )
 
-            # Extract search results from response
-            search_summary = response.text if hasattr(response, 'text') else str(response)
+                # Extract search results from response
+                search_summary = response.text if hasattr(response, 'text') else str(response)
 
-            return {
-                'query': brand_name,
-                'search_summary': search_summary,
-                'grounding_metadata': {}
-            }
+                logger.info(f"Google Search grounding successful for '{brand_name}'")
 
-        except ImportError:
-            logger.warning("New google.genai API not available, trying vertexai.preview")
-            # Try the preview API
+                return {
+                    'query': brand_name,
+                    'search_summary': search_summary,
+                    'grounding_metadata': {},
+                    'search_method': 'google_search_grounding'
+                }
+
+            except Exception as e:
+                logger.warning(f"Google Search grounding failed: {e}. Using model knowledge only.")
+                # Fallback to model knowledge without live search
+                return self._perform_knowledge_based_search(brand_name, industry)
+
+        # Fallback to old SDK (vertexai)
+        else:
             try:
                 from vertexai.preview.generative_models import Tool
                 from vertexai.preview import grounding
@@ -320,21 +355,19 @@ Provide a summary of the top search results including entity names, types, and i
 
                 search_summary = response.text if hasattr(response, 'text') else str(response)
 
+                logger.info(f"Google Search grounding successful for '{brand_name}' (vertexai SDK)")
+
                 return {
                     'query': brand_name,
                     'search_summary': search_summary,
-                    'grounding_metadata': {}
+                    'grounding_metadata': {},
+                    'search_method': 'google_search_grounding_legacy'
                 }
 
             except Exception as e:
                 logger.warning(f"Google Search grounding failed: {e}. Using model knowledge only.")
                 # Fallback to model knowledge without live search
                 return self._perform_knowledge_based_search(brand_name, industry)
-
-        except Exception as e:
-            logger.warning(f"Google Search grounding failed: {e}. Using model knowledge only.")
-            # Fallback to model knowledge without live search
-            return self._perform_knowledge_based_search(brand_name, industry)
 
     def _perform_knowledge_based_search(
         self,
@@ -365,7 +398,19 @@ If you don't know of any significant entities with this name, state that clearly
 """
 
         try:
-            response = self.model.generate_content(knowledge_prompt)
+            if self.use_genai_sdk:
+                # Use new SDK
+                from google.genai.types import GenerateContentConfig
+
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=knowledge_prompt,
+                    config=GenerateContentConfig(temperature=1.0)
+                )
+            else:
+                # Use old SDK
+                response = self.model.generate_content(knowledge_prompt)
+
             knowledge_summary = response.text if hasattr(response, 'text') else str(response)
 
             return {
@@ -451,7 +496,19 @@ Provide ONLY the JSON output, no additional text.
 
         try:
             # Generate collision analysis
-            response = self.model.generate_content(analysis_prompt)
+            if self.use_genai_sdk:
+                # Use new SDK
+                from google.genai.types import GenerateContentConfig
+
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=analysis_prompt,
+                    config=GenerateContentConfig(temperature=0.7)  # Lower temp for structured output
+                )
+            else:
+                # Use old SDK
+                response = self.model.generate_content(analysis_prompt)
+
             response_text = response.text if hasattr(response, 'text') else str(response)
 
             # Extract JSON from response
