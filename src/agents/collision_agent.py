@@ -170,7 +170,7 @@ class BrandCollisionAgent:
         self,
         project_id: str,
         location: str = "us-central1",
-        model_name: str = "gemini-2.0-flash-exp"
+        model_name: str = "gemini-1.5-flash-002"  # Use 1.5 for search grounding support
     ):
         """
         Initialize the collision detection agent.
@@ -277,12 +277,13 @@ Provide a summary of the top search results with:
 If no significant entities are found, state that clearly.
 """
 
-        # Try the new google_search field first (for Gemini 2.0+)
+        # Use Google Search grounding (works with Gemini 1.5)
         try:
-            from vertexai.generative_models import Tool, GoogleSearch
+            from vertexai.generative_models import Tool, grounding
 
-            # Use the new google_search field for Gemini 2.0+
-            search_tool = Tool(google_search=GoogleSearch())
+            search_tool = Tool.from_google_search_retrieval(
+                grounding.GoogleSearchRetrieval()
+            )
 
             response = self.model.generate_content(
                 search_prompt,
@@ -292,7 +293,7 @@ If no significant entities are found, state that clearly.
 
             search_summary = response.text if hasattr(response, 'text') else str(response)
 
-            logger.info(f"Google Search grounding successful for '{brand_name}' (google_search field)")
+            logger.info(f"Google Search grounding successful for '{brand_name}'")
 
             return {
                 'query': brand_name,
@@ -301,36 +302,10 @@ If no significant entities are found, state that clearly.
                 'search_method': 'google_search_grounding'
             }
 
-        except (ImportError, AttributeError, Exception) as e:
-            # Try the old google_search_retrieval field (for older Gemini models)
-            try:
-                from vertexai.generative_models import Tool, grounding
-
-                search_tool = Tool.from_google_search_retrieval(
-                    grounding.GoogleSearchRetrieval()
-                )
-
-                response = self.model.generate_content(
-                    search_prompt,
-                    tools=[search_tool],
-                    generation_config={"temperature": 1.0}
-                )
-
-                search_summary = response.text if hasattr(response, 'text') else str(response)
-
-                logger.info(f"Google Search grounding successful for '{brand_name}' (google_search_retrieval field)")
-
-                return {
-                    'query': brand_name,
-                    'search_summary': search_summary,
-                    'grounding_metadata': {},
-                    'search_method': 'google_search_grounding_legacy'
-                }
-
-            except Exception as e2:
-                logger.warning(f"Google Search grounding failed: {e2}. Using model knowledge only.")
-                # Fallback to model knowledge without live search
-                return self._perform_knowledge_based_search(brand_name, industry)
+        except Exception as e:
+            logger.warning(f"Google Search grounding failed: {e}. Using model knowledge only.")
+            # Fallback to model knowledge without live search
+            return self._perform_knowledge_based_search(brand_name, industry)
 
     def _perform_knowledge_based_search(
         self,
