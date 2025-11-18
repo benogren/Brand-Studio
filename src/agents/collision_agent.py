@@ -9,7 +9,6 @@ potential naming collisions and brand confusion risks.
 import logging
 import os
 from typing import Dict, Any, List
-from google.cloud import aiplatform
 
 logger = logging.getLogger('brand_studio.collision_agent')
 
@@ -184,17 +183,28 @@ class BrandCollisionAgent:
         self.location = location
         self.model_name = model_name
 
-        # Initialize Vertex AI
-        aiplatform.init(project=project_id, location=location)
+        # Use Google AI Studio API (like your course code) instead of Vertex AI
+        try:
+            from google import genai
+            from google.genai import types
 
-        # Use vertexai SDK (stable and working)
-        from vertexai.generative_models import GenerativeModel
-        self.model = GenerativeModel(model_name)
-        self.use_genai_sdk = False
+            # Get API key from environment
+            api_key = os.environ.get('GOOGLE_API_KEY')
+            if not api_key:
+                raise ValueError("GOOGLE_API_KEY not found in environment")
 
-        logger.info(
-            f"BrandCollisionAgent initialized with vertexai SDK (model: {model_name})"
-        )
+            # Initialize client with API key
+            self.client = genai.Client(api_key=api_key)
+            self.use_genai_client = True
+
+            logger.info(
+                f"BrandCollisionAgent initialized with Google AI Studio API (model: {model_name})"
+            )
+        except Exception as e:
+            logger.warning(f"Google AI Studio API not available: {e}. Using basic model knowledge.")
+            self.client = None
+            self.use_genai_client = False
+            logger.info("BrandCollisionAgent will use basic model knowledge only")
 
     def analyze_brand_collision(
         self,
@@ -277,34 +287,39 @@ Provide a summary of the top search results with:
 If no significant entities are found, state that clearly.
 """
 
-        # Use Google Search grounding (works with Gemini 1.5)
-        try:
-            from vertexai.generative_models import Tool, grounding
+        # Use Google AI Studio API with google_search tool (if available)
+        if self.use_genai_client:
+            try:
+                from google.genai import types
 
-            search_tool = Tool.from_google_search_retrieval(
-                grounding.GoogleSearchRetrieval()
-            )
+                # Use google_search tool (like your course code)
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=search_prompt,
+                    config=types.GenerateContentConfig(
+                        tools=[types.Tool(google_search=types.GoogleSearch())],
+                        temperature=1.0
+                    )
+                )
 
-            response = self.model.generate_content(
-                search_prompt,
-                tools=[search_tool],
-                generation_config={"temperature": 1.0}  # Recommended for grounding
-            )
+                search_summary = response.text if hasattr(response, 'text') else str(response)
 
-            search_summary = response.text if hasattr(response, 'text') else str(response)
+                logger.info(f"Google Search successful for '{brand_name}' (AI Studio API)")
 
-            logger.info(f"Google Search grounding successful for '{brand_name}'")
+                return {
+                    'query': brand_name,
+                    'search_summary': search_summary,
+                    'grounding_metadata': {},
+                    'search_method': 'google_search_ai_studio'
+                }
 
-            return {
-                'query': brand_name,
-                'search_summary': search_summary,
-                'grounding_metadata': {},
-                'search_method': 'google_search_grounding'
-            }
-
-        except Exception as e:
-            logger.warning(f"Google Search grounding failed: {e}. Using model knowledge only.")
-            # Fallback to model knowledge without live search
+            except Exception as e:
+                logger.warning(f"Google Search failed: {e}. Using model knowledge only.")
+                # Fallback to model knowledge
+                return self._perform_knowledge_based_search(brand_name, industry)
+        else:
+            # No client available, use model knowledge
+            logger.info(f"Using model knowledge for '{brand_name}' (no API client)")
             return self._perform_knowledge_based_search(brand_name, industry)
 
     def _perform_knowledge_based_search(
@@ -336,10 +351,21 @@ If you don't know of any significant entities with this name, state that clearly
 """
 
         try:
-            response = self.model.generate_content(
-                knowledge_prompt,
-                generation_config={"temperature": 1.0}
-            )
+            if self.use_genai_client:
+                from google.genai import types
+
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=knowledge_prompt,
+                    config=types.GenerateContentConfig(temperature=1.0)
+                )
+            else:
+                # Fallback - just return basic message
+                return {
+                    'query': brand_name,
+                    'search_summary': f'No analysis available for "{brand_name}"',
+                    'search_method': 'unavailable'
+                }
 
             knowledge_summary = response.text if hasattr(response, 'text') else str(response)
 
@@ -426,10 +452,22 @@ Provide ONLY the JSON output, no additional text.
 
         try:
             # Generate collision analysis
-            response = self.model.generate_content(
-                analysis_prompt,
-                generation_config={"temperature": 0.7}  # Lower temp for structured output
-            )
+            if self.use_genai_client:
+                from google.genai import types
+
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=analysis_prompt,
+                    config=types.GenerateContentConfig(temperature=0.7)
+                )
+            else:
+                # No client available
+                return {
+                    'brand_name': brand_name,
+                    'collision_risk_level': 'unknown',
+                    'risk_summary': 'Analysis unavailable - API client not initialized',
+                    'error': 'No API client'
+                }
 
             response_text = response.text if hasattr(response, 'text') else str(response)
 
