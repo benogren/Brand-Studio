@@ -1,1476 +1,250 @@
 """
 Orchestrator Agent for AI Brand Studio.
 
-This agent coordinates the multi-agent workflow for brand name generation,
-analyzing user briefs and delegating to specialized sub-agents.
+Coordinates the multi-agent brand creation workflow using ADK workflow patterns:
+- SequentialAgent for the main pipeline
+- LoopAgent for iterative refinement
+- AgentTool for sub-agent delegation
+
+Migrated to use real ADK instead of custom orchestration logic.
 """
 
 import logging
-from typing import List, Optional, Dict, Any
-from datetime import datetime
-from google.cloud import aiplatform
+from typing import Dict, Any
+from google.adk.agents import Agent, SequentialAgent, LoopAgent
+from google.adk.tools import AgentTool
 
-# Import Brand Studio logging
-from src.infrastructure.logging import get_logger, track_performance
+from src.infrastructure.logging import get_logger
+from src.agents.base_adk_agent import create_brand_agent
+from src.agents.research_agent import create_research_agent
+from src.agents.name_generator import create_name_generator_agent
+from src.agents.validation_agent import create_validation_agent
+from src.agents.seo_agent import create_seo_agent
+from src.agents.story_agent import create_story_agent
 
-# Try to import real ADK, fall back to mock for Phase 1
-try:
-    from google_genai.adk import LlmAgent
-except ImportError:
-    from src.utils.mock_adk import LlmAgent
-
-# Import feedback system
-from src.feedback import NameFeedback, FeedbackType, NameGenerationSession, collect_feedback_interactive
-
-# Import Memory Bank for long-term user preference storage
-from src.session.memory_bank import get_memory_bank_client
+logger = logging.getLogger('brand_studio.orchestrator')
 
 
-# Orchestrator instruction prompt - Enhanced for better coordination
+# Orchestrator instruction prompt
 ORCHESTRATOR_INSTRUCTION = """
-You are the orchestrator for AI Brand Studio, a multi-agent system that generates
-legally-clear, SEO-optimized brand names with complete brand narratives.
+You are the Brand Studio Orchestrator, coordinating a multi-agent workflow to generate
+complete, validated brand identities.
 
-## YOUR CORE RESPONSIBILITIES
+## YOUR ROLE
 
-### 1. ANALYZE USER'S PRODUCT BRIEF
-Extract and validate these critical elements:
-- **Product Description**: What the product does and its unique value
-- **Target Audience**: Who will use it (demographics, psychographics)
-- **Industry**: Specific market category for context
-- **Brand Personality**: Tone and character (professional, playful, innovative, luxury)
-- **Core Problem**: What pain point does this solve?
-- **Competitive Context**: How it differs from alternatives
+You coordinate specialized agents to create brand identities through a structured workflow:
 
-**Validation Checklist:**
-✓ Product description is clear and specific
-✓ Target audience is well-defined
-✓ Industry category is identified
-✓ Brand personality is specified
-✗ Reject vague or incomplete briefs
+1. **Research Agent**: Analyzes industry trends and competitive landscape
+2. **Name Generator**: Creates 20-50 brand name candidates using RAG
+3. **Validation Agent**: Checks domain/trademark availability and risk
+4. **SEO Agent**: Optimizes for search and creates meta content
+5. **Story Agent**: Generates taglines, narratives, and positioning
 
-### 2. COORDINATE SPECIALIZED SUB-AGENTS
-Execute agents in this proven sequence:
+## WORKFLOW COORDINATION
 
-**STAGE 1: Research (Contextual Foundation)**
-→ Research Agent analyzes industry trends, competitor patterns, naming conventions
-→ Output: Industry insights, naming strategies, competitive landscape
+Your workflow follows this sequence:
+1. Delegate to Research Agent for industry analysis
+2. Use research insights to inform Name Generator
+3. Validate top candidates with Validation Agent
+4. If validation fails, loop back to Name Generator with feedback
+5. Optimize validated names with SEO Agent
+6. Generate brand story with Story Agent
 
-**STAGE 2: Generation (Creative Exploration)**
-→ Name Generator Agent creates 20-50 diverse candidates using RAG retrieval
-→ Output: Brand names with naming strategies, rationales, initial taglines
+## OUTPUT FORMAT
 
-**STAGE 3: Validation (Legal/Technical Verification)**
-→ Validation Agent checks domains (.com, .ai, .io, +7 more) and trademarks (USPTO)
-→ Output: Domain availability, trademark risk levels, legal clearance
+Consolidate all agent outputs into a comprehensive brand identity package:
 
-**STAGE 4: Optimization (if validation passes)**
-→ SEO Optimizer Agent: Analyzes metrics, generates SEO metadata
-→ Story Generator Agent: Creates brand narratives and marketing copy
-→ Output: Complete brand package with content
-
-### 3. QUALITY GATES & ITERATION LOGIC
-Enforce these validation thresholds:
-
-**Minimum Requirements:**
-- ✓ At least 50% of names with LOW trademark risk (min 1 name)
-- ✓ At least 1 name with available domain (any TLD acceptable)
-- ✓ Names are pronounceable (vowel ratio 30-50%)
-- ✓ Names match specified brand personality
-
-**Iteration Strategy (Max 3 loops):**
-- Iteration 1: Generate fresh candidates
-- Iteration 2: Incorporate feedback, adjust naming strategies
-- Iteration 3: Final attempt with relaxed constraints if needed
-- After 3 failures: Present best available options with risk disclosure
-
-### 4. DELIVERABLE STRUCTURE
-Present a comprehensive brand package:
-
-**For Each Approved Name:**
-```
+```json
 {
-  "brand_name": "ClarityHealth",
-  "domain_availability": {
-    ".com": "available",
-    ".ai": "taken",
-    ".io": "available"
+  "brand_identity": {
+    "selected_name": "BrandName",
+    "research_insights": {...},
+    "name_candidates": [...],
+    "validation_results": {...},
+    "seo_optimization": {...},
+    "brand_story": {...}
   },
-  "trademark_risk": "low",
-  "seo_score": 85,
-  "taglines": [
-    "Healthcare Made Clear",
-    "Your Health, Simplified",
-    "Clarity in Every Care Decision"
-  ],
-  "brand_story": "150-300 word narrative...",
-  "hero_copy": "50-100 word landing page copy...",
-  "value_proposition": "20-30 word statement...",
-  "meta_title": "50-60 character SEO title",
-  "meta_description": "150-160 character SEO description"
+  "workflow_status": "complete",
+  "iterations": 1,
+  "recommendations": "..."
 }
 ```
 
-## SUCCESS CRITERIA
-✓ Generated 20-50 name candidates
-✓ Validated legal availability
-✓ Matched brand personality
-✓ Provided complete content package
-✓ Completed in ≤3 iterations
+## IMPORTANT GUIDELINES
 
-## FAILURE HANDLING
-If unable to meet requirements after 3 iterations:
-1. Log specific blockers (e.g., "All names have trademark conflicts")
-2. Present best available options with risk warnings
-3. Suggest alternative approaches (different naming strategies, industries)
-
-Remember: Your goal is end-to-end brand creation, not just name generation. Ensure every deliverable is production-ready.
+1. **Delegate systematically** - Use the defined workflow sequence
+2. **Pass context forward** - Each agent builds on previous results
+3. **Handle failures gracefully** - If validation fails, provide feedback for refinement
+4. **Consolidate results** - Combine all agent outputs into coherent package
+5. **Track progress** - Report workflow status and iterations
 """
 
 
-class BrandStudioOrchestrator:
+def create_brand_pipeline() -> SequentialAgent:
     """
-    Orchestrator agent that coordinates brand creation workflow.
+    Create sequential brand creation pipeline using ADK SequentialAgent.
 
-    Uses Gemini 2.5 Flash Lite for cost-effective coordination of sub-agents.
+    Workflow sequence:
+    Research → Name Generation → Validation → SEO → Story
 
-    NOTE: Phase 1 MVP Implementation
-    This wrapper class provides workflow coordination logic while sub-agents
-    are being developed. In Phase 2, when all sub-agents are functional,
-    orchestration will be fully delegated to self.agent (the LlmAgent) which
-    will use its instruction prompt to coordinate sub-agents through the ADK
-    framework. For Phase 1, we use self.agent for user brief analysis while
-    placeholder methods simulate sub-agent execution.
+    Returns:
+        SequentialAgent configured with all brand creation agents
+
+    Example:
+        >>> pipeline = create_brand_pipeline()
+        >>> # Pipeline can be used in Runner or wrapped in LoopAgent
     """
-
-    def __init__(
-        self,
-        project_id: str,
-        location: str = "us-central1",
-        model_name: str = "gemini-2.5-flash-lite",
-        enable_cloud_logging: bool = True,
-        name_generator_agent = None,
-        enable_interactive_feedback: bool = True,
-        enable_memory_bank: bool = True,
-        user_id: Optional[str] = None
-    ):
-        """
-        Initialize the orchestrator agent.
-
-        Args:
-            project_id: Google Cloud project ID
-            location: Google Cloud region
-            model_name: Gemini model to use (default: gemini-2.5-flash-lite)
-            enable_cloud_logging: Enable Cloud Logging integration
-            name_generator_agent: Optional NameGeneratorAgent instance for actual name generation
-            enable_interactive_feedback: Enable interactive feedback loop (default: True)
-            enable_memory_bank: Enable Memory Bank for long-term user preferences (default: True)
-            user_id: User identifier for Memory Bank storage
-        """
-        self.project_id = project_id
-        self.location = location
-        self.model_name = model_name
-        self.sub_agents: List = []
-        self.name_generator_agent = name_generator_agent
-        self.enable_interactive_feedback = enable_interactive_feedback
-        self.enable_memory_bank = enable_memory_bank
-        self.user_id = user_id or "default_user"
-
-        # Initialize logging with new BrandStudioLogger
-        self.logger = get_logger(project_id=project_id, enable_cloud_logging=enable_cloud_logging)
-        self.logger.log_agent_action(
-            agent_name="orchestrator",
-            action_type="initialize",
-            metadata={
-                'project_id': project_id,
-                'location': location,
-                'model_name': model_name,
-                'has_name_generator': name_generator_agent is not None,
-                'interactive_feedback': enable_interactive_feedback,
-                'memory_bank_enabled': enable_memory_bank,
-                'user_id': self.user_id
-            }
-        )
-
-        # Initialize Memory Bank client if enabled
-        self.memory_bank_client = None
-        if self.enable_memory_bank:
-            try:
-                self.memory_bank_client = get_memory_bank_client(
-                    project_id=project_id,
-                    location=location
-                )
-                self.logger.info(f"Memory Bank initialized for user {self.user_id}")
-            except Exception as e:
-                self.logger.warning(
-                    f"Failed to initialize Memory Bank: {e}. "
-                    "Continuing without long-term memory."
-                )
-                self.memory_bank_client = None
-
-        # Initialize Vertex AI
-        try:
-            aiplatform.init(project=project_id, location=location)
-            self.logger.info("Vertex AI initialized successfully")
-        except Exception as e:
-            self.logger.error(
-                f"Failed to initialize Vertex AI: {e}",
-                extra={'error_type': type(e).__name__}
-            )
-            raise
-
-        # Initialize orchestrator LLM agent
-        self.agent = LlmAgent(
-            name="brand_orchestrator",
-            model=model_name,
-            description="Coordinates brand creation workflow",
-            instruction=ORCHESTRATOR_INSTRUCTION,
-            sub_agents=self.sub_agents
-        )
-        self.logger.info("Orchestrator LlmAgent initialized")
-
-
-    def add_sub_agent(self, agent) -> None:
-        """
-        Add a sub-agent to the orchestrator's workflow.
-
-        Args:
-            agent: Sub-agent instance to add
-        """
-        self.sub_agents.append(agent)
-        self.logger.info(
-            f"Added sub-agent to orchestrator",
-            extra={'agent_type': type(agent).__name__}
-        )
-
-    def analyze_user_brief(self, user_brief: dict) -> dict:
-        """
-        Analyze user's product brief and extract key attributes.
-
-        Args:
-            user_brief: Dictionary containing:
-                - product_description: What the product does
-                - target_audience: Who the product is for
-                - brand_personality: Desired brand personality
-                - industry: Product industry/category
-
-        Returns:
-            Dictionary with analyzed attributes and workflow plan
-
-        Raises:
-            ValueError: If required fields are missing
-        """
-        self.logger.info("Analyzing user brief")
-
-        try:
-            # Extract and validate required fields
-            product_description = user_brief.get('product_description', '')
-            target_audience = user_brief.get('target_audience', '')
-            brand_personality = user_brief.get('brand_personality', 'professional')
-            industry = user_brief.get('industry', 'general')
-
-            if not product_description:
-                self.logger.error("Missing required field: product_description")
-                raise ValueError("product_description is required in user brief")
-
-            # Prepare analysis result
-            analysis = {
-                'product_description': product_description,
-                'target_audience': target_audience,
-                'brand_personality': brand_personality,
-                'industry': industry,
-                'workflow_stages': [
-                    'research',
-                    'name_generation',
-                    'validation',
-                    'seo_optimization',
-                    'story_generation'
-                ]
-            }
-
-            self.logger.info(
-                "User brief analyzed successfully",
-                extra={
-                    'industry': industry,
-                    'brand_personality': brand_personality,
-                    'has_target_audience': bool(target_audience)
-                }
-            )
-
-            return analysis
-
-        except Exception as e:
-            self.logger.error(
-                f"Error analyzing user brief: {e}",
-                extra={'error_type': type(e).__name__}
-            )
-            raise
-
-    def coordinate_workflow(self, user_brief: dict) -> dict:
-        """
-        Coordinate the complete brand creation workflow using sequential execution.
-
-        This implements the MVP sequential workflow pattern:
-        Research → Name Generation → Validation → SEO → Story
-
-        Args:
-            user_brief: User's product brief
-
-        Returns:
-            Dictionary with complete brand package
-        """
-        workflow_start_time = datetime.utcnow()
-        self.logger.info("Starting brand creation workflow")
-
-        # Retrieve user preferences from Memory Bank (if enabled)
-        user_preferences = {}
-        if self.memory_bank_client:
-            try:
-                user_preferences = self._retrieve_user_preferences()
-                self.logger.info(
-                    f"Retrieved user preferences: {len(user_preferences.get('preferred_industries', []))} "
-                    f"industries, {len(user_preferences.get('preferred_personalities', []))} personalities"
-                )
-            except Exception as e:
-                self.logger.warning(f"Failed to retrieve user preferences: {e}")
-                user_preferences = {}
-
-        # Analyze user brief
-        try:
-            analysis = self.analyze_user_brief(user_brief)
-            # Enrich analysis with user preferences
-            analysis['user_preferences'] = user_preferences
-            # Store analysis for access by sub-methods
-            self.current_analysis = analysis
-        except Exception as e:
-            self.logger.error(f"Failed to analyze user brief: {e}")
-            return {
-                'status': 'failed',
-                'error': f"Brief analysis failed: {str(e)}",
-                'failed_stage': 'brief_analysis'
-            }
-
-        # Initialize workflow result with tracking
-        workflow_result = {
-            'user_brief': analysis,
-            'workflow_stages': [],
-            'brand_names': [],
-            'validation_results': {},
-            'seo_data': {},
-            'brand_story': {},
-            'domain_status': {},
-            'trademark_risk': {},
-            'seo_scores': {},
-            'selected_brands': [],
-            'workflow_summary': '',
-            'status': 'initialized',
-            'current_stage': None,
-            'iteration': 0,
-            'start_time': workflow_start_time.isoformat()
-        }
-
-        # Sequential execution with loop refinement (max 3 iterations)
-        max_iterations = 3
-        validation_passed = False
-
-        try:
-            self.logger.info(
-                f"Beginning workflow execution with max {max_iterations} iterations"
-            )
-            while not validation_passed and workflow_result['iteration'] < max_iterations:
-                workflow_result['iteration'] += 1
-                self.logger.info(f"Starting workflow iteration {workflow_result['iteration']}")
-
-                # Stage 1: Research
-                try:
-                    workflow_result['current_stage'] = 'research'
-                    workflow_result['workflow_stages'].append('research')
-                    self.logger.info("Executing research stage")
-                    workflow_result['research_data'] = self._execute_research(analysis)
-                    self.logger.info("Research stage completed")
-                except Exception as e:
-                    self.logger.error(f"Research stage failed: {e}")
-                    raise
-
-                # Stage 2: Name Generation with Interactive Feedback
-                try:
-                    workflow_result['current_stage'] = 'name_generation'
-                    workflow_result['workflow_stages'].append('name_generation')
-                    self.logger.info("Executing name generation stage with feedback")
-
-                    # Use feedback-enabled generation
-                    approved_names, feedback_session = self._execute_name_generation_with_feedback(
-                        analysis=analysis,
-                        research_data=workflow_result['research_data'],
-                        name_generator_agent=self.name_generator_agent,
-                        max_feedback_iterations=3,
-                        enable_feedback=self.enable_interactive_feedback
-                    )
-
-                    # Store approved names (with full metadata)
-                    workflow_result['brand_names_full'] = approved_names
-
-                    # Extract just brand name strings for validation
-                    workflow_result['brand_names'] = [
-                        name['brand_name'] if isinstance(name, dict) else name
-                        for name in approved_names
-                    ]
-
-                    # Store feedback session (both summary and full object for Memory Bank)
-                    if feedback_session:
-                        workflow_result['feedback_session'] = {
-                            'session_id': feedback_session.session_id,
-                            'iterations': feedback_session.iteration,
-                            'approved_names': feedback_session.approved_names,
-                            'feedback_count': len(feedback_session.feedback_history)
-                        }
-                        # Store full session object for Memory Bank extraction
-                        workflow_result['feedback_session_full'] = feedback_session
-
-                    self.logger.info(
-                        f"Name generation completed: {len(workflow_result['brand_names'])} names approved"
-                    )
-                except Exception as e:
-                    self.logger.error(f"Name generation stage failed: {e}")
-                    raise
-
-                # Check if names were generated
-                if not workflow_result['brand_names']:
-                    self.logger.error("No brand names generated")
-                    raise ValueError("No brand names generated")
-
-                # Stage 3: Validation
-                try:
-                    workflow_result['current_stage'] = 'validation'
-                    workflow_result['workflow_stages'].append('validation')
-                    self.logger.info("Executing validation stage")
-                    workflow_result['validation_results'] = self._execute_validation(
-                        workflow_result['brand_names']
-                    )
-                    self.logger.info("Validation stage completed")
-                except Exception as e:
-                    self.logger.error(f"Validation stage failed: {e}")
-                    raise
-
-                # Check validation results
-                validation_passed = self._check_validation_passed(
-                    workflow_result['validation_results']
-                )
-
-                if not validation_passed:
-                    self.logger.warning(
-                        f"Validation failed in iteration {workflow_result['iteration']}"
-                    )
-                    if workflow_result['iteration'] < max_iterations:
-                        # Log iteration and continue loop
-                        workflow_result['workflow_stages'].append(
-                            f'validation_failed_iteration_{workflow_result["iteration"]}'
-                        )
-                        self.logger.info("Retrying name generation...")
-                        continue
-                    else:
-                        # Max iterations reached
-                        self.logger.error(
-                            f"Validation failed after {max_iterations} iterations"
-                        )
-                        workflow_result['status'] = 'validation_failed'
-                        workflow_result['error'] = (
-                            'Validation failed after maximum iterations'
-                        )
-                        workflow_result['end_time'] = datetime.utcnow().isoformat()
-                        return workflow_result
-                else:
-                    self.logger.info("Validation passed")
-
-                    # Interactive post-validation menu (if feedback is enabled)
-                    if self.enable_interactive_feedback:
-                        from src.feedback import collect_post_validation_choice
-
-                        # Prepare validated names with full metadata
-                        validated_names_with_metadata = []
-                        for name_dict in workflow_result['brand_names_full']:
-                            brand_name = name_dict.get('brand_name')
-                            # Add validation results to each name
-                            name_with_validation = name_dict.copy()
-                            if brand_name in workflow_result['validation_results'].get('domain_availability', {}):
-                                name_with_validation['domain_status'] = workflow_result['validation_results']['domain_availability'][brand_name]
-                            if brand_name in workflow_result['validation_results'].get('trademark_results', {}):
-                                name_with_validation['trademark_risk'] = workflow_result['validation_results']['trademark_results'][brand_name]
-                            validated_names_with_metadata.append(name_with_validation)
-
-                        # Display validation results first
-                        self._display_validation_results(
-                            validated_names_with_metadata,
-                            workflow_result['validation_results']
-                        )
-
-                        # Collect user choice
-                        post_validation_choice = collect_post_validation_choice(validated_names_with_metadata)
-
-                        if post_validation_choice['choice'] == 'regenerate':
-                            # User wants completely new names - restart loop
-                            self.logger.info("User chose to regenerate new names")
-                            workflow_result['workflow_stages'].append('user_requested_regenerate')
-                            # Reset feedback history for fresh start
-                            if workflow_result['iteration'] < max_iterations:
-                                validation_passed = False  # Reset to continue loop
-                                continue
-                            else:
-                                self.logger.warning("Max iterations reached, proceeding anyway")
-
-                        elif post_validation_choice['choice'] == 'feedback':
-                            # User wants to refine with feedback - restart loop
-                            self.logger.info("User chose to refine names with feedback")
-                            workflow_result['workflow_stages'].append('user_requested_feedback')
-
-                            # Store feedback for next iteration
-                            feedback = post_validation_choice['feedback']
-                            if 'feedback_session_full' in workflow_result:
-                                workflow_result['feedback_session_full'].add_feedback(feedback)
-
-                            if workflow_result['iteration'] < max_iterations:
-                                validation_passed = False  # Reset to continue loop
-                                continue
-                            else:
-                                self.logger.warning("Max iterations reached, proceeding anyway")
-
-                        elif post_validation_choice['choice'] == 'narrative':
-                            # User selected names for narrative generation
-                            self.logger.info(f"User selected {len(post_validation_choice['selected_names'])} names for narrative")
-                            workflow_result['selected_for_narrative'] = post_validation_choice['selected_names']
-                            # Break out of validation loop and proceed to narrative generation
-                            break
-                    else:
-                        # Non-interactive mode - proceed automatically
-                        self.logger.info("Proceeding to content generation")
-                        break
-
-            # Validation passed - proceed to content generation
-            # Stage 4: SEO Optimization
-            try:
-                workflow_result['current_stage'] = 'seo_optimization'
-                workflow_result['workflow_stages'].append('seo_optimization')
-                self.logger.info("Executing SEO optimization stage")
-                workflow_result['seo_data'] = self._execute_seo_optimization(
-                    workflow_result['brand_names']
-                )
-                self.logger.info("SEO optimization completed")
-            except Exception as e:
-                self.logger.error(f"SEO optimization stage failed: {e}")
-                raise
-
-            # Stage 5: Brand Narrative Generation
-            try:
-                workflow_result['current_stage'] = 'narrative_generation'
-                workflow_result['workflow_stages'].append('narrative_generation')
-                self.logger.info("Executing brand narrative generation stage")
-
-                # Determine which names to generate narratives for
-                if 'selected_for_narrative' in workflow_result:
-                    # User selected specific names
-                    selected_names_data = workflow_result['selected_for_narrative']
-                    self.logger.info(f"Generating narratives for {len(selected_names_data)} user-selected names")
-                else:
-                    # Auto-select top brand (backward compatibility)
-                    top_brand = self._select_top_brand(
-                        workflow_result['brand_names'],
-                        workflow_result['validation_results'],
-                        workflow_result['seo_data']
-                    )
-                    self.logger.info(f"Auto-selected top brand: {top_brand}")
-                    # Find the full metadata for this brand
-                    selected_names_data = [
-                        name for name in workflow_result['brand_names_full']
-                        if name.get('brand_name') == top_brand
-                    ]
-
-                # Generate narratives for all selected names
-                workflow_result['brand_narratives'] = []
-                for name_data in selected_names_data:
-                    brand_name = name_data.get('brand_name')
-                    self.logger.info(f"Generating narrative for {brand_name}")
-
-                    narrative = self._execute_narrative_generation(
-                        brand_name,
-                        analysis
-                    )
-
-                    # Combine name data with narrative
-                    complete_narrative = {
-                        'brand_name': brand_name,
-                        'naming_strategy': name_data.get('naming_strategy'),
-                        'original_tagline': name_data.get('tagline'),
-                        'narrative_taglines': narrative.get('taglines', []),
-                        'brand_story': narrative.get('brand_story', ''),
-                        'value_proposition': narrative.get('value_proposition', ''),
-                        'domain_status': name_data.get('domain_status', {}),
-                        'trademark_risk': name_data.get('trademark_risk', 'unknown')
-                    }
-
-                    workflow_result['brand_narratives'].append(complete_narrative)
-
-                self.logger.info(f"Generated {len(workflow_result['brand_narratives'])} brand narratives")
-
-                # For backward compatibility, also store first narrative as brand_story
-                if workflow_result['brand_narratives']:
-                    workflow_result['brand_story'] = {
-                        'taglines': workflow_result['brand_narratives'][0]['narrative_taglines'],
-                        'brand_story': workflow_result['brand_narratives'][0]['brand_story'],
-                        'value_proposition': workflow_result['brand_narratives'][0]['value_proposition']
-                    }
-
-            except Exception as e:
-                self.logger.error(f"Narrative generation stage failed: {e}")
-                raise
-
-            # Mark workflow as completed and populate output fields
-            workflow_result['current_stage'] = 'completed'
-            workflow_result['status'] = 'completed'
-
-            # Set selected_brand (first narrative's name, or None)
-            if workflow_result.get('brand_narratives'):
-                workflow_result['selected_brand'] = workflow_result['brand_narratives'][0]['brand_name']
-            else:
-                workflow_result['selected_brand'] = None
-
-            # Populate domain_status from validation results
-            workflow_result['domain_status'] = workflow_result['validation_results'].get(
-                'domain_availability', {}
-            )
-
-            # Populate trademark_risk from validation results
-            workflow_result['trademark_risk'] = workflow_result['validation_results'].get(
-                'trademark_results', {}
-            )
-
-            # Populate seo_scores from SEO data
-            workflow_result['seo_scores'] = workflow_result['seo_data'].get('seo_scores', {})
-
-            # Populate selected_brands from narratives (instead of legacy single brand)
-            workflow_result['selected_brands'] = []
-            if workflow_result.get('brand_narratives'):
-                for narrative in workflow_result['brand_narratives']:
-                    brand_name = narrative['brand_name']
-                    workflow_result['selected_brands'].append({
-                        'brand_name': brand_name,
-                        'domain_status': workflow_result['domain_status'].get(brand_name, {}),
-                        'trademark_risk': workflow_result['trademark_risk'].get(brand_name, 'unknown'),
-                        'seo_score': workflow_result['seo_scores'].get(brand_name, 0),
-                        'taglines': narrative.get('narrative_taglines', []),
-                        'brand_story': narrative.get('brand_story', ''),
-                        'value_proposition': narrative.get('value_proposition', '')
-                    })
-
-            # Generate workflow summary
-            feedback_info = ""
-            if 'feedback_session' in workflow_result:
-                feedback_info = (
-                    f"User provided {workflow_result['feedback_session']['feedback_count']} "
-                    f"feedback iteration(s). "
-                )
-
-            # Build summary based on what was generated
-            if workflow_result.get('brand_narratives'):
-                narrative_count = len(workflow_result['brand_narratives'])
-                narrative_names = ', '.join([n['brand_name'] for n in workflow_result['brand_narratives']])
-                selected_info = f"Generated {narrative_count} brand narrative(s) for: {narrative_names}"
-            else:
-                selected_info = f"Selected: {workflow_result.get('selected_brand', 'None')}"
-
-            workflow_result['workflow_summary'] = (
-                f"Completed {len(workflow_result['workflow_stages'])} stages "
-                f"in {workflow_result['iteration']} validation iteration(s). "
-                f"{feedback_info}"
-                f"Generated {len(workflow_result['brand_names'])} brand names. "
-                f"{selected_info}"
-            )
-
-            workflow_result['end_time'] = datetime.utcnow().isoformat()
-
-            # Calculate total duration
-            duration = (
-                datetime.fromisoformat(workflow_result['end_time']) -
-                datetime.fromisoformat(workflow_result['start_time'])
-            ).total_seconds()
-
-            self.logger.info(
-                f"Workflow completed successfully in {duration:.2f} seconds",
-                extra={
-                    'duration_seconds': duration,
-                    'total_iterations': workflow_result['iteration'],
-                    'stages_executed': len(workflow_result['workflow_stages'])
-                }
-            )
-
-            # Store user preferences in Memory Bank if enabled
-            if self.memory_bank_client:
-                try:
-                    self._store_user_preferences(
-                        analysis=analysis,
-                        workflow_result=workflow_result
-                    )
-                except Exception as e:
-                    self.logger.warning(
-                        f"Failed to store user preferences in Memory Bank: {e}"
-                    )
-
-        except Exception as e:
-            workflow_result['status'] = 'failed'
-            workflow_result['error'] = str(e)
-            workflow_result['failed_stage'] = workflow_result.get('current_stage', 'unknown')
-            workflow_result['end_time'] = datetime.utcnow().isoformat()
-
-            self.logger.error(
-                f"Workflow failed at stage '{workflow_result['failed_stage']}': {e}",
-                extra={
-                    'error_type': type(e).__name__,
-                    'failed_stage': workflow_result['failed_stage'],
-                    'iteration': workflow_result['iteration']
-                },
-                exc_info=True
-            )
-
-        return workflow_result
-
-    def _check_validation_passed(self, validation_results: dict) -> bool:
-        """
-        Check if validation results meet minimum requirements.
-
-        Requirements:
-        - At least 50% of names with low trademark risk (minimum 1)
-        - At least 1 name with .com domain available OR any available domain extensions
-
-        Args:
-            validation_results: Validation results dictionary
-
-        Returns:
-            True if validation passed, False otherwise
-        """
-        # Count low-risk trademarks
-        low_risk_count = validation_results.get('low_risk_count', 0)
-
-        # Count available .com domains
-        available_com_count = validation_results.get('available_com_count', 0)
-
-        # Get total number of names validated
-        domain_availability = validation_results.get('domain_availability', {})
-        total_names = len(domain_availability)
-
-        # Calculate minimum thresholds based on number of selected names
-        min_low_risk = max(1, total_names // 2)  # At least 50% or 1
-        min_domains = 1  # At least 1 domain available
-
-        # Check if we have ANY available domains (not just .com)
-        any_domains_available = any(
-            any(avail for avail in domains.values())
-            for domains in domain_availability.values()
-        )
-
-        # Check requirements
-        has_enough_low_risk = low_risk_count >= min_low_risk
-        has_enough_domains = available_com_count >= min_domains or any_domains_available
-
-        self.logger.info(
-            f"Validation check: {low_risk_count}/{total_names} low-risk (need {min_low_risk}), "
-            f"{available_com_count} .com available (need {min_domains}), "
-            f"any domains: {any_domains_available}"
-        )
-
-        return has_enough_low_risk and has_enough_domains
-
-    def _select_top_brand(
-        self,
-        brand_names: List[str],
-        validation_results: dict,
-        seo_data: dict
-    ) -> Optional[str]:
-        """
-        Select the top brand name based on validation and SEO scores.
-
-        Args:
-            brand_names: List of brand names
-            validation_results: Validation results
-            seo_data: SEO optimization data
-
-        Returns:
-            Selected brand name or None
-        """
-        if not brand_names:
-            return None
-
-        # For MVP, select first brand with low risk and available .com
-        # In Phase 2, this will use scoring algorithm
-        return brand_names[0] if brand_names else None
-
-    def _execute_research(self, analysis: dict) -> dict:
-        """Execute research stage (placeholder)."""
-        return {
-            'industry_trends': [],
-            'competitor_names': [],
-            'naming_patterns': []
-        }
-
-    def _execute_name_generation_with_feedback(
-        self,
-        analysis: dict,
-        research_data: dict,
-        name_generator_agent,
-        max_feedback_iterations: int = 3,
-        enable_feedback: bool = True
-    ) -> tuple[List[Dict[str, Any]], Optional[NameGenerationSession]]:
-        """
-        Execute name generation with interactive feedback loop.
-
-        Args:
-            analysis: User brief analysis
-            research_data: Research data from research stage
-            name_generator_agent: NameGeneratorAgent instance
-            max_feedback_iterations: Maximum feedback iterations allowed
-            enable_feedback: Enable interactive feedback (False for automated workflows)
-
-        Returns:
-            Tuple of (approved_names, session)
-            - approved_names: List of name dictionaries that user approved
-            - session: NameGenerationSession with feedback history (or None if disabled)
-        """
-        import uuid
-
-        # Create session to track feedback iterations
-        if enable_feedback:
-            session = NameGenerationSession(
-                session_id=str(uuid.uuid4()),
-                brief=analysis.get('product_description', ''),
-                max_iterations=max_feedback_iterations
-            )
-        else:
-            session = None
-
-        feedback_context = None
-        previous_names = []
-        approved_names = None
-        liked_names_to_keep = []  # Track names user liked from previous iterations
-
-        # Feedback loop
-        while session is None or (not session.is_complete() and session.has_iterations_remaining()):
-            # Generate names
-            self.logger.info(
-                f"Generating names (iteration {session.iteration + 1 if session else 1})"
-            )
-
-            if name_generator_agent:
-                # Use actual name generator agent
-                # Extract user preferences if available
-                user_prefs = analysis.get('user_preferences', {})
-
-                generated_names = name_generator_agent.generate_names(
-                    product_description=analysis.get('product_description', ''),
-                    target_audience=analysis.get('target_audience', ''),
-                    brand_personality=analysis.get('brand_personality', 'professional'),
-                    industry=analysis.get('industry', 'general'),
-                    num_names=30,
-                    feedback_context=feedback_context,
-                    previous_names=previous_names,
-                    user_preferences=user_prefs  # Pass user preferences from Memory Bank
-                )
-            else:
-                # Placeholder for testing
-                generated_names = [
-                    {
-                        'brand_name': f"Brand{i}",
-                        'naming_strategy': 'descriptive',
-                        'rationale': 'Placeholder name',
-                        'tagline': 'Placeholder tagline',
-                        'syllables': 2,
-                        'memorable_score': 7
-                    }
-                    for i in range(1, 31)
-                ]
-
-            # Extract just the brand names for feedback display
-            brand_names = [name['brand_name'] for name in generated_names]
-
-            # Merge with liked names from previous iterations
-            all_generated_names = generated_names.copy()
-            if liked_names_to_keep:
-                # Add liked names from previous iterations to the current batch
-                all_generated_names = liked_names_to_keep + generated_names
-                all_brand_names = [name['brand_name'] for name in all_generated_names]
-            else:
-                all_brand_names = brand_names
-
-            # Record generation
-            if session:
-                session.add_generation(all_brand_names)
-
-            # Collect user feedback (if enabled)
-            if enable_feedback:
-                feedback = collect_feedback_interactive(
-                    names=all_brand_names,
-                    iteration=session.iteration,
-                    max_iterations=session.max_iterations
-                )
-                session.add_feedback(feedback)
-
-                # Handle feedback
-                if feedback.feedback_type == FeedbackType.APPROVE:
-                    # User approved - select names and exit loop
-                    selected_names = feedback.selected_names or all_brand_names[:10]
-
-                    # Find full name dictionaries for selected names
-                    approved_names = [
-                        name for name in all_generated_names
-                        if name['brand_name'] in selected_names
-                    ]
-
-                    session.approve(selected_names)
-                    self.logger.info(f"User approved {len(approved_names)} names")
-                    break
-
-                elif feedback.feedback_type == FeedbackType.REFINE:
-                    # User wants to refine - prepare feedback context
-                    feedback_context = feedback.to_prompt_context()
-                    previous_names.extend(brand_names)
-
-                    # Preserve liked names from this iteration
-                    if feedback.liked_names:
-                        # Find full name dictionaries for liked names
-                        liked_name_dicts = [
-                            name for name in all_generated_names
-                            if name['brand_name'] in feedback.liked_names
-                        ]
-                        # Add to kept names (avoiding duplicates)
-                        for liked in liked_name_dicts:
-                            if liked not in liked_names_to_keep:
-                                liked_names_to_keep.append(liked)
-                        self.logger.info(f"Keeping {len(liked_name_dicts)} liked names for next iteration")
-
-                    self.logger.info("User requested refinement, regenerating with feedback")
-
-                elif feedback.feedback_type == FeedbackType.REGENERATE:
-                    # User wants completely fresh batch
-                    feedback_context = feedback.additional_feedback
-                    previous_names = []  # Don't carry over previous names
-                    self.logger.info("User requested fresh regeneration")
-            else:
-                # No feedback - approve all names and exit
-                approved_names = generated_names
-                break
-
-        # If loop exited without approval (max iterations reached), use last batch
-        if approved_names is None:
-            self.logger.warning(
-                f"Max feedback iterations ({max_feedback_iterations}) reached without approval"
-            )
-            approved_names = generated_names[:10]  # Default to top 10
-            if session:
-                session.approve([name['brand_name'] for name in approved_names])
-
-        return approved_names, session
-
-    def _execute_name_generation(
-        self,
-        analysis: dict,
-        research_data: dict
-    ) -> List[str]:
-        """Execute name generation stage (placeholder)."""
-        # Placeholder: Will be implemented in Phase 2 with Name Generator Agent
-        # For MVP testing, return sample brand names (min 20 as per PRD)
-        return [
-            f"Brand{i}" for i in range(1, 21)
+    logger.info("Creating brand creation pipeline with SequentialAgent")
+
+    # Create all agents in the pipeline
+    research_agent = create_research_agent()
+    name_agent = create_name_generator_agent()
+    validation_agent = create_validation_agent()
+    seo_agent = create_seo_agent()
+    story_agent = create_story_agent()
+
+    # Create sequential pipeline
+    pipeline = SequentialAgent(
+        name="BrandCreationPipeline",
+        sub_agents=[
+            research_agent,
+            name_agent,
+            validation_agent,
+            seo_agent,
+            story_agent
         ]
+    )
 
-    def _execute_validation(self, brand_names: List[str]) -> dict:
-        """Execute validation stage with domain, trademark, and collision checking."""
-        from src.tools.domain_checker import check_domain_availability
-        from src.tools.trademark_checker import search_trademarks_uspto
-        from src.agents.collision_agent import BrandCollisionAgent
-
-        num_names = len(brand_names)
-        domain_availability = {}
-        available_com_count = 0
-
-        self.logger.info(f"Checking domain availability for {num_names} brand names")
-
-        # Check domains for each brand name
-        for brand_name in brand_names:
-            # Check with prefix variations for better alternatives
-            domain_results = check_domain_availability(
-                brand_name=brand_name,
-                extensions=['.com', '.ai', '.io', '.app', '.co'],
-                include_prefixes=True
-            )
-
-            # Store full results for this brand
-            domain_availability[brand_name] = domain_results
-
-            # Count if .com is available (for validation check)
-            exact_com = f"{brand_name.lower().replace(' ', '').replace('-', '')}.com"
-            if domain_results.get(exact_com, False):
-                available_com_count += 1
-
-        # Trademark checking with USPTO
-        trademark_results = {}
-        low_risk_count = 0
-
-        self.logger.info(f"Checking trademarks for {num_names} brand names")
-
-        for brand_name in brand_names:
-            tm_result = search_trademarks_uspto(brand_name=brand_name)
-            risk_level = tm_result['risk_level']
-            trademark_results[brand_name] = risk_level
-
-            if risk_level == 'low':
-                low_risk_count += 1
-
-        # Brand collision detection with web search (optional, non-blocking)
-        collision_results = {}
-        try:
-            self.logger.info(f"Checking brand collisions for {num_names} brand names")
-
-            # Initialize collision agent
-            collision_agent = BrandCollisionAgent(
-                project_id=self.project_id,
-                location=self.location
-            )
-
-            # Get industry and product description from analysis
-            industry = self.current_analysis.get('industry', 'general')
-            product_description = self.current_analysis.get('product_description', '')
-
-            for brand_name in brand_names:
-                try:
-                    collision_analysis = collision_agent.analyze_brand_collision(
-                        brand_name=brand_name,
-                        industry=industry,
-                        product_description=product_description
-                    )
-                    collision_results[brand_name] = collision_analysis
-                    self.logger.info(
-                        f"Collision check for '{brand_name}': "
-                        f"{collision_analysis.get('collision_risk_level', 'unknown')}"
-                    )
-                except Exception as e:
-                    self.logger.warning(
-                        f"Collision check failed for '{brand_name}': {e}"
-                    )
-                    collision_results[brand_name] = {
-                        'collision_risk_level': 'unknown',
-                        'risk_summary': 'Collision analysis unavailable',
-                        'error': str(e)
-                    }
-        except Exception as e:
-            # If collision agent fails to initialize, log warning and continue
-            self.logger.warning(
-                f"Collision detection agent unavailable: {e}. "
-                "Continuing validation without collision analysis."
-            )
-            # Set all collision results to unknown
-            for brand_name in brand_names:
-                collision_results[brand_name] = {
-                    'collision_risk_level': 'unknown',
-                    'risk_summary': 'Collision analysis unavailable',
-                    'note': 'Feature temporarily unavailable'
-                }
-
-        self.logger.info(
-            f"Validation complete: {available_com_count} .com domains available, "
-            f"{low_risk_count} low-risk trademarks"
-        )
-
-        return {
-            'domain_availability': domain_availability,
-            'trademark_results': trademark_results,
-            'collision_results': collision_results,
-            'risk_assessment': {},
-            'low_risk_count': low_risk_count,
-            'available_com_count': available_com_count
-        }
-
-    def _execute_seo_optimization(self, brand_names: List[str]) -> dict:
-        """Execute SEO optimization stage with real SEO agent."""
-        from src.agents.seo_agent import SEOAgent
-
-        # Get product description from analysis (passed through workflow_result)
-        product_description = self.current_analysis.get('product_description', '')
-        industry = self.current_analysis.get('industry', 'general')
-
-        # Initialize SEO agent
-        seo_agent = SEOAgent(
-            project_id=self.project_id,
-            location=self.location
-        )
-
-        seo_scores = {}
-        meta_titles = {}
-        meta_descriptions = {}
-        all_seo_data = {}
-
-        self.logger.info(f"Optimizing SEO for {len(brand_names)} brand names")
-
-        for brand_name in brand_names:
-            seo_result = seo_agent.optimize_brand_seo(
-                brand_name=brand_name,
-                product_description=product_description,
-                industry=industry
-            )
-
-            seo_scores[brand_name] = seo_result['seo_score']
-            meta_titles[brand_name] = seo_result['meta_title']
-            meta_descriptions[brand_name] = seo_result['meta_description']
-            all_seo_data[brand_name] = seo_result
-
-        self.logger.info("SEO optimization completed for all names")
-
-        return {
-            'seo_scores': seo_scores,
-            'meta_titles': meta_titles,
-            'meta_descriptions': meta_descriptions,
-            'detailed_seo': all_seo_data
-        }
-
-    def _display_validation_results(
-        self,
-        validated_names: List[Dict[str, Any]],
-        validation_results: Dict[str, Any]
-    ) -> None:
-        """
-        Display validation results for user review.
-
-        Args:
-            validated_names: List of validated name dictionaries with metadata
-            validation_results: Validation results from validation agent
-        """
-        print("\n" + "=" * 70)
-        print("VALIDATION RESULTS")
-        print("=" * 70)
-
-        domain_availability = validation_results.get('domain_availability', {})
-        trademark_results = validation_results.get('trademark_results', {})
-        collision_results = validation_results.get('collision_results', {})
-
-        for i, name_data in enumerate(validated_names, 1):
-            brand_name = name_data.get('brand_name', 'Unknown')
-            print(f"\n{i}. {brand_name}")
-            print(f"   Strategy: {name_data.get('naming_strategy', 'N/A')}")
-            print(f"   Tagline: \"{name_data.get('tagline', 'N/A')}\"")
-
-            # Domain availability
-            if brand_name in domain_availability:
-                domains = domain_availability[brand_name]
-                available = [ext for ext, avail in domains.items() if avail]
-                if available:
-                    print(f"   ✓ Domains Available: {', '.join(available)}")
-                else:
-                    print(f"   ✗ Domains Available: None")
-
-            # Trademark risk
-            if brand_name in trademark_results:
-                risk = trademark_results[brand_name]
-                risk_icon = "✓" if risk == "low" else ("⚠" if risk == "medium" else "✗")
-                print(f"   {risk_icon} Trademark Risk: {risk.upper()}")
-
-            # Brand collision risk
-            if brand_name in collision_results:
-                collision = collision_results[brand_name]
-                collision_risk = collision.get('collision_risk_level', 'unknown')
-                risk_summary = collision.get('risk_summary', 'No summary available')
-
-                # Icon based on collision risk
-                if collision_risk == 'none':
-                    collision_icon = "✓"
-                elif collision_risk == 'low':
-                    collision_icon = "✓"
-                elif collision_risk == 'medium':
-                    collision_icon = "⚠"
-                elif collision_risk == 'high':
-                    collision_icon = "✗"
-                else:
-                    collision_icon = "?"
-
-                print(f"   {collision_icon} Market Collision: {collision_risk.upper()}")
-                print(f"      → {risk_summary}")
-
-                # Show error details if present
-                if 'error' in collision and collision_risk == 'unknown':
-                    error_msg = collision.get('error', 'Unknown error')
-                    print(f"      ℹ️  Note: Collision analysis unavailable")
-                    # Don't show technical error to end users, just note it's unavailable
-
-                # Show recommendation if available
-                recommendation = collision.get('recommendation', '')
-                if recommendation:
-                    rec_text = recommendation.upper()
-                    if recommendation == 'avoid':
-                        print(f"      ⛔ Recommendation: AVOID")
-                    elif recommendation == 'caution':
-                        print(f"      ⚠️  Recommendation: USE WITH CAUTION")
-                    elif recommendation == 'proceed':
-                        print(f"      ✅ Recommendation: PROCEED")
-
-        print("\n" + "=" * 70)
-
-    def _execute_narrative_generation(
-        self,
-        selected_name: Optional[str],
-        analysis: dict
-    ) -> dict:
-        """
-        Execute brand narrative generation with Story agent.
-
-        Generates:
-        - 3-5 tagline options (5-8 words each)
-        - Brand story (150-300 words)
-        - Value proposition statement (20-30 words)
-
-        Args:
-            selected_name: Brand name to generate narrative for
-            analysis: User brief analysis
-
-        Returns:
-            Dictionary with taglines, brand_story, and value_proposition
-        """
-        from src.agents.story_agent import StoryAgent
-
-        if not selected_name:
-            self.logger.warning("No brand name selected for narrative generation")
-            return {}
-
-        # Initialize story agent
-        story_agent = StoryAgent(
-            project_id=self.project_id,
-            location=self.location
-        )
-
-        self.logger.info(f"Generating brand narrative for {selected_name}")
-
-        # Generate narrative content
-        narrative_result = story_agent.generate_brand_story(
-            brand_name=selected_name,
-            product_description=analysis.get('product_description', ''),
-            brand_personality=analysis.get('brand_personality', 'professional'),
-            target_audience=analysis.get('target_audience', '')
-        )
-
-        self.logger.info(f"Brand narrative generated successfully for {selected_name}")
-
-        return narrative_result
-
-    def _store_user_preferences(
-        self,
-        analysis: Dict[str, Any],
-        workflow_result: Dict[str, Any]
-    ) -> None:
-        """
-        Store user preferences in Memory Bank for long-term learning.
-
-        Stores:
-        - Industry preferences
-        - Brand personality preferences
-        - Accepted brand names (from approved names)
-        - Rejected brand names (from feedback)
-        - Naming strategy preferences (from feedback)
-
-        Args:
-            analysis: User brief analysis
-            workflow_result: Complete workflow result
-        """
-        if not self.memory_bank_client:
-            return
-
-        self.logger.info(f"Storing user preferences for user {self.user_id}")
-
-        try:
-            # Store industry preference
-            industry = analysis.get('industry', 'general')
-            self.memory_bank_client.store_user_preference(
-                user_id=self.user_id,
-                preference_type='industry',
-                preference_value=industry,
-                metadata={
-                    'session_timestamp': workflow_result.get('start_time', datetime.utcnow().isoformat()),
-                    'source': 'user_brief'
-                }
-            )
-            self.logger.debug(f"Stored industry preference: {industry}")
-
-            # Store brand personality preference
-            brand_personality = analysis.get('brand_personality', 'professional')
-            self.memory_bank_client.store_user_preference(
-                user_id=self.user_id,
-                preference_type='personality',
-                preference_value=brand_personality,
-                metadata={
-                    'session_timestamp': workflow_result.get('start_time', datetime.utcnow().isoformat()),
-                    'source': 'user_brief'
-                }
-            )
-            self.logger.debug(f"Stored personality preference: {brand_personality}")
-
-            # Store accepted brand names
-            approved_names = workflow_result.get('brand_names', [])
-            for brand_name in approved_names:
-                # Extract name if it's a dict
-                name_str = brand_name if isinstance(brand_name, str) else brand_name.get('brand_name', str(brand_name))
-
-                self.memory_bank_client.store_brand_feedback(
-                    user_id=self.user_id,
-                    brand_name=name_str,
-                    feedback_type='accepted',
-                    feedback_data={
-                        'session_timestamp': workflow_result.get('start_time'),
-                        'industry': industry,
-                        'brand_personality': brand_personality,
-                        'validation_results': workflow_result.get('validation_results', {}).get(name_str, {}),
-                        'seo_score': workflow_result.get('seo_scores', {}).get(name_str, 0)
-                    }
-                )
-            self.logger.debug(f"Stored {len(approved_names)} accepted brand names")
-
-            # Store detailed feedback from feedback session (if available)
-            feedback_session_full = workflow_result.get('feedback_session_full')
-            if feedback_session_full and hasattr(feedback_session_full, 'feedback_history'):
-                feedback_history = feedback_session_full.feedback_history
-
-                for feedback in feedback_history:
-                    # Store liked names as preferences
-                    if feedback.liked_names:
-                        for liked_name in feedback.liked_names:
-                            self.memory_bank_client.store_brand_feedback(
-                                user_id=self.user_id,
-                                brand_name=liked_name,
-                                feedback_type='liked',
-                                feedback_data={
-                                    'session_timestamp': workflow_result.get('start_time'),
-                                    'industry': industry,
-                                    'brand_personality': brand_personality,
-                                    'liked_patterns': feedback.liked_patterns,
-                                    'liked_themes': feedback.liked_themes
-                                }
-                            )
-
-                    # Store disliked names as preferences
-                    if feedback.disliked_names:
-                        for disliked_name in feedback.disliked_names:
-                            self.memory_bank_client.store_brand_feedback(
-                                user_id=self.user_id,
-                                brand_name=disliked_name,
-                                feedback_type='rejected',
-                                feedback_data={
-                                    'session_timestamp': workflow_result.get('start_time'),
-                                    'industry': industry,
-                                    'brand_personality': brand_personality,
-                                    'disliked_patterns': feedback.disliked_patterns,
-                                    'disliked_themes': feedback.disliked_themes
-                                }
-                            )
-
-                    # Store preferred naming strategies
-                    if feedback.style_preferences:
-                        for strategy in feedback.style_preferences:
-                            self.memory_bank_client.store_user_preference(
-                                user_id=self.user_id,
-                                preference_type='naming_strategy',
-                                preference_value=strategy,
-                                metadata={
-                                    'session_timestamp': workflow_result.get('start_time'),
-                                    'source': 'feedback'
-                                }
-                            )
-
-                self.logger.debug(
-                    f"Stored detailed feedback from {len(feedback_history)} feedback iterations"
-                )
-
-            self.logger.info(
-                f"Successfully stored user preferences for {self.user_id}: "
-                f"industry={industry}, personality={brand_personality}, "
-                f"accepted_names={len(approved_names)}"
-            )
-
-        except Exception as e:
-            self.logger.error(
-                f"Error storing user preferences: {e}",
-                extra={'error_type': type(e).__name__}
-            )
-            # Don't raise - this is not critical to workflow success
-            pass
-
-    def _retrieve_user_preferences(self) -> Dict[str, Any]:
-        """
-        Retrieve user preferences from Memory Bank.
-
-        Returns:
-            Dictionary with user preferences:
-            - preferred_industries: List of industries the user has worked with
-            - preferred_personalities: List of brand personalities the user prefers
-            - past_accepted_names: List of brand names the user has accepted
-            - past_rejected_names: List of brand names the user has rejected
-            - learning_insights: Aggregated insights from past sessions
-        """
-        if not self.memory_bank_client:
-            self.logger.debug("Memory Bank not available, returning empty preferences")
-            return {
-                'preferred_industries': [],
-                'preferred_personalities': [],
-                'past_accepted_names': [],
-                'past_rejected_names': [],
-                'learning_insights': {}
-            }
-
-        self.logger.info(f"Retrieving user preferences for user {self.user_id}")
-
-        try:
-            # Retrieve all preferences for this user
-            all_preferences = self.memory_bank_client.retrieve_user_preferences(
-                user_id=self.user_id
-            )
-
-            # Parse preferences by type
-            industries = []
-            personalities = []
-            accepted_names = []
-            rejected_names = []
-
-            for pref in all_preferences:
-                pref_type = pref.get('preference_type', '')
-                pref_value = pref.get('preference_value', '')
-
-                if pref_type == 'industry' and pref_value not in industries:
-                    industries.append(pref_value)
-                elif pref_type == 'personality' and pref_value not in personalities:
-                    personalities.append(pref_value)
-
-            # Get learning insights (aggregated patterns from past sessions)
-            learning_insights = self.memory_bank_client.get_learning_insights(
-                user_id=self.user_id,
-                limit=20  # Look at last 20 interactions
-            )
-
-            preferences = {
-                'preferred_industries': industries,
-                'preferred_personalities': personalities,
-                'past_accepted_names': accepted_names,
-                'past_rejected_names': rejected_names,
-                'learning_insights': learning_insights
-            }
-
-            self.logger.info(
-                f"Retrieved preferences for {self.user_id}: "
-                f"{len(industries)} industries, {len(personalities)} personalities"
-            )
-
-            return preferences
-
-        except Exception as e:
-            self.logger.error(
-                f"Error retrieving user preferences: {e}",
-                extra={'error_type': type(e).__name__}
-            )
-            # Return empty preferences on error
-            return {
-                'preferred_industries': [],
-                'preferred_personalities': [],
-                'past_accepted_names': [],
-                'past_rejected_names': [],
-                'learning_insights': {}
-            }
+    logger.info("Brand creation pipeline created successfully with 5 sub-agents")
+    return pipeline
+
+
+def check_validation_passed(result: Dict[str, Any]) -> bool:
+    """
+    Loop condition function to check if validation criteria are met.
+
+    Used by LoopAgent to determine if refinement loop should continue.
+
+    Args:
+        result: Result dictionary from the pipeline execution
+
+    Returns:
+        True if validation passed (loop should exit), False otherwise (continue looping)
+
+    Validation criteria:
+    - At least one name with CLEAR status (score 80+)
+    - At least one premium domain available (.com, .ai, or .io)
+    - No critical trademark conflicts
+    """
+    logger.info("Checking validation criteria for loop exit condition")
+
+    # Extract validation results from the pipeline output
+    validation_results = result.get("validation_results", {})
+
+    # Check if validation_results is a dict or a list
+    if isinstance(validation_results, dict):
+        # Single validation result
+        status = validation_results.get("validation_status", "BLOCKED")
+        score = validation_results.get("overall_score", 0)
+
+        # CLEAR status means score 80+
+        if status == "CLEAR" and score >= 80:
+            logger.info(f"Validation passed: {status} with score {score}")
+            return True
+
+        logger.info(f"Validation not passed: {status} with score {score}")
+        return False
+
+    elif isinstance(validation_results, list):
+        # Multiple validation results - check if any passed
+        for val in validation_results:
+            status = val.get("validation_status", "BLOCKED")
+            score = val.get("overall_score", 0)
+
+            if status == "CLEAR" and score >= 80:
+                logger.info(f"Validation passed for one candidate: {status} with score {score}")
+                return True
+
+        logger.info("No candidates passed validation")
+        return False
+
+    # Default to continuing loop if validation format unexpected
+    logger.warning("Unexpected validation_results format, continuing loop")
+    return False
+
+
+def create_refinement_loop(max_iterations: int = 3) -> LoopAgent:
+    """
+    Create LoopAgent for iterative refinement of brand names.
+
+    The loop runs the name generation and validation agents iteratively
+    up to max_iterations times to find valid brand names.
+
+    Args:
+        max_iterations: Maximum refinement iterations (default: 3)
+
+    Returns:
+        LoopAgent configured for brand refinement
+
+    Example:
+        >>> loop = create_refinement_loop()
+        >>> # Loop will refine names up to 3 times
+    """
+    logger.info(f"Creating refinement loop with max {max_iterations} iterations")
+
+    # Create agents that need to loop (name generation + validation)
+    name_agent = create_name_generator_agent()
+    validation_agent = create_validation_agent()
+
+    loop_agent = LoopAgent(
+        name="BrandRefinementLoop",
+        sub_agents=[name_agent, validation_agent],
+        max_iterations=max_iterations
+    )
+
+    logger.info("Refinement loop created successfully")
+    return loop_agent
+
+
+def create_orchestrator() -> SequentialAgent:
+    """
+    Create main orchestrator using ADK workflow patterns.
+
+    The orchestrator coordinates the entire brand creation process:
+    1. Research agent analyzes industry
+    2. LoopAgent for name generation + validation (iterative refinement)
+    3. SEO and Story agents finalize the brand
+
+    Workflow: Research → [Name + Validation Loop] → SEO → Story
+
+    Returns:
+        SequentialAgent configured as complete brand creation workflow
+
+    Example:
+        >>> orchestrator = create_orchestrator()
+        >>> # Use with ADK Runner for execution
+        >>> from google.adk.runners import InMemoryRunner
+        >>> runner = InMemoryRunner(agent=orchestrator)
+        >>> result = runner.run("Create a brand for an AI-powered meal planning app")
+    """
+    logger.info("Creating Brand Studio Orchestrator with ADK patterns")
+
+    # Create individual agents
+    research_agent = create_research_agent()
+    refinement_loop = create_refinement_loop(max_iterations=3)
+    seo_agent = create_seo_agent()
+    story_agent = create_story_agent()
+
+    # Create sequential workflow with loop in the middle
+    orchestrator = SequentialAgent(
+        name="BrandStudioOrchestrator",
+        sub_agents=[
+            research_agent,
+            refinement_loop,  # Loops name generation + validation
+            seo_agent,
+            story_agent
+        ]
+    )
+
+    logger.info("Brand Studio Orchestrator created successfully")
+    return orchestrator

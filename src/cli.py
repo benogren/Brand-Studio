@@ -1,904 +1,374 @@
 #!/usr/bin/env python3
 """
-Interactive CLI for AI Brand Studio.
+Interactive Chat Mode for AI Brand Studio.
 
-This module provides a command-line interface for generating brand names
-using the multi-agent orchestrator system.
+Provides a conversational interface where users can interact with the
+brand generation workflow through simple prompts instead of long commands.
+
+Usage:
+    python -m src.cli_chat
 """
 
-import argparse
-import json
 import os
 import sys
-from typing import Dict, Any, Optional
-from datetime import datetime
+import asyncio
+import warnings
+import logging
+from typing import Dict, Any
 from dotenv import load_dotenv
 
-from src.agents.orchestrator import BrandStudioOrchestrator
-from src.agents.name_generator import NameGeneratorAgent
+from google.adk.runners import InMemoryRunner
+from src.agents.research_agent import create_research_agent
+from src.agents.name_generator import create_name_generator_agent
+from src.agents.validation_agent import create_validation_agent
+from src.agents.story_agent import create_story_agent
+from src.infrastructure.session_manager import get_session_manager, BrandSessionState
+
+# Suppress ADK warnings for cleaner CLI output
+warnings.filterwarnings('ignore', message='.*App name mismatch.*')
+warnings.filterwarnings('ignore', message='.*non-text parts in the response.*')
+warnings.filterwarnings('ignore', message='.*ADK LoggingPlugin not available.*')
+
+# Configure logging to suppress ADK debug messages
+logging.getLogger('google.adk').setLevel(logging.ERROR)
 
 
-def create_parser() -> argparse.ArgumentParser:
-    """
-    Create and configure the argument parser.
+class SuppressStderr:
+    """Context manager to suppress stderr output."""
+    def __enter__(self):
+        self._original_stderr = sys.stderr
+        sys.stderr = open(os.devnull, 'w')
+        return self
 
-    Returns:
-        Configured ArgumentParser instance
-    """
-    parser = argparse.ArgumentParser(
-        description='AI Brand Studio - Generate legally-clear, SEO-optimized brand names',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Interactive mode
-  python -m src.cli
-
-  # Direct input
-  python -m src.cli --product "AI meal planning app" --audience "Busy parents" --personality warm
-
-  # Verbose mode with JSON output
-  python -m src.cli --product "Fintech app" --verbose --json output.json
-
-  # Custom number of names
-  python -m src.cli --product "Healthcare app" --count 40
-        """
-    )
-
-    # Product information
-    parser.add_argument(
-        '--product',
-        '-p',
-        type=str,
-        help='Product description (what does your product do?)'
-    )
-
-    parser.add_argument(
-        '--audience',
-        '-a',
-        type=str,
-        default='',
-        help='Target audience (who is this product for?)'
-    )
-
-    parser.add_argument(
-        '--personality',
-        '-P',
-        type=str,
-        choices=['playful', 'professional', 'innovative', 'luxury'],
-        default='professional',
-        help='Brand personality (default: professional)'
-    )
-
-    parser.add_argument(
-        '--industry',
-        '-i',
-        type=str,
-        default='general',
-        help='Industry/category (e.g., healthcare, fintech, food_tech)'
-    )
-
-    # Generation options
-    parser.add_argument(
-        '--count',
-        '-c',
-        type=int,
-        default=30,
-        help='Number of brand names to generate (20-50, default: 30)'
-    )
-
-    # Output options
-    parser.add_argument(
-        '--verbose',
-        '-v',
-        action='store_true',
-        help='Enable verbose output (show agent traces and debugging info)'
-    )
-
-    parser.add_argument(
-        '--json',
-        '-j',
-        type=str,
-        metavar='FILE',
-        help='Save full results to JSON file'
-    )
-
-    parser.add_argument(
-        '--quiet',
-        '-q',
-        action='store_true',
-        help='Minimal output (only brand names)'
-    )
-
-    # Configuration
-    parser.add_argument(
-        '--project-id',
-        type=str,
-        help='Google Cloud project ID (overrides .env)'
-    )
-
-    parser.add_argument(
-        '--location',
-        type=str,
-        default='us-central1',
-        help='Google Cloud location (default: us-central1)'
-    )
-
-    return parser
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stderr.close()
+        sys.stderr = self._original_stderr
 
 
-def load_config(args: argparse.Namespace) -> Dict[str, str]:
-    """
-    Load configuration from environment and command-line arguments.
-
-    Args:
-        args: Parsed command-line arguments
-
-    Returns:
-        Dictionary with configuration values
-
-    Raises:
-        ValueError: If required configuration is missing
-    """
-    # Load .env file
-    load_dotenv()
-
-    # Get project ID from args or environment
-    project_id = args.project_id or os.getenv('GOOGLE_CLOUD_PROJECT')
-    location = args.location or os.getenv('GOOGLE_CLOUD_LOCATION', 'us-central1')
-
-    if not project_id:
-        raise ValueError(
-            "Google Cloud project ID is required. "
-            "Set GOOGLE_CLOUD_PROJECT in .env or use --project-id flag."
-        )
-
-    return {
-        'project_id': project_id,
-        'location': location
-    }
-
-
-def get_user_brief_interactive() -> Dict[str, Any]:
-    """
-    Collect user brief through interactive prompts.
-
-    Returns:
-        Dictionary with user brief information
-    """
+def print_banner():
+    """Print welcome banner."""
     print("\n" + "=" * 70)
     print("AI BRAND STUDIO - INTERACTIVE MODE")
-    print("=" * 70 + "\n")
+    print("=" * 70)
+    print("\nWelcome! I'll help you create a complete brand identity.")
+    print("Just answer a few questions and I'll guide you through the process.\n")
 
-    # Product description (required)
-    while True:
-        product = input("Product description (what does it do?): ").strip()
-        if product:
-            break
-        print("  Error: Product description is required.\n")
 
-    # Target audience (optional)
-    audience = input("Target audience (who is it for?) [optional]: ").strip()
+def get_product_info() -> Dict[str, str]:
+    """Get product information from user."""
+    print("First, tell me about your product:\n")
 
-    # Brand personality
-    print("\nBrand personality options:")
-    print("  1. Playful (fun, whimsical, lighthearted)")
-    print("  2. Professional (authoritative, trustworthy)")
-    print("  3. Innovative (forward-thinking, tech-savvy)")
-    print("  4. Luxury (elegant, sophisticated, premium)")
+    product = input("What does your product do? ").strip()
+    while not product:
+        print("Please provide a product description.")
+        product = input("What does your product do? ").strip()
 
-    while True:
-        choice = input("Select personality (1-4) [default: 2]: ").strip()
-        if not choice:
-            personality = 'professional'
-            break
-        elif choice in ['1', '2', '3', '4']:
-            personalities = ['playful', 'professional', 'innovative', 'luxury']
-            personality = personalities[int(choice) - 1]
-            break
-        else:
-            print("  Error: Please enter 1, 2, 3, or 4.\n")
+    audience = input("Who is it for? (press Enter for 'General consumers'): ").strip()
+    if not audience:
+        audience = "General consumers"
 
-    # Industry (optional)
-    industry = input("Industry/category [default: general]: ").strip() or 'general'
+    print("\nChoose a brand personality:")
+    print("  1. Playful")
+    print("  2. Professional")
+    print("  3. Innovative")
+    print("  4. Luxury")
 
-    # Number of names
-    while True:
-        count_input = input("Number of brand names to generate (20-50) [default: 30]: ").strip()
-        if not count_input:
-            count = 30
-            break
-        try:
-            count = int(count_input)
-            if 20 <= count <= 50:
-                break
-            else:
-                print("  Error: Please enter a number between 20 and 50.\n")
-        except ValueError:
-            print("  Error: Please enter a valid number.\n")
+    personality_map = {'1': 'playful', '2': 'professional', '3': 'innovative', '4': 'luxury'}
+    choice = input("Enter number (1-4, default=3): ").strip() or '3'
+    personality = personality_map.get(choice, 'innovative')
+
+    industry = input("Industry/category (press Enter for 'general'): ").strip() or 'general'
 
     return {
-        'product_description': product,
-        'target_audience': audience,
-        'brand_personality': personality,
-        'industry': industry,
-        'count': count
+        'product': product,
+        'audience': audience,
+        'personality': personality,
+        'industry': industry
     }
 
 
-def print_header(verbose: bool = False):
-    """
-    Print CLI header.
-
-    Args:
-        verbose: Whether verbose mode is enabled
-    """
-    print("\n" + "=" * 70)
-    print("AI BRAND STUDIO")
-    print("Multi-agent system for brand name generation")
-    if verbose:
-        print("VERBOSE MODE ENABLED")
-    print("=" * 70 + "\n")
-
-
-def print_user_brief(brief: Dict[str, Any], verbose: bool = False):
-    """
-    Print the user brief summary.
-
-    Args:
-        brief: User brief dictionary
-        verbose: Whether to show verbose output
-    """
-    print("USER BRIEF")
-    print("-" * 70)
-    print(f"Product: {brief['product_description']}")
-    if brief.get('target_audience'):
-        print(f"Audience: {brief['target_audience']}")
-    print(f"Personality: {brief['brand_personality']}")
-    print(f"Industry: {brief['industry']}")
-    if verbose:
-        print(f"Requested Names: {brief.get('count', 30)}")
-    print()
+def extract_text_from_events(events) -> str:
+    """Extract text content from agent events."""
+    text_parts = []
+    for event in events:
+        if hasattr(event, 'content'):
+            content = event.content
+            if isinstance(content, str):
+                text_parts.append(content)
+            elif hasattr(content, 'parts'):
+                for part in content.parts:
+                    if hasattr(part, 'text') and part.text:
+                        text_parts.append(part.text)
+        elif hasattr(event, 'text') and event.text:
+            text_parts.append(event.text)
+    return '\n\n'.join(text_parts)
 
 
-def print_brand_names(names: list, quiet: bool = False, verbose: bool = False):
-    """
-    Print generated brand names in formatted output.
+async def run_research(product_info: Dict[str, str]) -> str:
+    """Run research agent."""
+    research_agent = create_research_agent()
+    runner = InMemoryRunner(agent=research_agent)
 
-    Args:
-        names: List of brand name dictionaries
-        quiet: Minimal output mode
-        verbose: Show detailed information
-    """
-    if not names:
-        print("No brand names generated.")
-        return
+    prompt = f"""
+Analyze this product for brand naming:
 
-    print(f"\nGENERATED BRAND NAMES ({len(names)} total)")
-    print("=" * 70 + "\n")
+Product: {product_info['product']}
+Audience: {product_info['audience']}
+Personality: {product_info['personality']}
+Industry: {product_info['industry']}
 
-    if quiet:
-        # Minimal output - just the names
-        for name in names:
-            print(name['brand_name'])
+Provide research insights in JSON format.
+"""
+
+    with SuppressStderr():
+        events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
+    return extract_text_from_events(events)
+
+
+async def run_name_generation(product_info: Dict[str, str], count: int, feedback: str = None, kept_names: str = None) -> str:
+    """Run name generator agent."""
+    name_generator = create_name_generator_agent()
+    runner = InMemoryRunner(agent=name_generator)
+
+    if feedback:
+        prompt = f"""
+Generate {count} NEW brand names incorporating this feedback:
+
+Previous names you liked: {kept_names or 'None'}
+Your feedback: {feedback}
+
+Product: {product_info['product']}
+Personality: {product_info['personality']}
+Industry: {product_info['industry']}
+
+Return as JSON array with: name, strategy, rationale, strength_score
+"""
     else:
-        # Full formatted output
-        for i, name in enumerate(names, 1):
-            print(f"{i}. {name['brand_name']}")
+        prompt = f"""
+Generate {count} creative brand names for:
 
-            if verbose:
-                print(f"   Strategy: {name['naming_strategy']}")
-                print(f"   Syllables: {name['syllables']}")
-                print(f"   Memorable Score: {name['memorable_score']}/10")
+Product: {product_info['product']}
+Personality: {product_info['personality']}
+Industry: {product_info['industry']}
 
-            print(f"   Rationale: {name['rationale']}")
-            print(f"   Tagline: \"{name['tagline']}\"")
-            print()
+Return as JSON array with: name, strategy, rationale, strength_score
+"""
 
-
-def print_brand_names_simple(names: list):
-    """
-    Print brand names in simple list format for selection.
-
-    Args:
-        names: List of brand name dictionaries
-    """
-    if not names:
-        print("No brand names generated.")
-        return
-
-    print(f"\nGENERATED BRAND NAMES ({len(names)} total)")
-    print("=" * 70 + "\n")
-
-    for i, name in enumerate(names, 1):
-        print(f"{i:2d}. {name['brand_name']:20s} - {name['rationale'][:50]}...")
+    with SuppressStderr():
+        events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
+    return extract_text_from_events(events)
 
 
-def get_user_selection(names: list, min_select: int = 5, max_select: int = 10) -> list:
-    """
-    Let user select their favorite brand names.
+async def run_validation(names: str, product_info: Dict[str, str]) -> str:
+    """Run validation agent with collision detection."""
+    from src.agents.collision_agent import BrandCollisionAgent
 
-    Args:
-        names: List of brand name dictionaries
-        min_select: Minimum number of names to select
-        max_select: Maximum number of names to select
+    # Run domain and trademark validation
+    validation_agent = create_validation_agent()
+    runner = InMemoryRunner(agent=validation_agent)
 
-    Returns:
-        List of selected brand name dictionaries
-    """
-    print(f"\n{'=' * 70}")
-    print(f"SELECT YOUR FAVORITE NAMES ({min_select}-{max_select} names)")
-    print("=" * 70 + "\n")
-    print(f"Enter the numbers of your favorite names (comma-separated)")
-    print(f"Example: 1,5,7,12,18")
-    print(f"Or type 'all' to select all names")
-    print(f"Or type 'regenerate' to start over with new names\n")
+    prompt = f"""
+Validate these brand names:
+{names}
 
-    while True:
-        selection_input = input(f"Your selection ({min_select}-{max_select} names): ").strip()
+Check:
+1. Domain availability (.com, .ai, .io, and other TLDs)
+2. If .com is unavailable, also check prefix variations (get-, try-, use-, my-, etc.)
+3. Trademark conflicts using USPTO database
+4. Calculate overall risk scores
 
-        if selection_input.lower() == 'regenerate':
-            return 'regenerate'
+Return validation results in JSON format with domain availability, trademark analysis, and recommendations.
+"""
 
-        if selection_input.lower() == 'all':
-            return names
+    with SuppressStderr():
+        events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
+    validation_output = extract_text_from_events(events)
 
-        try:
-            # Parse comma-separated numbers
-            selected_indices = [int(x.strip()) for x in selection_input.split(',')]
-
-            # Validate selection count
-            if len(selected_indices) < min_select:
-                print(f"  Error: Please select at least {min_select} names.\n")
-                continue
-            if len(selected_indices) > max_select:
-                print(f"  Error: Please select at most {max_select} names.\n")
-                continue
-
-            # Validate indices are within range
-            if any(idx < 1 or idx > len(names) for idx in selected_indices):
-                print(f"  Error: Numbers must be between 1 and {len(names)}.\n")
-                continue
-
-            # Get selected names
-            selected_names = [names[idx - 1] for idx in selected_indices]
-
-            # Confirm selection
-            print(f"\nYou selected {len(selected_names)} names:")
-            for name in selected_names:
-                print(f"  - {name['brand_name']}")
-
-            confirm = input("\nConfirm selection? (y/n): ").strip().lower()
-            if confirm == 'y':
-                return selected_names
-            else:
-                print("\nLet's try again...\n")
-                continue
-
-        except ValueError:
-            print("  Error: Please enter comma-separated numbers (e.g., 1,5,7,12).\n")
-            continue
-
-
-def run_phase3_validation(
-    config: Dict[str, str],
-    selected_names: List[Dict],
-    brief: Dict[str, Any],
-    verbose: bool = False
-) -> Dict[str, Any]:
-    """
-    Run Phase 3 validation on selected names: domain, trademark, SEO, and enhanced taglines.
-
-    Args:
-        config: Configuration dictionary
-        selected_names: List of selected brand name dictionaries
-        brief: User brief
-        verbose: Verbose output
-
-    Returns:
-        Dictionary with validation results
-    """
-    from src.tools.domain_checker import check_domain_availability
-    from src.tools.trademark_checker import search_trademarks_uspto
-    from src.agents.seo_agent import SEOAgent
-
-    print("\n" + "=" * 70)
-    print("PHASE 3: VALIDATING SELECTED NAMES")
-    print("=" * 70 + "\n")
-
-    results = {}
-
-    # Initialize SEO agent
-    seo_agent = SEOAgent(
-        project_id=config['project_id'],
-        location=config['location']
-    )
-
-    for i, name_dict in enumerate(selected_names, 1):
-        brand_name = name_dict['brand_name']
-        print(f"\n[{i}/{len(selected_names)}] Validating: {brand_name}")
-        print("-" * 70)
-
-        # Domain availability check
-        print("  Checking domain availability...")
-        domain_results = check_domain_availability(brand_name)
-
-        # Trademark risk assessment
-        print("  Checking trademark conflicts...")
-        trademark_results = search_trademarks_uspto(brand_name)
-
-        # SEO optimization
-        print("  Optimizing for SEO...")
-        seo_results = seo_agent.optimize_brand_seo(
-            brand_name=brand_name,
-            product_description=brief['product_description'],
-            industry=brief['industry']
-        )
-
-        # Store results
-        results[brand_name] = {
-            'original_data': name_dict,
-            'domain_availability': domain_results,
-            'trademark_risk': trademark_results,
-            'seo_optimization': seo_results
-        }
-
-        # Print summary
-        available_domains = [ext for ext, avail in domain_results.items() if avail]
-        print(f"  ✓ Domains available: {', '.join(available_domains) if available_domains else 'None'}")
-        print(f"  ✓ Trademark risk: {trademark_results['risk_level']}")
-        print(f"  ✓ SEO score: {seo_results['seo_score']}/100")
-
-    return results
-
-
-def print_validation_results(validation_results: Dict[str, Any]):
-    """
-    Print Phase 3 validation results in a formatted way.
-
-    Args:
-        validation_results: Dictionary with validation results
-    """
-    print("\n" + "=" * 70)
-    print("VALIDATION RESULTS")
-    print("=" * 70 + "\n")
-
-    for brand_name, results in validation_results.items():
-        print(f"\n{brand_name}")
-        print("-" * 70)
-
-        # Domain availability
-        domain_avail = results['domain_availability']
-        print(f"Domain Availability:")
-
-        # Group by extension for better display
-        available_domains = []
-        taken_domains = []
-
-        for domain, available in sorted(domain_avail.items()):
-            if available:
-                available_domains.append(domain)
-            else:
-                taken_domains.append(domain)
-
-        # Show available domains first (more important)
-        if available_domains:
-            print(f"  ✓ Available ({len(available_domains)}):")
-            for domain in available_domains[:5]:  # Show first 5
-                print(f"    • {domain}")
-            if len(available_domains) > 5:
-                print(f"    ... and {len(available_domains) - 5} more")
-
-        # Show taken domains
-        if taken_domains:
-            print(f"  ✗ Taken ({len(taken_domains)}):")
-            for domain in taken_domains[:3]:  # Show first 3
-                print(f"    • {domain}")
-            if len(taken_domains) > 3:
-                print(f"    ... and {len(taken_domains) - 3} more")
-
-        # Check if we should suggest alternatives
-        base_domains = [d for d in domain_avail.keys() if not any(
-            d.startswith(p) for p in ['get', 'try', 'your', 'my', 'hello', 'use']
-        )]
-        base_available = [d for d in base_domains if domain_avail[d]]
-
-        if not base_available:
-            # Suggest alternatives
-            prefix_domains = [d for d in available_domains if any(
-                d.startswith(p) for p in ['get', 'try', 'your', 'my', 'hello', 'use']
-            )]
-            if prefix_domains:
-                print(f"\n  💡 Try these variations:")
-                for domain in prefix_domains[:3]:
-                    print(f"    • {domain}")
-
-        # Trademark risk
-        tm_risk = results['trademark_risk']
-        risk_level = tm_risk['risk_level'].upper()
-        risk_color = {
-            'LOW': '✓',
-            'MEDIUM': '⚠',
-            'HIGH': '✗',
-            'CRITICAL': '✗✗'
-        }.get(risk_level, '?')
-        print(f"\nTrademark Risk: {risk_color} {risk_level}")
-        if tm_risk['conflicts_found'] > 0:
-            print(f"  Conflicts found: {tm_risk['conflicts_found']}")
-
-        # SEO optimization
-        seo_opt = results['seo_optimization']
-        print(f"\nSEO Score: {seo_opt['seo_score']}/100")
-        print(f"Meta Title: {seo_opt['meta_title']}")
-        print(f"Meta Description: {seo_opt['meta_description']}")
-        print(f"Primary Keywords: {', '.join(seo_opt['primary_keywords'])}")
-
-        # Enhanced taglines (from original + SEO)
-        print(f"\nTagline: \"{results['original_data']['tagline']}\"")
-
-        print()
-
-    print("=" * 70)
-
-
-def print_workflow_summary(result: Dict[str, Any], verbose: bool = False):
-    """
-    Print workflow execution summary.
-
-    Args:
-        result: Workflow result dictionary
-        verbose: Show detailed information
-    """
-    print("\n" + "=" * 70)
-    print("WORKFLOW SUMMARY")
-    print("=" * 70)
-
-    status = result.get('status', 'unknown')
-    print(f"\nStatus: {status.upper()}")
-
-    if verbose:
-        # Show detailed workflow information
-        stages = result.get('workflow_stages', [])
-        if stages:
-            print(f"Stages Executed: {', '.join(stages)}")
-
-        iterations = result.get('iteration', 0)
-        if iterations:
-            print(f"Iterations: {iterations}")
-
-        # Timing information
-        start_time = result.get('start_time')
-        end_time = result.get('end_time')
-        if start_time and end_time:
-            from datetime import datetime
-            start = datetime.fromisoformat(start_time)
-            end = datetime.fromisoformat(end_time)
-            duration = (end - start).total_seconds()
-            print(f"Duration: {duration:.2f} seconds")
-
-    # Summary from workflow
-    summary = result.get('workflow_summary', '')
-    if summary:
-        print(f"\n{summary}")
-
-    print()
-
-
-def save_json_output(data: Dict[str, Any], filepath: str, verbose: bool = False):
-    """
-    Save results to JSON file.
-
-    Args:
-        data: Data to save
-        filepath: Output file path
-        verbose: Show verbose output
-    """
+    # Run collision detection for search results
     try:
-        with open(filepath, 'w') as f:
-            json.dump(data, f, indent=2)
-        if verbose:
-            print(f"Results saved to: {filepath}")
+        project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
+        collision_agent = BrandCollisionAgent(project_id=project_id)
+
+        collision_results = []
+        for name in names.split(','):
+            name = name.strip()
+            if name:
+                collision_result = collision_agent.analyze_brand_collision(
+                    brand_name=name,
+                    industry=product_info.get('industry', 'general'),
+                    product_description=product_info.get('product', '')
+                )
+                collision_results.append(f"\n\n**Search Collision Analysis for {name}:**\n{collision_result.get('risk_summary', 'No analysis available')}\n- Risk Level: {collision_result.get('collision_risk_level', 'unknown')}\n- Recommendation: {collision_result.get('recommendation', 'N/A')}")
+
+        # Combine validation and collision results
+        combined_output = validation_output + "\n\n" + "=" * 70 + "\n## SEARCH RESULT COLLISION ANALYSIS\n" + "=" * 70 + "\n".join(collision_results)
+        return combined_output
+
     except Exception as e:
-        print(f"Error saving JSON output: {e}", file=sys.stderr)
+        logger.warning(f"Collision detection failed: {e}")
+        return validation_output + f"\n\n(Note: Search collision analysis unavailable: {e})"
 
 
-def run_name_generator_only(
-    config: Dict[str, str],
-    brief: Dict[str, Any],
-    verbose: bool = False
-) -> list:
-    """
-    Run name generator agent directly (without orchestrator).
+async def run_story(brand_name: str, product_info: Dict[str, str]) -> str:
+    """Run story agent."""
+    story_agent = create_story_agent()
+    runner = InMemoryRunner(agent=story_agent)
 
-    Args:
-        config: Configuration dictionary
-        brief: User brief
-        verbose: Verbose output
+    prompt = f"""
+Create a complete brand story for:
 
-    Returns:
-        List of generated brand names
-    """
-    if verbose:
-        print("Initializing Name Generator Agent...")
+Brand Name: {brand_name}
+Product: {product_info['product']}
+Personality: {product_info['personality']}
+Industry: {product_info['industry']}
 
-    generator = NameGeneratorAgent(
-        project_id=config['project_id'],
-        location=config['location']
-    )
+Generate:
+1. Five tagline options (5-8 words each, memorable and action-oriented)
+2. Brand story (200-300 words)
+3. Value proposition statement (20-30 words, clear and compelling)
 
-    if verbose:
-        print(f"Generating {brief.get('count', 30)} brand names...\n")
+Return in JSON format.
+"""
 
-    names = generator.generate_names(
-        product_description=brief['product_description'],
-        target_audience=brief.get('target_audience', ''),
-        brand_personality=brief['brand_personality'],
-        industry=brief['industry'],
-        num_names=brief.get('count', 30)
-    )
-
-    return names
+    with SuppressStderr():
+        events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
+    return extract_text_from_events(events)
 
 
-def run_orchestrator_workflow(
-    config: Dict[str, str],
-    brief: Dict[str, Any],
-    verbose: bool = False,
-    enable_interactive_feedback: bool = True
-) -> Dict[str, Any]:
-    """
-    Run full orchestrator workflow with interactive feedback.
-
-    Args:
-        config: Configuration dictionary
-        brief: User brief
-        verbose: Verbose output
-        enable_interactive_feedback: Enable interactive feedback loop
-
-    Returns:
-        Workflow result dictionary
-    """
-    if verbose:
-        print("Initializing Name Generator Agent...")
-
-    # Initialize name generator agent
-    name_generator = NameGeneratorAgent(
-        project_id=config['project_id'],
-        location=config['location']
-    )
-
-    if verbose:
-        print("Initializing Orchestrator Agent...")
-
-    # Initialize orchestrator with name generator
-    orchestrator = BrandStudioOrchestrator(
-        project_id=config['project_id'],
-        location=config['location'],
-        enable_cloud_logging=verbose,
-        name_generator_agent=name_generator,
-        enable_interactive_feedback=enable_interactive_feedback
-    )
-
-    if verbose:
-        print("Executing brand creation workflow with interactive feedback...\n")
-
-    result = orchestrator.coordinate_workflow(brief)
-
-    return result
+def display_names(names_output: str):
+    """Display generated names in a readable format."""
+    print("\n" + "=" * 70)
+    print("GENERATED NAMES")
+    print("=" * 70 + "\n")
+    print(names_output)
+    print()
 
 
 def main():
-    """Main entry point for the CLI."""
-    parser = create_parser()
-    args = parser.parse_args()
+    """Main interactive mode."""
+    load_dotenv()
 
-    try:
-        # Load configuration
-        config = load_config(args)
+    # Check config
+    if not os.getenv('GOOGLE_CLOUD_PROJECT'):
+        print("Error: GOOGLE_CLOUD_PROJECT not set in .env file")
+        sys.exit(1)
 
-        # Print header
-        if not args.quiet:
-            print_header(verbose=args.verbose)
+    # Suppress initial ADK plugin warning
+    with SuppressStderr():
+        # Import agents to trigger ADK initialization warnings
+        pass
 
-        # Get user brief
-        if args.product:
-            # Use command-line arguments
-            brief = {
-                'product_description': args.product,
-                'target_audience': args.audience,
-                'brand_personality': args.personality,
-                'industry': args.industry,
-                'count': 20  # Start with 20 names for selection
-            }
+    print_banner()
+
+    # Get product info
+    product_info = get_product_info()
+
+    print("\n" + "-" * 70)
+    print("Great! Let me start by researching your industry...")
+    print("-" * 70 + "\n")
+
+    # Run research
+    research_output = asyncio.run(run_research(product_info))
+    print("✓ Research complete")
+
+    # Name generation loop
+    all_names = []
+    iteration = 1
+
+    while True:
+        print(f"\n{'='*70}")
+        print(f"ROUND {iteration}: NAME GENERATION")
+        print("=" * 70)
+
+        if iteration == 1:
+            count = input("\nHow many names would you like? (default=15): ").strip()
+            count = int(count) if count.isdigit() else 15
+
+            print(f"\nGenerating {count} brand names...")
+            names_output = asyncio.run(run_name_generation(product_info, count))
         else:
-            # Interactive mode
-            brief = get_user_brief_interactive()
-            # Override count to 20 for initial generation
-            brief['count'] = 20
+            feedback = input("\nWhat feedback do you have? (e.g., 'More tech-focused', 'Shorter names'): ").strip()
+            kept = input("Any names you liked? (comma-separated, or press Enter): ").strip()
+            count = input("How many new names? (default=10): ").strip()
+            count = int(count) if count.isdigit() else 10
 
-        # Print user brief
-        if not args.quiet:
-            print_user_brief(brief, verbose=args.verbose)
+            print(f"\nGenerating {count} new names based on your feedback...")
+            names_output = asyncio.run(run_name_generation(product_info, count, feedback, kept))
 
-        # Run orchestrator workflow with interactive feedback
-        # The orchestrator will:
-        # 1. Generate names with the name generator agent
-        # 2. Collect user feedback interactively
-        # 3. Refine names based on feedback (up to 3 iterations)
-        # 4. Once approved, proceed to validation
-        # 5. Run SEO optimization and story generation
+        all_names.append(names_output)
+        display_names(names_output)
 
-        if args.verbose:
-            print("\n" + "=" * 70)
-            print("STARTING INTERACTIVE WORKFLOW")
-            print("=" * 70)
-            print("\nThe system will generate brand names and collect your feedback.")
-            print("You can refine the names up to 3 times before proceeding to validation.\n")
+        print("\nWhat would you like to do next?")
+        print("  1. Generate more names with feedback")
+        print("  2. Validate selected names")
+        print("  3. Quit")
 
-        result = run_orchestrator_workflow(
-            config=config,
-            brief=brief,
-            verbose=args.verbose,
-            enable_interactive_feedback=True
-        )
+        choice = input("\nEnter choice (1-3): ").strip()
 
-        # Check workflow status
-        if result['status'] == 'completed':
-            if not args.quiet:
-                print("\n✓ Workflow completed successfully!")
-
-                # Show feedback session info if available
-                if 'feedback_session' in result:
-                    session = result['feedback_session']
-                    print(f"\n📊 Feedback Summary:")
-                    print(f"  • Iterations: {session['iterations']}")
-                    print(f"  • Feedback rounds: {session['feedback_count']}")
-                    print(f"  • Approved names: {len(session['approved_names'])}")
-
-                # Show detailed names with full metadata, validation, and SEO
-                if result.get('brand_names_full'):
-                    print(f"\n{'=' * 70}")
-                    print(f"APPROVED BRAND NAMES ({len(result['brand_names_full'])} total)")
-                    print("=" * 70 + "\n")
-
-                    validation_results = result.get('validation_results', {})
-                    seo_data = result.get('seo_data', {})
-                    domain_avail = validation_results.get('domain_availability', {})
-                    trademark = validation_results.get('trademark_results', {})
-                    seo_scores = seo_data.get('seo_scores', {})
-
-                    for i, name_data in enumerate(result['brand_names_full'], 1):
-                        brand_name = name_data.get('brand_name', 'Unknown')
-                        print(f"{i}. {brand_name}")
-                        print(f"   Strategy: {name_data.get('naming_strategy', 'N/A')}")
-                        print(f"   Rationale: {name_data.get('rationale', 'N/A')}")
-                        print(f"   Tagline: \"{name_data.get('tagline', 'N/A')}\"")
-                        print(f"   Syllables: {name_data.get('syllables', 'N/A')} | Memorable: {name_data.get('memorable_score', 'N/A')}/10")
-
-                        # Domain availability
-                        if brand_name in domain_avail:
-                            domains = domain_avail[brand_name]
-                            available = [ext for ext, avail in domains.items() if avail]
-                            if available:
-                                print(f"   Domains Available: {', '.join(available)}")
-                            else:
-                                print(f"   Domains Available: None")
-
-                        # Trademark risk
-                        if brand_name in trademark:
-                            risk = trademark[brand_name]
-                            risk_icon = "✓" if risk == "low" else ("⚠" if risk == "medium" else "✗")
-                            print(f"   Trademark Risk: {risk_icon} {risk.upper()}")
-
-                        # SEO score
-                        if brand_name in seo_scores:
-                            print(f"   SEO Score: {seo_scores[brand_name]}/100")
-
-                        print()
-                elif result.get('brand_names'):
-                    print(f"\n✓ {len(result['brand_names'])} names approved and validated")
-                    print(f"  Names: {', '.join(result['brand_names'][:5])}")
-                    if len(result['brand_names']) > 5:
-                        print(f"  ... and {len(result['brand_names']) - 5} more")
-
-                # Show brand narratives if generated
-                if result.get('brand_narratives'):
-                    print(f"\n{'=' * 70}")
-                    print(f"BRAND NARRATIVES ({len(result['brand_narratives'])} generated)")
-                    print("=" * 70)
-
-                    for i, narrative in enumerate(result['brand_narratives'], 1):
-                        brand_name = narrative.get('brand_name', 'Unknown')
-                        print(f"\n{i}. {brand_name}")
-                        print("=" * 70)
-
-                        # Tagline options
-                        taglines = narrative.get('narrative_taglines', [])
-                        if taglines:
-                            print(f"\n   TAGLINE OPTIONS ({len(taglines)}):")
-                            for j, tagline in enumerate(taglines, 1):
-                                print(f"   {j}. \"{tagline}\"")
-
-                        # Brand story
-                        brand_story = narrative.get('brand_story', '')
-                        if brand_story:
-                            print(f"\n   BRAND STORY:")
-                            # Wrap text at 70 characters
-                            import textwrap
-                            wrapped_story = textwrap.fill(
-                                brand_story,
-                                width=66,
-                                initial_indent='   ',
-                                subsequent_indent='   '
-                            )
-                            print(wrapped_story)
-
-                        # Value proposition
-                        value_prop = narrative.get('value_proposition', '')
-                        if value_prop:
-                            print(f"\n   VALUE PROPOSITION:")
-                            print(f"   \"{value_prop}\"")
-
-                        # Domain and trademark info
-                        domain_status = narrative.get('domain_status', {})
-                        if domain_status:
-                            available = [ext for ext, avail in domain_status.items() if avail]
-                            if available:
-                                print(f"\n   Available Domains: {', '.join(available)}")
-
-                        trademark_risk = narrative.get('trademark_risk')
-                        if trademark_risk:
-                            risk_icon = "✓" if trademark_risk == "low" else ("⚠" if trademark_risk == "medium" else "✗")
-                            print(f"   Trademark Risk: {risk_icon} {trademark_risk.upper()}")
-
-                        print()
-
-                # Show workflow summary
-                if result.get('workflow_summary'):
-                    print(f"{result['workflow_summary']}")
-                    print()
-
-        elif result['status'] == 'validation_failed':
-            print("\n⚠️  Validation failed after maximum attempts.")
-            print("   The generated names did not meet trademark/domain requirements.")
-            if not args.quiet:
-                print(f"\n   Error: {result.get('error', 'Unknown error')}")
-
-        else:
-            print(f"\n❌ Workflow failed: {result.get('error', 'Unknown error')}")
-            if args.verbose:
-                print(f"   Failed at stage: {result.get('failed_stage', 'unknown')}")
-
-        # Save JSON output if requested
-        if args.json:
-            save_json_output(result, args.json, verbose=args.verbose)
-
-        # Print success message
-        if not args.quiet and result['status'] == 'completed':
-            print("\n" + "=" * 70)
-            print(f"✓ Brand naming workflow completed successfully!")
-            print("=" * 70 + "\n")
-
-        # Exit with appropriate status code
-        if result['status'] == 'completed':
+        if choice == '1':
+            iteration += 1
+            continue
+        elif choice == '2':
+            break
+        elif choice == '3':
+            print("\nGoodbye!")
             sys.exit(0)
         else:
-            sys.exit(1)
+            print("Invalid choice, continuing...")
+            iteration += 1
 
-    except ValueError as e:
-        print(f"\n❌ Configuration Error: {e}", file=sys.stderr)
-        print("\nPlease check your .env file or use --project-id flag.", file=sys.stderr)
-        sys.exit(1)
+    # Validation
+    print("\n" + "=" * 70)
+    print("VALIDATION")
+    print("=" * 70)
 
-    except KeyboardInterrupt:
-        print("\n\nOperation cancelled by user.", file=sys.stderr)
-        sys.exit(130)
+    names_to_validate = input("\nEnter names to validate (comma-separated): ").strip()
 
-    except Exception as e:
-        print(f"\n❌ Unexpected Error: {e}", file=sys.stderr)
-        if args.verbose:
-            import traceback
-            traceback.print_exc()
-        sys.exit(1)
+    if names_to_validate:
+        print("\nValidating names (checking domains, trademarks, and search collisions)...")
+        print("This may take a minute...\n")
+
+        validation_output = asyncio.run(run_validation(names_to_validate, product_info))
+
+        print("=" * 70)
+        print("VALIDATION RESULTS")
+        print("=" * 70 + "\n")
+        print(validation_output)
+        print()
+
+    # Ask if they want to continue to story
+    print("\nWould you like to generate a brand story for one of these names?")
+    choice = input("Enter 'y' to continue or 'n' to quit: ").strip().lower()
+
+    if choice != 'y':
+        print("\nGoodbye!")
+        sys.exit(0)
+
+    # Brand story
+    print("\n" + "=" * 70)
+    print("BRAND STORY")
+    print("=" * 70)
+
+    final_name = input("\nWhat's your final brand name choice? ").strip()
+
+    if final_name:
+        print(f"\nGenerating complete brand story for '{final_name}'...")
+        print("This may take a minute...\n")
+
+        story_output = asyncio.run(run_story(final_name, product_info))
+
+        print("=" * 70)
+        print(f"BRAND IDENTITY: {final_name}")
+        print("=" * 70 + "\n")
+        print(story_output)
+        print()
+
+    print("\n" + "=" * 70)
+    print("✓ BRAND IDENTITY COMPLETE!")
+    print("=" * 70)
+    print(f"\nYour brand: {final_name}")
+    print("\nThank you for using AI Brand Studio!")
+    print()
 
 
 if __name__ == '__main__':

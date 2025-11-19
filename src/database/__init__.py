@@ -1,11 +1,10 @@
-"""Database module for session management and persistence."""
+"""
+Database module for session management and persistence.
 
-from src.database.session_manager import (
-    SessionManager,
-    get_session_manager
-)
+Note: Session management is now handled by ADK's DatabaseSessionService
+when needed. The custom SessionManager has been removed in favor of
+ADK's built-in session management.
+"""
 
-__all__ = [
-    "SessionManager",
-    "get_session_manager"
-]
+# Placeholder for future database-related utilities
+__all__ = []

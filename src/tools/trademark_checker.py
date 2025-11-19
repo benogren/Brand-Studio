@@ -15,6 +15,8 @@ import os
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 import xml.etree.ElementTree as ET
+from google.adk.tools import FunctionTool
+from google.adk.tools.tool_context import ToolContext
 
 logger = logging.getLogger('brand_studio.trademark_checker')
 
@@ -301,36 +303,62 @@ def batch_trademark_search(
     return results
 
 
-# ADK Tool Registration
+# ADK FunctionTool Registration
+
+def search_trademarks_tool(
+    brand_name: str,
+    limit: int = 20
+) -> Dict[str, Any]:
+    """
+    ADK FunctionTool for searching USPTO trademark database for conflicts.
+
+    This tool searches the USPTO database for existing trademarks that may conflict
+    with the proposed brand name and provides a risk assessment.
+
+    Args:
+        brand_name: Brand name to search for trademark conflicts
+        limit: Maximum number of results to return (default: 20)
+
+    Returns:
+        Dictionary with trademark search results:
+        {
+            'brand_name': str,
+            'conflicts_found': int,
+            'exact_matches': list,
+            'similar_marks': list,
+            'risk_level': str,  # 'low', 'medium', 'high', 'critical'
+            'checked_at': str,
+            'source': str
+        }
+
+    Example:
+        >>> result = search_trademarks_tool("TechFlow", category="009")
+        >>> print(result['risk_level'])
+        'medium'
+    """
+    logger.info(f"Trademark checker tool called for '{brand_name}'")
+
+    # Call the underlying search_trademarks_uspto function
+    # No category filter - search all
+    return search_trademarks_uspto(
+        brand_name=brand_name,
+        category=None,  # Search all categories
+        limit=limit
+    )
+
+
+# Create the FunctionTool instance for use in agents
+trademark_checker_tool = FunctionTool(search_trademarks_tool)
+
+
+# Legacy function for backward compatibility
 def create_trademark_checker_tool():
     """
     Create and return an ADK-compatible tool for trademark checking.
 
+    DEPRECATED: Use trademark_checker_tool directly instead.
+
     Returns:
-        Tool instance that can be used by ADK agents
-
-    Example:
-        >>> from src.tools.trademark_checker import create_trademark_checker_tool
-        >>> trademark_tool = create_trademark_checker_tool()
-        >>> # Use with agent
-        >>> agent = LlmAgent(
-        ...     name="validation_agent",
-        ...     tools=[trademark_tool],
-        ...     ...
-        ... )
+        FunctionTool instance that can be used by ADK agents
     """
-    # Try to import real ADK, fall back to mock for development
-    try:
-        from google_genai.adk import Tool
-    except ImportError:
-        from src.utils.mock_adk import Tool
-
-    return Tool(
-        name="search_trademarks_uspto",
-        description=(
-            "Search USPTO trademark database for potential conflicts with a brand name. "
-            "Returns exact matches, similar marks, and risk assessment (low/medium/high/critical). "
-            "Helps identify trademark conflicts before finalizing brand names."
-        ),
-        func=search_trademarks_uspto
-    )
+    return trademark_checker_tool

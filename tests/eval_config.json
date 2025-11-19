@@ -1,0 +1,33 @@
+{
+  "config_version": "1.0",
+  "description": "Evaluation configuration for AI Brand Studio agents",
+  "evaluation_criteria": {
+    "tool_trajectory_avg_score": 1.0,
+    "response_match_score": 0.8
+  },
+  "custom_evaluators": [
+    {
+      "name": "name_quality_evaluator",
+      "module": "tests.evaluators.name_quality_evaluator",
+      "class": "NameQualityEvaluator",
+      "weight": 0.3,
+      "description": "Evaluates brand name quality based on memorability, pronounceability, and uniqueness"
+    },
+    {
+      "name": "validation_accuracy_evaluator",
+      "module": "tests.evaluators.validation_accuracy_evaluator",
+      "class": "ValidationAccuracyEvaluator",
+      "weight": 0.3,
+      "description": "Evaluates accuracy of domain and trademark validation results"
+    }
+  ],
+  "thresholds": {
+    "minimum_passing_score": 0.7,
+    "excellent_score": 0.9
+  },
+  "output_settings": {
+    "verbose": true,
+    "save_detailed_results": true,
+    "results_directory": "tests/eval_results"
+  }
+}

@@ -16,6 +16,8 @@ import requests
 from typing import Dict, Optional, List, Set
 from datetime import datetime, timedelta
 import whois
+from google.adk.tools import FunctionTool
+from google.adk.tools.tool_context import ToolContext
 
 # Configure logger
 logger = logging.getLogger('brand_studio.domain_checker')
@@ -447,36 +449,58 @@ def clear_cache() -> None:
     logger.info("Domain cache cleared")
 
 
-# ADK Tool Registration
+# ADK FunctionTool Registration
+
+def check_domain_availability_tool(
+    brand_name: str,
+    include_prefixes: bool = False
+) -> Dict[str, bool]:
+    """
+    ADK FunctionTool for checking domain availability across multiple TLDs.
+
+    This tool checks if domains are available for registration across popular
+    extensions including .com, .ai, .io, .so, .app, .co, .is, .me, .net, and .to.
+
+    Args:
+        brand_name: Brand name to check (converted to domain format)
+        include_prefixes: If True, also check prefix variations like get-, try-, etc. (only .com)
+
+    Returns:
+        Dictionary mapping domain names to availability:
+        {
+            'brandname.com': True,   # Available
+            'brandname.ai': False,   # Taken
+            'brandname.io': True     # Available
+        }
+
+    Example:
+        >>> result = check_domain_availability_tool("MyBrand", extensions=[".com", ".ai", ".io"])
+        >>> print(result)
+        {'mybrand.com': True, 'mybrand.ai': False, 'mybrand.io': True}
+    """
+    logger.info(f"Domain checker tool called for '{brand_name}'")
+
+    # Call the underlying check_domain_availability function
+    # Always use default extensions (all 10 TLDs)
+    return check_domain_availability(
+        brand_name=brand_name,
+        extensions=None,  # Use default extensions
+        include_prefixes=include_prefixes
+    )
+
+
+# Create the FunctionTool instance for use in agents
+domain_checker_tool = FunctionTool(check_domain_availability_tool)
+
+
+# Legacy function for backward compatibility
 def create_domain_checker_tool():
     """
     Create and return an ADK-compatible tool for domain availability checking.
 
+    DEPRECATED: Use domain_checker_tool directly instead.
+
     Returns:
-        Tool instance that can be used by ADK agents
-
-    Example:
-        >>> from src.tools.domain_checker import create_domain_checker_tool
-        >>> domain_tool = create_domain_checker_tool()
-        >>> # Use with agent
-        >>> agent = LlmAgent(
-        ...     name="validation_agent",
-        ...     tools=[domain_tool],
-        ...     ...
-        ... )
+        FunctionTool instance that can be used by ADK agents
     """
-    # Try to import real ADK, fall back to mock for Phase 1
-    try:
-        from google_genai.adk import Tool
-    except ImportError:
-        from src.utils.mock_adk import Tool
-
-    return Tool(
-        name="check_domain_availability",
-        description=(
-            "Check domain availability for brand names across .com, .ai, and .io extensions. "
-            "Returns availability status for each domain extension. "
-            "Automatically handles WHOIS errors and caches results for 5 minutes."
-        ),
-        func=check_domain_availability
-    )
+    return domain_checker_tool

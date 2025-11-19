@@ -10,6 +10,8 @@ import logging
 import numpy as np
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from google.adk.tools import FunctionTool
+from google.adk.tools.tool_context import ToolContext
 
 logger = logging.getLogger('brand_studio.brand_retrieval')
 
@@ -295,25 +297,65 @@ def search_similar_brands(
     )
 
 
-# ADK Tool Registration
+# ADK FunctionTool Registration
+
+def retrieve_similar_brands_tool(
+    query: str,
+    top_k: int = 5,
+    industry: Optional[str] = None,
+    tool_context: ToolContext = None
+) -> Dict[str, Any]:
+    """
+    ADK FunctionTool for retrieving similar brand names from the database.
+
+    This tool searches for brands similar to the query using semantic search
+    and returns relevant examples with their metadata.
+
+    Args:
+        query: Search query describing the product, industry, or desired characteristics
+        top_k: Number of similar brands to return (default: 5)
+        industry: Optional industry filter to narrow results
+        tool_context: ADK ToolContext for accessing session state
+
+    Returns:
+        Dictionary with 'similar_brands' list containing matching brand examples
+
+    Example:
+        >>> result = retrieve_similar_brands_tool("AI productivity app", top_k=3, industry="technology")
+        >>> print(result['similar_brands'][0]['brand_name'])
+        "Notion"
+    """
+    logger.info(f"RAG tool called with query='{query}', top_k={top_k}, industry={industry}")
+
+    # Get the singleton retrieval instance
+    retrieval = get_brand_retrieval()
+
+    # Perform retrieval
+    similar_brands = retrieval.retrieve_similar_brands(
+        query=query,
+        top_k=top_k,
+        industry_filter=industry
+    )
+
+    # Log to tool_context if available
+    if tool_context:
+        logger.debug(f"Tool context available: session_id={getattr(tool_context, 'session_id', None)}")
+
+    return {"similar_brands": similar_brands}
+
+
+# Create the FunctionTool instance for use in agents
+brand_retrieval_tool = FunctionTool(retrieve_similar_brands_tool)
+
+
+# Legacy function for backward compatibility
 def create_brand_retrieval_tool():
     """
     Create and return an ADK-compatible tool for brand retrieval.
 
-    Returns:
-        Tool instance that can be used by ADK agents
-    """
-    try:
-        from google_genai.adk import Tool
-    except ImportError:
-        from src.utils.mock_adk import Tool
+    DEPRECATED: Use brand_retrieval_tool directly instead.
 
-    return Tool(
-        name="search_similar_brands",
-        description=(
-            "Search for similar successful brand names from a curated database. "
-            "Retrieves brands with similar characteristics, industry, or naming patterns. "
-            "Useful for finding inspiration and understanding naming conventions."
-        ),
-        func=search_similar_brands
-    )
+    Returns:
+        FunctionTool instance that can be used by ADK agents
+    """
+    return brand_retrieval_tool
