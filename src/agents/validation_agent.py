@@ -10,6 +10,9 @@ import os
 from typing import List, Dict, Any, Optional
 from google.cloud import aiplatform
 
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
+
 # Import validation tools
 from src.tools.domain_checker import check_domain_availability
 from src.tools.trademark_checker import search_trademarks_uspto

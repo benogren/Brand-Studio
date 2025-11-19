@@ -9,7 +9,9 @@ import logging
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from google.cloud import aiplatform
-from google.cloud import logging as cloud_logging
+
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
 
 # Try to import real ADK, fall back to mock for Phase 1
 try:
@@ -174,11 +176,12 @@ class BrandStudioOrchestrator:
         self.enable_memory_bank = enable_memory_bank
         self.user_id = user_id or "default_user"
 
-        # Initialize logging
-        self.logger = self._setup_logging(project_id, enable_cloud_logging)
-        self.logger.info(
-            "Initializing BrandStudioOrchestrator",
-            extra={
+        # Initialize logging with new BrandStudioLogger
+        self.logger = get_logger(project_id=project_id, enable_cloud_logging=enable_cloud_logging)
+        self.logger.log_agent_action(
+            agent_name="orchestrator",
+            action_type="initialize",
+            metadata={
                 'project_id': project_id,
                 'location': location,
                 'model_name': model_name,
@@ -226,46 +229,6 @@ class BrandStudioOrchestrator:
         )
         self.logger.info("Orchestrator LlmAgent initialized")
 
-    def _setup_logging(
-        self,
-        project_id: str,
-        enable_cloud_logging: bool
-    ) -> logging.Logger:
-        """
-        Set up logging with Cloud Logging integration.
-
-        Args:
-            project_id: Google Cloud project ID
-            enable_cloud_logging: Enable Cloud Logging
-
-        Returns:
-            Configured logger instance
-        """
-        logger = logging.getLogger('brand_studio.orchestrator')
-        logger.setLevel(logging.INFO)
-
-        # Console handler for local development
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
-        console_handler.setFormatter(formatter)
-        logger.addHandler(console_handler)
-
-        # Cloud Logging handler for production
-        if enable_cloud_logging:
-            try:
-                client = cloud_logging.Client(project=project_id)
-                cloud_handler = client.get_default_handler()
-                logger.addHandler(cloud_handler)
-            except Exception as e:
-                logger.warning(
-                    f"Failed to initialize Cloud Logging: {e}. "
-                    "Using console logging only."
-                )
-
-        return logger
 
     def add_sub_agent(self, agent) -> None:
         """

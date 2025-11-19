@@ -10,6 +10,9 @@ import os
 from typing import List, Dict, Any, Optional
 from google.cloud import aiplatform
 
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
+
 # Try to import real ADK, fall back to mock for Phase 2
 try:
     from google_genai.adk import LlmAgent

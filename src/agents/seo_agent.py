@@ -10,6 +10,9 @@ import os
 from typing import Dict, Any
 from google.cloud import aiplatform
 
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
+
 try:
     from google_genai.adk import LlmAgent
 except ImportError:

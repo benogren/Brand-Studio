@@ -10,6 +10,9 @@ import logging
 import os
 from typing import Dict, Any, List
 
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
+
 logger = logging.getLogger('brand_studio.collision_agent')
 
 

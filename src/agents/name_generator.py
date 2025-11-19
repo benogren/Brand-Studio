@@ -12,6 +12,9 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 from google.cloud import aiplatform
 
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
+
 # Try to import real ADK, fall back to mock for Phase 1
 try:
     from google_genai.adk import LlmAgent
@@ -387,9 +390,12 @@ class NameGeneratorAgent:
         self.location = location
         self.model_name = model_name
 
-        logger.info(
-            "Initializing NameGeneratorAgent",
-            extra={
+        # Initialize Brand Studio logger
+        self.logger = get_logger(project_id=project_id)
+        self.logger.log_agent_action(
+            agent_name="name_generator",
+            action_type="initialize",
+            metadata={
                 'project_id': project_id,
                 'location': location,
                 'model_name': model_name
@@ -427,6 +433,7 @@ class NameGeneratorAgent:
         else:
             logger.info("RAG not available, proceeding without RAG enhancement")
 
+    @track_performance("name_generator", "generate")
     def generate_names(
         self,
         product_description: str,

@@ -12,6 +12,9 @@ from google.cloud import aiplatform
 from google import genai
 from google.genai import types
 
+# Import Brand Studio logging
+from src.infrastructure.logging import get_logger, track_performance
+
 try:
     from google_genai.adk import LlmAgent
 except ImportError:
