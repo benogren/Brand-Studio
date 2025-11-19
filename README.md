@@ -4,6 +4,10 @@
 
 Powered by Google Agent Development Kit (ADK) and Gemini models.
 
+[![Deployment Status](https://img.shields.io/badge/Deployment-Ready-success)](DEPLOYMENT.md)
+[![ADK Version](https://img.shields.io/badge/ADK-1.18.0-blue)](https://cloud.google.com/vertex-ai/generative-ai/docs/agent-development-kit)
+[![Gemini](https://img.shields.io/badge/Gemini-2.0%20Flash-orange)](https://ai.google.dev/gemini-api/docs)
+
 ## Overview
 
 AI Brand Studio creates complete brand identities through a simple conversational interface. Just answer a few questions and the system guides you through:
@@ -278,8 +282,37 @@ gcloud auth application-default login
 - Public APIs may be rate-limited
 - System continues with simulated results for development
 
+## Deployment
+
+### Deployment-Ready Configuration
+
+This project is configured for deployment to **Vertex AI Agent Engine**:
+
+✅ **Deployment Status:** Ready
+✅ **Configuration:** Complete
+✅ **Verification:** All checks passed
+
+```bash
+# Verify deployment readiness
+python verify_deployment_ready.py
+
+# Deploy to Vertex AI Agent Engine
+cd brand_studio_agent
+# See DEPLOYMENT.md for detailed deployment instructions
+```
+
+**Deployment Features:**
+- Auto-scaling (0-5 instances)
+- Resource optimization (2 CPU, 4Gi memory)
+- Health checks enabled
+- Cloud Logging integration
+- Production-ready configuration
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete deployment guide.
+
 ## Documentation
 
+- `DEPLOYMENT.md` - Production deployment guide ⭐ NEW
 - `TESTING.md` - Testing strategies and evaluation
 - `CLAUDE.md` - Agent architecture and patterns
 - `coursework/` - ADK learning materials (Days 1-5)
