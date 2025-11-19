@@ -169,7 +169,7 @@ class BrandCollisionAgent:
         self,
         project_id: str,
         location: str = "us-central1",
-        model_name: str = "gemini-1.5-flash"  # For AI Studio API
+        model_name: str = "gemini-2.5-flash"  # For AI Studio API with search
     ):
         """
         Initialize the collision detection agent.
