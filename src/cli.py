@@ -131,11 +131,31 @@ async def run_name_generation(product_info: Dict[str, str], count: int, feedback
     runner = InMemoryRunner(agent=name_generator)
 
     if feedback:
-        prompt = f"""
+        kept_list = []
+        if kept_names:
+            kept_list = [name.strip() for name in kept_names.split(',') if name.strip()]
+
+        if kept_list:
+            prompt = f"""
+IMPORTANT: Keep these names that the user liked:
+{', '.join(kept_list)}
+
+Now generate {count} ADDITIONAL brand names to supplement the kept names, incorporating this feedback:
+
+User feedback: {feedback}
+
+Product: {product_info['product']}
+Personality: {product_info['personality']}
+Industry: {product_info['industry']}
+
+Return as JSON array with ALL names (kept ones + new ones) with: name, strategy, rationale, strength_score
+Mark the kept names with "kept": true in the JSON.
+"""
+        else:
+            prompt = f"""
 Generate {count} NEW brand names incorporating this feedback:
 
-Previous names you liked: {kept_names or 'None'}
-Your feedback: {feedback}
+User feedback: {feedback}
 
 Product: {product_info['product']}
 Personality: {product_info['personality']}
@@ -159,9 +179,36 @@ Return as JSON array with: name, strategy, rationale, strength_score
     return extract_text_from_events(events)
 
 
-async def run_validation(names: str, product_info: Dict[str, str]) -> str:
-    """Run validation agent with collision detection."""
+async def run_validation(names: str, product_info: Dict[str, str]) -> Dict[str, Any]:
+    """Run validation agent with collision detection. Returns structured data."""
     from src.agents.collision_agent import BrandCollisionAgent
+    import json
+    import re
+
+    # Sanitize brand names - remove or warn about special characters
+    sanitized_names = []
+    original_names = [n.strip() for n in names.split(',')]
+
+    for name in original_names:
+        # Check for special characters that might cause issues
+        if any(char in name for char in ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '=', '+', '[', ']', '{', '}', '|', '\\', ';', ':', '"', "'", '<', '>', '?', '/']):
+            print(f"\n⚠️  Warning: '{name}' contains special characters that may not be valid in domains.")
+            print(f"   Domains typically only allow letters, numbers, and hyphens.")
+            sanitized = re.sub(r'[^a-zA-Z0-9\s-]', '', name)
+            if sanitized and sanitized.strip():
+                print(f"   Using sanitized version: '{sanitized.strip()}'")
+                sanitized_names.append(sanitized.strip())
+            else:
+                print(f"   Skipping '{name}' - no valid characters remaining after sanitization.\n")
+        else:
+            sanitized_names.append(name)
+
+    if not sanitized_names:
+        return {
+            'validation_data': [{'raw_output': 'No valid brand names to validate after sanitization.'}],
+            'collision_data': [],
+            'raw_validation_output': 'No valid brand names to validate.'
+        }
 
     # Run domain and trademark validation
     validation_agent = create_validation_agent()
@@ -169,7 +216,7 @@ async def run_validation(names: str, product_info: Dict[str, str]) -> str:
 
     prompt = f"""
 Validate these brand names:
-{names}
+{', '.join(sanitized_names)}
 
 Check:
 1. Domain availability (.com, .ai, .io, and other TLDs)
@@ -184,29 +231,50 @@ Return validation results in JSON format with domain availability, trademark ana
         events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
     validation_output = extract_text_from_events(events)
 
-    # Run collision detection for search results
+    # Try to parse JSON from validation output
+    validation_data = []
+    try:
+        # Extract JSON from markdown code blocks or raw text
+        json_match = re.search(r'```json\s*(.*?)\s*```', validation_output, re.DOTALL)
+        if json_match:
+            parsed = json.loads(json_match.group(1))
+        else:
+            parsed = json.loads(validation_output)
+
+        # Handle both single object and array
+        if isinstance(parsed, dict):
+            validation_data = [parsed]
+        else:
+            validation_data = parsed
+    except:
+        # If parsing fails, just store the raw text
+        validation_data = [{"raw_output": validation_output}]
+
+    # Run collision detection for search results (use sanitized names)
+    collision_data = []
     try:
         project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
         collision_agent = BrandCollisionAgent(project_id=project_id)
 
-        collision_results = []
-        for name in names.split(','):
-            name = name.strip()
+        for name in sanitized_names:
             if name:
                 collision_result = collision_agent.analyze_brand_collision(
                     brand_name=name,
                     industry=product_info.get('industry', 'general'),
                     product_description=product_info.get('product', '')
                 )
-                collision_results.append(f"\n\n**Search Collision Analysis for {name}:**\n{collision_result.get('risk_summary', 'No analysis available')}\n- Risk Level: {collision_result.get('collision_risk_level', 'unknown')}\n- Recommendation: {collision_result.get('recommendation', 'N/A')}")
-
-        # Combine validation and collision results
-        combined_output = validation_output + "\n\n" + "=" * 70 + "\n## SEARCH RESULT COLLISION ANALYSIS\n" + "=" * 70 + "\n".join(collision_results)
-        return combined_output
-
+                collision_data.append({
+                    'brand_name': name,
+                    'collision_result': collision_result
+                })
     except Exception as e:
         logger.warning(f"Collision detection failed: {e}")
-        return validation_output + f"\n\n(Note: Search collision analysis unavailable: {e})"
+
+    return {
+        'validation_data': validation_data,
+        'collision_data': collision_data,
+        'raw_validation_output': validation_output
+    }
 
 
 async def run_story(brand_name: str, product_info: Dict[str, str]) -> str:
@@ -242,6 +310,144 @@ def display_names(names_output: str):
     print("=" * 70 + "\n")
     print(names_output)
     print()
+
+
+def display_validation_results(validation_results: Dict[str, Any]):
+    """Display detailed validation results in a structured format."""
+    print("\n" + "=" * 70)
+    print("VALIDATION RESULTS")
+    print("=" * 70 + "\n")
+
+    validation_data = validation_results.get('validation_data', [])
+    collision_data = validation_results.get('collision_data', [])
+
+    # Display each validated name
+    for i, val_data in enumerate(validation_data, 1):
+        if 'raw_output' in val_data:
+            # Fallback: just display raw output if parsing failed
+            print(val_data['raw_output'])
+            continue
+
+        brand_name = val_data.get('brand_name', f'Name #{i}')
+        status = val_data.get('validation_status', 'UNKNOWN')
+        score = val_data.get('overall_score', 0)
+
+        # Header
+        print(f"{'='*70}")
+        print(f"BRAND NAME: {brand_name}")
+        print(f"Status: {status} | Overall Score: {score}/100")
+        print(f"{'='*70}\n")
+
+        # Domain Availability
+        domain_info = val_data.get('domain_availability', {})
+        if domain_info:
+            print("📍 DOMAIN AVAILABILITY:")
+            print("-" * 70)
+            best_available = domain_info.get('best_available', 'N/A')
+            print(f"   Best Available: {best_available}")
+            print(f"   Domain Score: {domain_info.get('domain_score', 0)}/50\n")
+
+            # Separate base domains and prefix variations
+            base_domains = {}
+            prefix_domains = {}
+
+            for domain, available in domain_info.items():
+                if domain not in ['best_available', 'domain_score']:
+                    # Check if it's a prefixed domain (contains common prefixes)
+                    domain_lower = domain.lower()
+                    is_prefix = any(domain_lower.startswith(prefix) for prefix in ['get', 'try', 'use', 'my', 'hello', 'your'])
+
+                    if is_prefix:
+                        prefix_domains[domain] = available
+                    else:
+                        base_domains[domain] = available
+
+            # Show base TLDs first
+            if base_domains:
+                print("   Base Domains:")
+                for tld, available in base_domains.items():
+                    status_icon = "✅" if available else "❌"
+                    status_text = "Available" if available else "Unavailable"
+                    print(f"   {status_icon} {tld:25s} {status_text}")
+
+            # Show prefix variations
+            if prefix_domains:
+                print("\n   Prefix Variations (.com):")
+                for domain, available in prefix_domains.items():
+                    status_icon = "✅" if available else "❌"
+                    status_text = "Available" if available else "Unavailable"
+                    print(f"   {status_icon} {domain:25s} {status_text}")
+
+            print()
+
+        # Trademark Analysis
+        trademark_info = val_data.get('trademark_analysis', {})
+        if trademark_info:
+            print("⚖️  TRADEMARK ANALYSIS:")
+            print("-" * 70)
+            risk_level = trademark_info.get('risk_level', 'unknown').upper()
+            conflicts_found = trademark_info.get('conflicts_found', 0)
+            trademark_score = trademark_info.get('trademark_score', 0)
+
+            risk_icon = "🟢" if risk_level == "LOW" else "🟡" if risk_level == "MEDIUM" else "🔴"
+            print(f"   Risk Level: {risk_icon} {risk_level}")
+            print(f"   Conflicts Found: {conflicts_found}")
+            print(f"   Trademark Score: {trademark_score}/50\n")
+
+            exact_matches = trademark_info.get('exact_matches', [])
+            if exact_matches:
+                print(f"   ⚠️  Exact Matches:")
+                for match in exact_matches:
+                    print(f"      - {match}")
+
+            similar_marks = trademark_info.get('similar_marks', [])
+            if similar_marks:
+                print(f"   ⚠️  Similar Marks:")
+                for mark in similar_marks:
+                    print(f"      - {mark}")
+
+            print()
+
+        # Recommendation
+        recommendation = val_data.get('recommendation', 'N/A')
+        action_required = val_data.get('action_required', 'N/A')
+        if recommendation:
+            print("💡 RECOMMENDATION:")
+            print("-" * 70)
+            print(f"   {recommendation}")
+            if action_required:
+                print(f"\n   Action Required: {action_required}")
+            print()
+
+        print()
+
+    # Display collision detection results
+    if collision_data:
+        print("\n" + "=" * 70)
+        print("SEARCH COLLISION ANALYSIS")
+        print("=" * 70 + "\n")
+
+        for collision_entry in collision_data:
+            brand_name = collision_entry.get('brand_name', 'Unknown')
+            collision_result = collision_entry.get('collision_result', {})
+
+            print(f"{'='*70}")
+            print(f"BRAND: {brand_name}")
+            print(f"{'='*70}\n")
+
+            risk_level = collision_result.get('collision_risk_level', 'unknown').upper()
+            risk_summary = collision_result.get('risk_summary', 'No analysis available')
+            recommendation = collision_result.get('recommendation', 'N/A')
+
+            risk_icon = "🟢" if risk_level == "NONE" or risk_level == "LOW" else "🟡" if risk_level == "MEDIUM" else "🔴"
+            print(f"🔍 Risk Level: {risk_icon} {risk_level}\n")
+            print(f"📊 Risk Summary:")
+            print(f"   {risk_summary}\n")
+            print(f"💡 Recommendation:")
+            print(f"   {recommendation}\n")
+            print()
+
+    print("=" * 70)
 
 
 def main():
@@ -292,7 +498,10 @@ def main():
             count = input("How many new names? (default=10): ").strip()
             count = int(count) if count.isdigit() else 10
 
-            print(f"\nGenerating {count} new names based on your feedback...")
+            if kept:
+                print(f"\nKeeping your liked names and generating {count} additional names based on your feedback...")
+            else:
+                print(f"\nGenerating {count} new names based on your feedback...")
             names_output = asyncio.run(run_name_generation(product_info, count, feedback, kept))
 
         all_names.append(names_output)
@@ -317,32 +526,97 @@ def main():
             print("Invalid choice, continuing...")
             iteration += 1
 
-    # Validation
-    print("\n" + "=" * 70)
-    print("VALIDATION")
-    print("=" * 70)
+    # Validation and post-validation loop
+    validation_results = None
+    while True:
+        print("\n" + "=" * 70)
+        print("VALIDATION")
+        print("=" * 70)
 
-    names_to_validate = input("\nEnter names to validate (comma-separated): ").strip()
+        names_to_validate = input("\nEnter names to validate (comma-separated): ").strip()
 
-    if names_to_validate:
+        if not names_to_validate:
+            print("⚠️  No names entered. Please enter at least one name to validate.\n")
+            continue
+
         print("\nValidating names (checking domains, trademarks, and search collisions)...")
         print("This may take a minute...\n")
 
-        validation_output = asyncio.run(run_validation(names_to_validate, product_info))
+        validation_results = asyncio.run(run_validation(names_to_validate, product_info))
+        display_validation_results(validation_results)
 
-        print("=" * 70)
-        print("VALIDATION RESULTS")
-        print("=" * 70 + "\n")
-        print(validation_output)
-        print()
+        # Post-validation options
+        print("\nWhat would you like to do next?")
+        print("  1. Generate more names with feedback")
+        print("  2. Validate different names")
+        print("  3. Continue to brand story")
+        print("  4. Quit")
 
-    # Ask if they want to continue to story
-    print("\nWould you like to generate a brand story for one of these names?")
-    choice = input("Enter 'y' to continue or 'n' to quit: ").strip().lower()
+        choice = input("\nEnter choice (1-4): ").strip()
 
-    if choice != 'y':
-        print("\nGoodbye!")
-        sys.exit(0)
+        if choice == '1':
+            # Go back to name generation with feedback
+            iteration += 1
+
+            # Name generation loop (same as the initial generation loop)
+            while True:
+                print(f"\n{'='*70}")
+                print(f"ROUND {iteration}: NAME GENERATION WITH FEEDBACK")
+                print("=" * 70)
+
+                feedback = input("\nWhat feedback do you have? (e.g., 'More tech-focused', 'Shorter names'): ").strip()
+                kept = input("Any names you liked from validation? (comma-separated, or press Enter): ").strip()
+                count = input("How many new names? (default=10): ").strip()
+                count = int(count) if count.isdigit() else 10
+
+                if kept:
+                    print(f"\nKeeping your liked names and generating {count} additional names based on your feedback...")
+                else:
+                    print(f"\nGenerating {count} new names based on your feedback...")
+
+                names_output = asyncio.run(run_name_generation(product_info, count, feedback, kept))
+                all_names.append(names_output)
+                display_names(names_output)
+
+                # Show name generation menu options
+                print("\nWhat would you like to do next?")
+                print("  1. Generate more names with feedback")
+                print("  2. Validate selected names")
+                print("  3. Quit")
+
+                name_choice = input("\nEnter choice (1-3): ").strip()
+
+                if name_choice == '1':
+                    iteration += 1
+                    continue  # Continue name generation loop
+                elif name_choice == '2':
+                    break  # Break to go back to validation loop
+                elif name_choice == '3':
+                    print("\nGoodbye!")
+                    sys.exit(0)
+                else:
+                    print("Invalid choice, continuing...")
+                    iteration += 1
+                    continue
+
+            # After breaking from name generation, continue to validation loop
+            continue
+
+        elif choice == '2':
+            # Validate different names
+            continue
+
+        elif choice == '3':
+            # Continue to story
+            break
+
+        elif choice == '4':
+            print("\nGoodbye!")
+            sys.exit(0)
+
+        else:
+            print("Invalid choice. Please try again.")
+            continue
 
     # Brand story
     print("\n" + "=" * 70)

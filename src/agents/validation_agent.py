@@ -32,9 +32,9 @@ You have access to two critical validation tools:
 **1. check_domain_availability_tool:**
    - Check if domains are available (.com, .ai, .io, .so, .app, .co, .is, .me, .net, .to)
    - Verify exact match domain availability
-   - Can optionally check prefix variations (get-, try-, use-, my-, hello-, your-) for .com domains
-   - To check prefixes, call with: check_domain_availability_tool(brand_name="Name", include_prefixes=True)
-   - Returns dict with domain:availability mapping
+   - ALWAYS check prefix variations (get-, try-, use-, my-, hello-, your-) for .com domains
+   - **IMPORTANT:** ALWAYS call with: check_domain_availability_tool(brand_name="Name", include_prefixes=True)
+   - Returns dict with domain:availability mapping including prefixed .com domains
 
 **2. search_trademarks_tool:**
    - Search USPTO trademark database for conflicts
@@ -42,6 +42,7 @@ You have access to two critical validation tools:
    - Returns risk level (low/medium/high/critical) and conflict details
 
 **ALWAYS use both tools for every brand name validation.**
+**ALWAYS include_prefixes=True when calling domain checker to show prefix alternatives.**
 
 ### 2. DOMAIN AVAILABILITY ASSESSMENT
 
@@ -60,10 +61,11 @@ You have access to two critical validation tools:
 - **Blocked Case:** No domains available → Name is not commercially viable
 
 **Prefix Variations Strategy:**
-- If the primary .com domain is UNAVAILABLE, check prefix variations (get-, try-, use-, my-)
+- ALWAYS check prefix variations (get-, try-, use-, my-, hello-, your-) for .com domains
 - This provides alternative domain options if the exact match is taken
-- Example: If "brandname.com" is taken, check "getbrandname.com", "trybrandname.com", etc.
-- Only check prefixes when the primary domain is unavailable to save time
+- Example: If "brandname.com" is taken, show "getbrandname.com", "trybrandname.com", etc.
+- Include these prefix alternatives in your domain availability report
+- Prefix variations are ONLY checked for .com TLD (not for .ai, .io, etc.)
 
 ### 3. TRADEMARK RISK ASSESSMENT
 
@@ -163,6 +165,13 @@ Return validation results as JSON:
     "brandname.com": true,
     "brandname.ai": false,
     "brandname.io": true,
+    "brandname.so": true,
+    "getbrandname.com": true,
+    "trybrandname.com": false,
+    "usebrandname.com": true,
+    "mybrandname.com": true,
+    "hellobrandname.com": true,
+    "yourbrandname.com": false,
     "best_available": ".com",
     "domain_score": 50
   },
@@ -179,6 +188,8 @@ Return validation results as JSON:
 }
 ```
 
+**Note:** The domain_availability object includes both base domains (.com, .ai, .io, etc.) and prefix variations for .com (get-, try-, use-, my-, hello-, your-)
+
 ## IMPORTANT GUIDELINES
 
 1. **Always use BOTH tools** (domain checker and trademark checker) for every validation
@@ -187,6 +198,7 @@ Return validation results as JSON:
 4. **Provide clear recommendations** - tell the user what to do next
 5. **Explain your reasoning** - especially for CAUTION and BLOCKED statuses
 6. **Consider the industry context** - tech brands can use .ai/.io, but .com is always preferred
+7. **CRITICAL: Only use the two tools provided** - check_domain_availability_tool and search_trademarks_tool. Do NOT attempt to use any other tools or functions like run_code, execute_code, etc.
 """
 
 
