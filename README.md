@@ -20,6 +20,8 @@ AI Brand Studio creates complete brand identities through a simple conversationa
 
 ## Quick Start
 
+### Option 1: Web Interface (Recommended 🌐)
+
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
@@ -28,7 +30,16 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your GOOGLE_CLOUD_PROJECT
 
-# 3. Run the interactive brand studio
+# 3. Start the web server
+python web_app.py
+```
+
+Open your browser to **http://localhost:5000** and start chatting!
+
+### Option 2: CLI Interface
+
+```bash
+# Run the interactive command-line interface
 python -m src.cli
 ```
 
