@@ -9,25 +9,26 @@ Usage:
     python -m src.cli_chat
 """
 
+# IMPORTANT: Set up warning filters BEFORE any other imports
+import warnings
+warnings.filterwarnings('ignore', message='.*App name mismatch.*')
+warnings.filterwarnings('ignore', message='.*non-text parts in the response.*')
+warnings.filterwarnings('ignore', message='.*ADK LoggingPlugin not available.*')
+
 import os
 import sys
 import asyncio
-import warnings
 import logging
 from typing import Dict, Any
 from dotenv import load_dotenv
 
 from google.adk.runners import InMemoryRunner
+from google.adk.apps.app import App
 from src.agents.research_agent import create_research_agent
 from src.agents.name_generator import create_name_generator_agent
 from src.agents.validation_agent import create_validation_agent
 from src.agents.story_agent import create_story_agent
 from src.infrastructure.session_manager import get_session_manager, BrandSessionState
-
-# Suppress ADK warnings for cleaner CLI output
-warnings.filterwarnings('ignore', message='.*App name mismatch.*')
-warnings.filterwarnings('ignore', message='.*non-text parts in the response.*')
-warnings.filterwarnings('ignore', message='.*ADK LoggingPlugin not available.*')
 
 # Configure logging to suppress ADK debug messages
 logging.getLogger('google.adk').setLevel(logging.ERROR)
@@ -45,11 +46,41 @@ class SuppressStderr:
         sys.stderr = self._original_stderr
 
 
+def create_runner_for_agent(agent, app_name: str = None):
+    """
+    Create an InMemoryRunner with proper App wrapper to avoid name mismatch warnings.
+
+    Args:
+        agent: The ADK agent to wrap
+        app_name: Optional app name (defaults to agent name)
+
+    Returns:
+        InMemoryRunner instance
+    """
+    if app_name is None:
+        app_name = getattr(agent, 'name', 'BrandStudioAgent')
+
+    app = App(
+        name=app_name,
+        root_agent=agent
+    )
+
+    return InMemoryRunner(app=app)
+
+
 def print_banner():
     """Print welcome banner."""
-    print("\n" + "=" * 70)
-    print("AI BRAND STUDIO - INTERACTIVE MODE")
-    print("=" * 70)
+    print("\n")
+    print("=" * 80)
+    print(r"""
+    ___    ____   ____                      __   _____ __            ___
+   /   |  /  _/  / __ )_________  ____  ____/ /  / ___// /___  ______/ (_)___
+  / /| |  / /   / __  / ___/ __ \/ __ \/ __  /   \__ \/ __/ / / / __  / / __ \
+ / ___ |_/ /   / /_/ / /  / /_/ / / / / /_/ /   ___/ / /_/ /_/ / /_/ / / /_/ /
+/_/  |_/___/  /_____/_/   \__,_/_/ /_/\__,_/   /____/\__/\__,_/\__,_/_/\____/
+
+    """)
+    print("=" * 80)
     print("\nWelcome! I'll help you create a complete brand identity.")
     print("Just answer a few questions and I'll guide you through the process.\n")
 
@@ -63,7 +94,7 @@ def get_product_info() -> Dict[str, str]:
         print("Please provide a product description.")
         product = input("What does your product do? ").strip()
 
-    audience = input("Who is it for? (press Enter for 'General consumers'): ").strip()
+    audience = input("Great! Who is this product for? (e.g., 'busy professionals', 'Gen Z users', etc.): ").strip()
     if not audience:
         audience = "General consumers"
 
@@ -77,7 +108,7 @@ def get_product_info() -> Dict[str, str]:
     choice = input("Enter number (1-4, default=3): ").strip() or '3'
     personality = personality_map.get(choice, 'innovative')
 
-    industry = input("Industry/category (press Enter for 'general'): ").strip() or 'general'
+    industry = input("What industry/category is this for? (e.g., 'fitness', 'fintech', 'healthcare'): ").strip() or 'general'
 
     return {
         'product': product,
@@ -106,8 +137,9 @@ def extract_text_from_events(events) -> str:
 
 async def run_research(product_info: Dict[str, str]) -> str:
     """Run research agent."""
-    research_agent = create_research_agent()
-    runner = InMemoryRunner(agent=research_agent)
+    with SuppressStderr():
+        research_agent = create_research_agent()
+        runner = create_runner_for_agent(research_agent, "ResearchApp")
 
     prompt = f"""
 Analyze this product for brand naming:
@@ -127,8 +159,9 @@ Provide research insights in JSON format.
 
 async def run_name_generation(product_info: Dict[str, str], count: int, feedback: str = None, kept_names: str = None) -> str:
     """Run name generator agent."""
-    name_generator = create_name_generator_agent()
-    runner = InMemoryRunner(agent=name_generator)
+    with SuppressStderr():
+        name_generator = create_name_generator_agent()
+        runner = create_runner_for_agent(name_generator, "NameGeneratorApp")
 
     if feedback:
         kept_list = []
@@ -211,8 +244,9 @@ async def run_validation(names: str, product_info: Dict[str, str]) -> Dict[str, 
         }
 
     # Run domain and trademark validation
-    validation_agent = create_validation_agent()
-    runner = InMemoryRunner(agent=validation_agent)
+    with SuppressStderr():
+        validation_agent = create_validation_agent()
+        runner = create_runner_for_agent(validation_agent, "ValidationApp")
 
     prompt = f"""
 Validate these brand names:
@@ -279,8 +313,9 @@ Return validation results in JSON format with domain availability, trademark ana
 
 async def run_story(brand_name: str, product_info: Dict[str, str]) -> str:
     """Run story agent."""
-    story_agent = create_story_agent()
-    runner = InMemoryRunner(agent=story_agent)
+    with SuppressStderr():
+        story_agent = create_story_agent()
+        runner = create_runner_for_agent(story_agent, "StoryApp")
 
     prompt = f"""
 Create a complete brand story for:
@@ -303,23 +338,386 @@ Return in JSON format.
     return extract_text_from_events(events)
 
 
+def display_research(research_output: str):
+    """Display research findings in a readable format."""
+    import json
+    import re
+
+    print("\n" + "=" * 80)
+    print("INDUSTRY RESEARCH INSIGHTS")
+    print("=" * 80 + "\n")
+
+    # Try to parse JSON from the output
+    try:
+        # Extract JSON from markdown code blocks or raw text
+        json_match = re.search(r'```json\s*(.*?)\s*```', research_output, re.DOTALL)
+        if json_match:
+            parsed = json.loads(json_match.group(1))
+        else:
+            parsed = json.loads(research_output)
+
+        # Display Industry Analysis
+        industry = parsed.get('industry_analysis', {})
+        if industry:
+            print("🔍 INDUSTRY ANALYSIS")
+            print("─" * 80)
+
+            if industry.get('market_dynamics'):
+                print(f"\nMarket Dynamics:\n   {industry['market_dynamics']}")
+
+            if industry.get('key_characteristics'):
+                print(f"\nKey Characteristics:")
+                for char in industry['key_characteristics']:
+                    print(f"   • {char}")
+
+            if industry.get('trends'):
+                print(f"\nEmerging Trends:")
+                for trend in industry['trends']:
+                    print(f"   • {trend}")
+
+            if industry.get('terminology'):
+                print(f"\nIndustry Terminology:")
+                print(f"   {', '.join(industry['terminology'][:10])}")
+            print()
+
+        # Display Competitor Patterns
+        competitors = parsed.get('competitor_patterns', {})
+        if competitors:
+            print("\n🏆 COMPETITOR NAMING PATTERNS")
+            print("─" * 80)
+
+            if competitors.get('common_strategies'):
+                print(f"\nCommon Strategies:")
+                for strategy in competitors['common_strategies']:
+                    print(f"   • {strategy}")
+
+            if competitors.get('successful_examples'):
+                print(f"\nSuccessful Examples:")
+                for example in competitors['successful_examples'][:5]:
+                    brand = example.get('brand', 'N/A')
+                    reason = example.get('why_it_works', 'N/A')
+                    print(f"   • {brand}: {reason}")
+
+            if competitors.get('patterns_to_avoid'):
+                print(f"\nPatterns to Avoid:")
+                for pattern in competitors['patterns_to_avoid']:
+                    print(f"   ⚠️  {pattern}")
+            print()
+
+        # Display Audience Insights
+        audience = parsed.get('audience_insights', {})
+        if audience:
+            print("\n👥 TARGET AUDIENCE INSIGHTS")
+            print("─" * 80)
+
+            if audience.get('demographics'):
+                print(f"\nDemographics:\n   {audience['demographics']}")
+
+            if audience.get('preferences'):
+                print(f"\nPreferences:")
+                for pref in audience['preferences']:
+                    print(f"   • {pref}")
+
+            if audience.get('communication_style'):
+                print(f"\nCommunication Style:\n   {audience['communication_style']}")
+            print()
+
+        # Display Recommendations
+        recommendations = parsed.get('recommendations', {})
+        if recommendations:
+            print("\n💡 STRATEGIC RECOMMENDATIONS")
+            print("─" * 80)
+
+            if recommendations.get('suggested_strategies'):
+                print(f"\nSuggested Naming Strategies:")
+                for strategy in recommendations['suggested_strategies']:
+                    print(f"   ✓ {strategy}")
+
+            if recommendations.get('keywords_to_explore'):
+                print(f"\nKeywords to Explore:")
+                print(f"   {', '.join(recommendations['keywords_to_explore'][:15])}")
+
+            if recommendations.get('personality_fit'):
+                print(f"\nBest Personality Fit:")
+                print(f"   {', '.join([p.title() for p in recommendations['personality_fit']])}")
+
+            if recommendations.get('avoid'):
+                print(f"\nAvoid:")
+                for avoid in recommendations['avoid']:
+                    print(f"   ✗ {avoid}")
+            print()
+
+        print("=" * 80)
+
+    except (json.JSONDecodeError, AttributeError, KeyError) as e:
+        # If parsing fails, fall back to raw output
+        print("⚠️  Could not parse research format. Showing raw output:\n")
+        print(research_output)
+        print()
+
+
 def display_names(names_output: str):
     """Display generated names in a readable format."""
-    print("\n" + "=" * 70)
+    import json
+    import re
+
+    print("\n" + "=" * 80)
     print("GENERATED NAMES")
-    print("=" * 70 + "\n")
-    print(names_output)
-    print()
+    print("=" * 80 + "\n")
+
+    # Try to parse JSON from the output
+    try:
+        # Extract JSON from markdown code blocks or raw text
+        json_match = re.search(r'```json\s*(.*?)\s*```', names_output, re.DOTALL)
+        if json_match:
+            parsed = json.loads(json_match.group(1))
+        else:
+            parsed = json.loads(names_output)
+
+        # Get the names array
+        names_list = parsed.get('generated_names', [])
+
+        if not names_list:
+            # Fallback to raw output
+            print(names_output)
+            return
+
+        # Display each name in a formatted way
+        for i, name_data in enumerate(names_list, 1):
+            name = name_data.get('name', 'Unknown')
+            strategy = name_data.get('strategy', 'N/A')
+            rationale = name_data.get('rationale', 'N/A')
+            score = name_data.get('strength_score', 0)
+            kept = name_data.get('kept', False)
+
+            # Add visual indicator for kept names
+            kept_indicator = " ⭐ [KEPT]" if kept else ""
+
+            # Create score bar
+            score_bar = "█" * (score // 10) + "░" * (10 - score // 10)
+
+            print(f"{'─' * 80}")
+            print(f"{i}. {name}{kept_indicator}")
+            print(f"{'─' * 80}")
+            print(f"   Strategy:  {strategy.title()}")
+            print(f"   Score:     [{score_bar}] {score}/100")
+            print(f"   Rationale: {rationale}")
+            print()
+
+        print("─" * 80)
+        print(f"Total: {len(names_list)} brand names generated")
+        print("─" * 80)
+
+    except (json.JSONDecodeError, AttributeError, KeyError) as e:
+        # If parsing fails, fall back to raw output
+        print("⚠️  Could not parse names format. Showing raw output:\n")
+        print(names_output)
+        print()
+
+
+def display_story(story_output: str, brand_name: str):
+    """Display brand story in a readable format."""
+    import json
+    import re
+
+    print("\n" + "=" * 80)
+    print(f"BRAND IDENTITY: {brand_name}")
+    print("=" * 80 + "\n")
+
+    # Try to parse JSON from the output
+    try:
+        # Extract JSON from markdown code blocks or raw text
+        json_match = re.search(r'```json\s*(.*?)\s*```', story_output, re.DOTALL)
+        if json_match:
+            parsed = json.loads(json_match.group(1))
+        else:
+            parsed = json.loads(story_output)
+
+        # Display Taglines
+        taglines = parsed.get('taglines', [])
+        if taglines:
+            print("✨ TAGLINE OPTIONS")
+            print("─" * 80)
+            print()
+
+            for i, tagline_data in enumerate(taglines, 1):
+                # Handle both string and dict formats
+                if isinstance(tagline_data, dict):
+                    tagline = tagline_data.get('tagline', str(tagline_data))
+                    strategy = tagline_data.get('strategy', '')
+                    rationale = tagline_data.get('rationale', '')
+
+                    print(f"   {i}. \"{tagline}\"")
+                    if strategy:
+                        print(f"      Strategy: {strategy.replace('_', ' ').title()}")
+                    if rationale:
+                        import textwrap
+                        wrapped_rationale = textwrap.fill(rationale, width=70, initial_indent='      ', subsequent_indent='      ')
+                        print(f"{wrapped_rationale}")
+                    print()
+                else:
+                    # Simple string tagline
+                    print(f"   {i}. \"{tagline_data}\"")
+                    print()
+
+            print()
+
+        # Display Value Proposition
+        value_prop = parsed.get('value_proposition', '')
+        if value_prop:
+            print("🎯 VALUE PROPOSITION")
+            print("─" * 80)
+            print(f"\n   {value_prop}\n")
+            print()
+
+        # Display Brand Story
+        brand_story = parsed.get('brand_story', '')
+        if brand_story:
+            print("📖 BRAND STORY")
+            print("─" * 80)
+            print()
+            # Wrap text nicely at 76 characters
+            import textwrap
+            wrapped_story = textwrap.fill(brand_story, width=76, initial_indent='   ', subsequent_indent='   ')
+            print(wrapped_story)
+            print()
+
+        # Display additional fields if present
+        positioning = parsed.get('positioning_statement', '')
+        if positioning:
+            print("\n🎪 POSITIONING STATEMENT")
+            print("─" * 80)
+            wrapped_positioning = textwrap.fill(positioning, width=76, initial_indent='   ', subsequent_indent='   ')
+            print(f"\n{wrapped_positioning}\n")
+
+        target_audience = parsed.get('target_audience', '')
+        if target_audience:
+            print("\n👥 TARGET AUDIENCE")
+            print("─" * 80)
+            print(f"\n   {target_audience}\n")
+
+        brand_voice = parsed.get('brand_voice', '')
+        if brand_voice:
+            print("\n🗣️  BRAND VOICE")
+            print("─" * 80)
+            print(f"\n   {brand_voice}\n")
+
+        print("=" * 80)
+
+    except (json.JSONDecodeError, AttributeError, KeyError) as e:
+        # If parsing fails, fall back to raw output
+        print("⚠️  Could not parse story format. Showing raw output:\n")
+        print(story_output)
+        print()
 
 
 def display_validation_results(validation_results: Dict[str, Any]):
     """Display detailed validation results in a structured format."""
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 80)
     print("VALIDATION RESULTS")
-    print("=" * 70 + "\n")
+    print("=" * 80 + "\n")
 
     validation_data = validation_results.get('validation_data', [])
     collision_data = validation_results.get('collision_data', [])
+
+    # Check if we got raw text output instead of structured data
+    if validation_data and len(validation_data) == 1 and 'raw_output' in validation_data[0]:
+        raw_output = validation_data[0]['raw_output']
+
+        # Try to parse and format the markdown/text output
+        import re
+
+        # Split by name sections (looking for ### headers)
+        name_sections = re.split(r'###\s+(.+?)\s+Validation Results', raw_output)
+
+        if len(name_sections) > 1:
+            # We have structured markdown output
+            for i in range(1, len(name_sections), 2):
+                if i + 1 < len(name_sections):
+                    name = name_sections[i].strip()
+                    content = name_sections[i + 1].strip()
+
+                    print(f"{'='*80}")
+                    print(f"BRAND NAME: {name}")
+                    print(f"{'='*80}\n")
+
+                    # Parse and display sections
+                    lines = content.split('\n')
+                    current_section = None
+
+                    for line in lines:
+                        line = line.strip()
+                        if not line or line == '---':
+                            continue
+
+                        # Detect section headers
+                        if line.startswith('**Domain Availability:**'):
+                            print("📍 DOMAIN AVAILABILITY:")
+                            print("─" * 80)
+                            current_section = 'domain'
+                        elif line.startswith('**Trademark Analysis:**'):
+                            print("\n⚖️  TRADEMARK ANALYSIS:")
+                            print("─" * 80)
+                            current_section = 'trademark'
+                        elif line.startswith('**Overall Score:**'):
+                            score_match = re.search(r'(\d+)/100', line)
+                            if score_match:
+                                score = int(score_match.group(1))
+                                score_bar = "█" * (score // 10) + "░" * (10 - score // 10)
+                                print(f"\n📊 OVERALL SCORE: [{score_bar}] {score}/100")
+                        elif line.startswith('**Validation Status:**'):
+                            status = line.replace('**Validation Status:**', '').strip()
+                            status_icon = "✅" if status == "AVAILABLE" else "⚠️" if status == "CAUTION" else "❌"
+                            print(f"   Status: {status_icon} {status}")
+                        elif line.startswith('**Recommendation:**'):
+                            rec_text = line.replace('**Recommendation:**', '').strip().strip('"')
+                            print(f"\n💡 RECOMMENDATION:")
+                            print("─" * 80)
+                            import textwrap
+                            wrapped = textwrap.fill(rec_text, width=76, initial_indent='   ', subsequent_indent='   ')
+                            print(wrapped)
+                        elif line.startswith('**Action Required:**'):
+                            action = line.replace('**Action Required:**', '').strip()
+                            print(f"\n⚡ ACTION REQUIRED: {action}")
+                        elif line.startswith('*'):
+                            # Bullet point
+                            clean_line = line.lstrip('*').strip()
+                            print(f"   • {clean_line}")
+
+                    print("\n")
+        else:
+            # Just display the raw output in a nicer format
+            print(raw_output)
+            print()
+
+        # Still show collision data if available
+        if collision_data:
+            print("\n" + "=" * 80)
+            print("SEARCH COLLISION ANALYSIS")
+            print("=" * 80 + "\n")
+
+            for collision_entry in collision_data:
+                brand_name = collision_entry.get('brand_name', 'Unknown')
+                collision_result = collision_entry.get('collision_result', {})
+
+                print(f"{'='*80}")
+                print(f"BRAND: {brand_name}")
+                print(f"{'='*80}\n")
+
+                risk_level = collision_result.get('collision_risk_level', 'unknown').upper()
+                risk_summary = collision_result.get('risk_summary', 'No analysis available')
+                recommendation = collision_result.get('recommendation', 'N/A')
+
+                risk_icon = "🟢" if risk_level == "NONE" or risk_level == "LOW" else "🟡" if risk_level == "MEDIUM" else "🔴"
+                print(f"🔍 Risk Level: {risk_icon} {risk_level}\n")
+                print(f"📊 Risk Summary:")
+                print(f"   {risk_summary}\n")
+                print(f"💡 Recommendation:")
+                print(f"   {recommendation}\n")
+                print()
+
+        print("=" * 80)
+        return
 
     # Display each validated name
     for i, val_data in enumerate(validation_data, 1):
@@ -332,20 +730,30 @@ def display_validation_results(validation_results: Dict[str, Any]):
         status = val_data.get('validation_status', 'UNKNOWN')
         score = val_data.get('overall_score', 0)
 
+        # Create overall score bar
+        overall_score_bar = "█" * (score // 10) + "░" * (10 - score // 10)
+
+        # Status icon
+        status_icon = "✅" if status == "AVAILABLE" else "⚠️" if status == "CAUTION" else "❌"
+
         # Header
-        print(f"{'='*70}")
-        print(f"BRAND NAME: {brand_name}")
-        print(f"Status: {status} | Overall Score: {score}/100")
-        print(f"{'='*70}\n")
+        print(f"{'='*80}")
+        print(f"{status_icon} BRAND NAME: {brand_name}")
+        print(f"Status: {status}")
+        print(f"Overall Score: [{overall_score_bar}] {score}/100")
+        print(f"{'='*80}\n")
 
         # Domain Availability
         domain_info = val_data.get('domain_availability', {})
         if domain_info:
             print("📍 DOMAIN AVAILABILITY:")
-            print("-" * 70)
+            print("-" * 80)
             best_available = domain_info.get('best_available', 'N/A')
+            domain_score = domain_info.get('domain_score', 0)
+            domain_score_bar = "█" * (domain_score // 5) + "░" * (10 - domain_score // 5)
+
             print(f"   Best Available: {best_available}")
-            print(f"   Domain Score: {domain_info.get('domain_score', 0)}/50\n")
+            print(f"   Domain Score: [{domain_score_bar}] {domain_score}/50\n")
 
             # Separate base domains and prefix variations
             base_domains = {}
@@ -384,15 +792,16 @@ def display_validation_results(validation_results: Dict[str, Any]):
         trademark_info = val_data.get('trademark_analysis', {})
         if trademark_info:
             print("⚖️  TRADEMARK ANALYSIS:")
-            print("-" * 70)
+            print("-" * 80)
             risk_level = trademark_info.get('risk_level', 'unknown').upper()
             conflicts_found = trademark_info.get('conflicts_found', 0)
             trademark_score = trademark_info.get('trademark_score', 0)
+            trademark_score_bar = "█" * (trademark_score // 5) + "░" * (10 - trademark_score // 5)
 
             risk_icon = "🟢" if risk_level == "LOW" else "🟡" if risk_level == "MEDIUM" else "🔴"
             print(f"   Risk Level: {risk_icon} {risk_level}")
             print(f"   Conflicts Found: {conflicts_found}")
-            print(f"   Trademark Score: {trademark_score}/50\n")
+            print(f"   Trademark Score: [{trademark_score_bar}] {trademark_score}/50\n")
 
             exact_matches = trademark_info.get('exact_matches', [])
             if exact_matches:
@@ -413,7 +822,7 @@ def display_validation_results(validation_results: Dict[str, Any]):
         action_required = val_data.get('action_required', 'N/A')
         if recommendation:
             print("💡 RECOMMENDATION:")
-            print("-" * 70)
+            print("-" * 80)
             print(f"   {recommendation}")
             if action_required:
                 print(f"\n   Action Required: {action_required}")
@@ -423,17 +832,17 @@ def display_validation_results(validation_results: Dict[str, Any]):
 
     # Display collision detection results
     if collision_data:
-        print("\n" + "=" * 70)
+        print("\n" + "=" * 80)
         print("SEARCH COLLISION ANALYSIS")
-        print("=" * 70 + "\n")
+        print("=" * 80 + "\n")
 
         for collision_entry in collision_data:
             brand_name = collision_entry.get('brand_name', 'Unknown')
             collision_result = collision_entry.get('collision_result', {})
 
-            print(f"{'='*70}")
+            print(f"{'='*80}")
             print(f"BRAND: {brand_name}")
-            print(f"{'='*70}\n")
+            print(f"{'='*80}\n")
 
             risk_level = collision_result.get('collision_risk_level', 'unknown').upper()
             risk_summary = collision_result.get('risk_summary', 'No analysis available')
@@ -447,7 +856,7 @@ def display_validation_results(validation_results: Dict[str, Any]):
             print(f"   {recommendation}\n")
             print()
 
-    print("=" * 70)
+    print("=" * 80)
 
 
 def main():
@@ -469,22 +878,25 @@ def main():
     # Get product info
     product_info = get_product_info()
 
-    print("\n" + "-" * 70)
+    print("\n" + "-" * 80)
     print("Great! Let me start by researching your industry...")
-    print("-" * 70 + "\n")
+    print("-" * 80 + "\n")
 
     # Run research
     research_output = asyncio.run(run_research(product_info))
-    print("✓ Research complete")
+
+    # Display research findings
+    display_research(research_output)
+    print("\n✓ Research complete")
 
     # Name generation loop
     all_names = []
     iteration = 1
 
     while True:
-        print(f"\n{'='*70}")
+        print(f"\n{'='*80}")
         print(f"ROUND {iteration}: NAME GENERATION")
-        print("=" * 70)
+        print("=" * 80)
 
         if iteration == 1:
             count = input("\nHow many names would you like? (default=15): ").strip()
@@ -507,7 +919,8 @@ def main():
         all_names.append(names_output)
         display_names(names_output)
 
-        print("\nWhat would you like to do next?")
+        print("=" * 80)
+        print("\n 🤖 What would you like to do next?")
         print("  1. Generate more names with feedback")
         print("  2. Validate selected names")
         print("  3. Quit")
@@ -529,9 +942,9 @@ def main():
     # Validation and post-validation loop
     validation_results = None
     while True:
-        print("\n" + "=" * 70)
+        print("\n" + "=" * 80)
         print("VALIDATION")
-        print("=" * 70)
+        print("=" * 80)
 
         names_to_validate = input("\nEnter names to validate (comma-separated): ").strip()
 
@@ -540,13 +953,14 @@ def main():
             continue
 
         print("\nValidating names (checking domains, trademarks, and search collisions)...")
-        print("This may take a minute...\n")
+        print("This may take a minute... grab a cup of coffee ☕️ \n")
 
         validation_results = asyncio.run(run_validation(names_to_validate, product_info))
         display_validation_results(validation_results)
 
         # Post-validation options
-        print("\nWhat would you like to do next?")
+        print("=" * 80)
+        print("\n 🤖 What would you like to do next?")
         print("  1. Generate more names with feedback")
         print("  2. Validate different names")
         print("  3. Continue to brand story")
@@ -560,9 +974,9 @@ def main():
 
             # Name generation loop (same as the initial generation loop)
             while True:
-                print(f"\n{'='*70}")
+                print(f"\n{'='*80}")
                 print(f"ROUND {iteration}: NAME GENERATION WITH FEEDBACK")
-                print("=" * 70)
+                print("=" * 80)
 
                 feedback = input("\nWhat feedback do you have? (e.g., 'More tech-focused', 'Shorter names'): ").strip()
                 kept = input("Any names you liked from validation? (comma-separated, or press Enter): ").strip()
@@ -579,7 +993,8 @@ def main():
                 display_names(names_output)
 
                 # Show name generation menu options
-                print("\nWhat would you like to do next?")
+                print("=" * 80)
+                print("\n 🤖 What would you like to do next?")
                 print("  1. Generate more names with feedback")
                 print("  2. Validate selected names")
                 print("  3. Quit")
@@ -619,27 +1034,24 @@ def main():
             continue
 
     # Brand story
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 80)
     print("BRAND STORY")
-    print("=" * 70)
+    print("=" * 80)
 
     final_name = input("\nWhat's your final brand name choice? ").strip()
 
     if final_name:
         print(f"\nGenerating complete brand story for '{final_name}'...")
-        print("This may take a minute...\n")
+        print("This may take a minute... stand up and stretch a little 🚶‍♂️ \n")
 
         story_output = asyncio.run(run_story(final_name, product_info))
 
-        print("=" * 70)
-        print(f"BRAND IDENTITY: {final_name}")
-        print("=" * 70 + "\n")
-        print(story_output)
-        print()
+        # Display the story in formatted way
+        display_story(story_output, final_name)
 
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 80)
     print("✓ BRAND IDENTITY COMPLETE!")
-    print("=" * 70)
+    print("=" * 80)
     print(f"\nYour brand: {final_name}")
     print("\nThank you for using AI Brand Studio!")
     print()

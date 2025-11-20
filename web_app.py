@@ -8,10 +8,14 @@ A beautiful, lightweight web interface for brand identity creation.
 from flask import Flask, render_template, request, jsonify, session
 import sys
 import os
+import warnings
 from pathlib import Path
 from dotenv import load_dotenv
 import secrets
 from datetime import datetime
+
+# Suppress ADK App name mismatch warnings
+warnings.filterwarnings('ignore', message='.*App name mismatch.*')
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -20,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 load_dotenv()
 
 from google.adk.runners import InMemoryRunner
+from google.adk.apps.app import App
 from src.agents.orchestrator import create_orchestrator
 from src.infrastructure.logging import get_logger
 
@@ -36,7 +41,11 @@ def get_runner():
     global orchestrator, runner
     if orchestrator is None:
         orchestrator = create_orchestrator()
-        runner = InMemoryRunner(agent=orchestrator)
+        adk_app = App(
+            name="BrandStudioWebApp",
+            root_agent=orchestrator
+        )
+        runner = InMemoryRunner(app=adk_app)
     return runner
 
 @app.route('/')

@@ -8,8 +8,12 @@ A beautiful, interactive chat interface for brand identity creation.
 import streamlit as st
 import sys
 import os
+import warnings
 from pathlib import Path
 from dotenv import load_dotenv
+
+# Suppress ADK App name mismatch warnings
+warnings.filterwarnings('ignore', message='.*App name mismatch.*')
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -18,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 load_dotenv()
 
 from google.adk.runners import InMemoryRunner
+from google.adk.apps.app import App
 from src.agents.orchestrator import create_orchestrator
 from src.infrastructure.logging import get_logger
 
@@ -124,7 +129,11 @@ def initialize_agent():
         with st.spinner("🚀 Initializing AI agents..."):
             try:
                 st.session_state.orchestrator = create_orchestrator()
-                st.session_state.runner = InMemoryRunner(agent=st.session_state.orchestrator)
+                adk_app = App(
+                    name="BrandStudioStreamlitApp",
+                    root_agent=st.session_state.orchestrator
+                )
+                st.session_state.runner = InMemoryRunner(app=adk_app)
                 st.session_state.session_started = True
                 return True
             except Exception as e:

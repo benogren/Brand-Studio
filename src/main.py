@@ -9,8 +9,12 @@ the orchestrator agent for brand generation.
 import os
 import sys
 import json
+import warnings
 from typing import Dict, Any
 from dotenv import load_dotenv
+
+# Suppress ADK App name mismatch warnings (harmless when Apps are properly configured)
+warnings.filterwarnings('ignore', message='.*App name mismatch.*')
 
 # ADK imports
 from google.adk.runners import InMemoryRunner
@@ -122,9 +126,13 @@ def main():
         print("✓ Orchestrator initialized with ADK workflow patterns")
         print(f"  - Research → [Name+Validation Loop] → SEO → Story")
 
-        # Create runner - use agent directly without App wrapper for simpler session handling
+        # Create runner with App wrapper to avoid name mismatch warnings
         print("\nCreating ADK InMemoryRunner...")
-        runner = InMemoryRunner(agent=orchestrator)
+        app = App(
+            name="BrandStudioOrchestrator",
+            root_agent=orchestrator
+        )
+        runner = InMemoryRunner(app=app)
         print("✓ Runner ready")
 
         # Get sample user brief
