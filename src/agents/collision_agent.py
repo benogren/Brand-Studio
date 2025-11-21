@@ -325,8 +325,19 @@ If no significant entities are found, state that clearly.
                 }
 
             except Exception as e:
-                logger.warning(f"Google Search failed: {e}. Using model knowledge only.")
-                # Fallback to model knowledge
+                error_msg = str(e)
+                # Check if it's a quota error - don't spam logs
+                if '429' not in error_msg and 'RESOURCE_EXHAUSTED' not in error_msg:
+                    logger.warning(f"Google Search failed: {e}. Using model knowledge only.")
+                # Return error info so CLI can handle it gracefully
+                if '429' in error_msg or 'RESOURCE_EXHAUSTED' in error_msg:
+                    return {
+                        'query': brand_name,
+                        'search_summary': 'Quota exhausted',
+                        'error': str(e),
+                        'search_method': 'quota_error'
+                    }
+                # Fallback to model knowledge for other errors
                 return self._perform_knowledge_based_search(brand_name, industry)
         else:
             # No client available, use model knowledge
@@ -388,10 +399,13 @@ If you don't know of any significant entities with this name, state that clearly
             }
 
         except Exception as e:
-            logger.error(f"Knowledge-based search also failed: {e}")
+            error_msg = str(e)
+            # Don't spam logs for quota errors
+            if '429' not in error_msg and 'RESOURCE_EXHAUSTED' not in error_msg:
+                logger.error(f"Knowledge-based search also failed: {e}")
             return {
                 'query': brand_name,
-                'search_summary': f'Unable to analyze "{brand_name}" - limited information available',
+                'search_summary': f'Unable to analyze "{brand_name}" - API quota exhausted' if '429' in error_msg or 'RESOURCE_EXHAUSTED' in error_msg else f'Unable to analyze "{brand_name}"',
                 'error': str(e)
             }
 
@@ -502,10 +516,13 @@ Provide ONLY the JSON output, no additional text.
             return analysis_json
 
         except Exception as e:
-            logger.error(f"Error analyzing search results: {e}")
+            error_msg = str(e)
+            # Don't spam logs for quota errors
+            if '429' not in error_msg and 'RESOURCE_EXHAUSTED' not in error_msg:
+                logger.error(f"Error analyzing search results: {e}")
             return {
                 'brand_name': brand_name,
                 'collision_risk_level': 'unknown',
-                'risk_summary': f'Analysis error: {str(e)}',
+                'risk_summary': 'API quota exhausted' if '429' in error_msg or 'RESOURCE_EXHAUSTED' in error_msg else f'Analysis error: {str(e)}',
                 'error': str(e)
             }

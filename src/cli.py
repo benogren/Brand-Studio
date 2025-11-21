@@ -14,6 +14,7 @@ import warnings
 warnings.filterwarnings('ignore', message='.*App name mismatch.*')
 warnings.filterwarnings('ignore', message='.*non-text parts in the response.*')
 warnings.filterwarnings('ignore', message='.*ADK LoggingPlugin not available.*')
+warnings.filterwarnings('ignore', message='.*function_call.*')
 
 import os
 import sys
@@ -212,8 +213,8 @@ Return as JSON array with: name, strategy, rationale, strength_score
     return extract_text_from_events(events)
 
 
-async def run_validation(names: str, product_info: Dict[str, str]) -> Dict[str, Any]:
-    """Run validation agent with collision detection. Returns structured data."""
+async def run_validation(names: str, product_info: Dict[str, str], skip_collision: bool = False) -> Dict[str, Any]:
+    """Run validation agent with optional collision detection. Returns structured data."""
     from src.agents.collision_agent import BrandCollisionAgent
     import json
     import re
@@ -261,9 +262,29 @@ Check:
 Return validation results in JSON format with domain availability, trademark analysis, and recommendations.
 """
 
+    # Run validation with suppressed warnings
     with SuppressStderr():
-        events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
+        try:
+            events = await runner.run_debug(user_messages=prompt, quiet=True, verbose=False)
+        except Exception as e:
+            print(f"\n⚠️  Error running validation agent: {e}\n")
+            return {
+                'validation_data': [{'raw_output': f'Validation failed: {str(e)}'}],
+                'collision_data': [],
+                'raw_validation_output': f'Error: {str(e)}'
+            }
+
     validation_output = extract_text_from_events(events)
+
+    # Check if we got any output
+    if not validation_output or not validation_output.strip():
+        print("\n⚠️  Warning: Validation agent returned empty response.")
+        print("    This may be due to API issues or rate limits.\n")
+        return {
+            'validation_data': [{'raw_output': 'Validation agent returned no results. This may be due to API rate limits or configuration issues.'}],
+            'collision_data': [],
+            'raw_validation_output': 'Empty response from validation agent'
+        }
 
     # Try to parse JSON from validation output
     validation_data = []
@@ -286,6 +307,16 @@ Return validation results in JSON format with domain availability, trademark ana
 
     # Run collision detection for search results (use sanitized names)
     collision_data = []
+    quota_exhausted = False
+
+    # Skip collision detection if user requested it
+    if skip_collision:
+        return {
+            'validation_data': validation_data,
+            'collision_data': [],
+            'raw_validation_output': validation_output
+        }
+
     try:
         project_id = os.getenv('GOOGLE_CLOUD_PROJECT')
         collision_agent = BrandCollisionAgent(project_id=project_id)
@@ -297,12 +328,28 @@ Return validation results in JSON format with domain availability, trademark ana
                     industry=product_info.get('industry', 'general'),
                     product_description=product_info.get('product', '')
                 )
+
+                # Check if we hit quota limits
+                if 'error' in collision_result:
+                    error_msg = str(collision_result.get('error', ''))
+                    if '429' in error_msg or 'RESOURCE_EXHAUSTED' in error_msg or 'quota' in error_msg.lower():
+                        quota_exhausted = True
+                        print(f"\n⚠️  API quota limit reached. Skipping remaining collision checks.")
+                        print(f"   You can still see domain and trademark validation results below.\n")
+                        break
+
                 collision_data.append({
                     'brand_name': name,
                     'collision_result': collision_result
                 })
     except Exception as e:
-        logger.warning(f"Collision detection failed: {e}")
+        error_msg = str(e)
+        if '429' in error_msg or 'RESOURCE_EXHAUSTED' in error_msg or 'quota' in error_msg.lower():
+            quota_exhausted = True
+            print(f"\n⚠️  API quota limit reached. Collision detection skipped.")
+            print(f"   You can still see domain and trademark validation results below.\n")
+        else:
+            print(f"\n⚠️  Collision detection failed: {e}")
 
     return {
         'validation_data': validation_data,
@@ -452,7 +499,12 @@ def display_research(research_output: str):
     except (json.JSONDecodeError, AttributeError, KeyError) as e:
         # If parsing fails, fall back to raw output
         print("⚠️  Could not parse research format. Showing raw output:\n")
-        print(research_output)
+        if research_output and research_output.strip():
+            print(research_output)
+        else:
+            print("⚠️  Research agent returned empty response.")
+            print("    This may happen if the google_search tool is unavailable.")
+            print("    Continuing with name generation using general knowledge...")
         print()
 
 
@@ -883,11 +935,16 @@ def main():
     print("-" * 80 + "\n")
 
     # Run research
-    research_output = asyncio.run(run_research(product_info))
+    try:
+        research_output = asyncio.run(run_research(product_info))
 
-    # Display research findings
-    display_research(research_output)
-    print("\n✓ Research complete")
+        # Display research findings
+        display_research(research_output)
+        print("\n✓ Research complete")
+    except Exception as e:
+        print(f"\n⚠️  Research phase encountered an issue: {str(e)}")
+        print("    Continuing with name generation using general knowledge...")
+        print()
 
     # Name generation loop
     all_names = []
@@ -952,10 +1009,17 @@ def main():
             print("⚠️  No names entered. Please enter at least one name to validate.\n")
             continue
 
-        print("\nValidating names (checking domains, trademarks, and search collisions)...")
-        print("This may take a minute... grab a cup of coffee ☕️ \n")
+        # Ask if user wants collision detection (it's slow and rate-limited)
+        skip_collision = input("\nSkip collision detection? (faster, avoids rate limits) [y/N]: ").strip().lower()
 
-        validation_results = asyncio.run(run_validation(names_to_validate, product_info))
+        if skip_collision == 'y':
+            print("\nValidating names (checking domains and trademarks only)...")
+            print("This may take a minute... ☕️ \n")
+        else:
+            print("\nValidating names (checking domains, trademarks, and search collisions)...")
+            print("This may take a minute... grab a cup of coffee ☕️ \n")
+
+        validation_results = asyncio.run(run_validation(names_to_validate, product_info, skip_collision=(skip_collision == 'y')))
         display_validation_results(validation_results)
 
         # Post-validation options

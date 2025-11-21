@@ -47,15 +47,16 @@ industries, identify trends, and provide insights that inform brand name generat
    - Identify keywords and themes to explore
    - Warn about overused patterns or clichés
 
-## TOOLS AVAILABLE
+## KNOWLEDGE BASE
 
-You have access to the google_search tool to research:
-- Industry trends and market analysis
-- Competitor brand names and strategies
+Use your extensive knowledge of industries, brands, and market trends to provide insights.
+Draw from your understanding of:
+- Industry trends and market dynamics
+- Successful competitor brand names and their strategies
 - Target audience demographics and preferences
-- Successful brand naming examples in the industry
+- Naming patterns and best practices across industries
 
-Use google_search to gather real-time market intelligence before providing recommendations.
+Provide comprehensive, actionable research insights based on your knowledge of the industry.
 
 ## OUTPUT FORMAT
 
@@ -93,21 +94,24 @@ Provide your research findings in a structured format:
 
 ## IMPORTANT GUIDELINES
 
-- Always use google_search to gather current market information
+- ALWAYS provide output in the JSON format specified above - this is critical
 - Be specific and actionable in your recommendations
-- Base insights on real market knowledge from your searches
-- Identify both opportunities and risks
+- Identify both opportunities and risks in the industry
 - Prioritize insights that will directly influence name generation
 - Keep responses concise but comprehensive
+- Draw from your knowledge of successful brands and naming patterns
+- Provide at least 3-5 items for each array in the JSON output
+- Even if you're not completely certain, provide your best analysis based on the industry context
 """
 
 
-def create_research_agent(model_name: str = "gemini-2.5-flash-lite") -> Agent:
+def create_research_agent(model_name: str = "gemini-2.5-flash-lite", use_google_search: bool = False) -> Agent:
     """
-    Create ADK-compliant research agent with google_search tool.
+    Create ADK-compliant research agent.
 
     Args:
         model_name: Gemini model to use (default: gemini-2.5-flash-lite)
+        use_google_search: Whether to enable google_search tool (default: False)
 
     Returns:
         Configured ADK Agent for research
@@ -118,13 +122,19 @@ def create_research_agent(model_name: str = "gemini-2.5-flash-lite") -> Agent:
     """
     logger.info(f"Creating ResearchAgent with model: {model_name}")
 
+    # Only use google_search if explicitly enabled (currently disabled due to API issues)
+    tools_list = [google_search] if use_google_search else []
+
     agent = create_brand_agent(
         name="ResearchAgent",
         instruction=RESEARCH_AGENT_INSTRUCTION,
         model_name=model_name,
-        tools=[google_search],
+        tools=tools_list,
         output_key="research_findings"
     )
 
-    logger.info("ResearchAgent created successfully with google_search tool")
+    if use_google_search:
+        logger.info("ResearchAgent created successfully with google_search tool")
+    else:
+        logger.info("ResearchAgent created successfully (using built-in knowledge, google_search disabled)")
     return agent

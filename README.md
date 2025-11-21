@@ -20,28 +20,26 @@ AI Brand Studio creates complete brand identities through a simple conversationa
 
 ## Quick Start
 
-### Option 1: Web Interface (Recommended 🌐)
-
 ```bash
-# 1. Install dependencies
+# 1. Create and activate virtual environment (REQUIRED!)
+python3 -m venv venv
+source venv/bin/activate
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 2. Set up environment
+# 3. Set up environment
 cp .env.example .env
 # Edit .env with your GOOGLE_CLOUD_PROJECT
 
-# 3. Start the web server
-python web_app.py
-```
+# 4. Authenticate with Google Cloud (REQUIRED)
+gcloud auth application-default login
 
-Open your browser to **http://localhost:5000** and start chatting!
-
-### Option 2: CLI Interface
-
-```bash
-# Run the interactive command-line interface
+# 5. Run the interactive CLI
 python -m src.cli
 ```
+
+**Note:** Always run `source venv/bin/activate` before running the CLI!
 
 That's it! The system will guide you through everything.
 
@@ -87,7 +85,7 @@ That's it! The system will guide you through everything.
 ## Example Session
 
 ```
-$ python -m src.cli
+$ python3 -m src.cli
 
 AI BRAND STUDIO - INTERACTIVE MODE
 ====================================
@@ -293,6 +291,17 @@ gcloud auth application-default login
 - Public APIs may be rate-limited
 - System continues with simulated results for development
 
+**"429 RESOURCE_EXHAUSTED" or rate limit errors**
+- The `google_search` tool has strict **rate limits** (2-3 requests/minute), separate from quota
+- This affects the **collision detection** feature (search analysis)
+- **Quick fix:** Skip collision detection when prompted (press 'y' when asked)
+- **What you get without collision detection:**
+  - ✅ Domain availability (.com, .ai, .io, etc.)
+  - ✅ Trademark checking (USPTO database)
+  - ❌ Search collision analysis (requires google_search)
+- **Note:** Even with plenty of quota, rate limits can cause 429 errors
+- **Alternative:** Wait 1-2 minutes between validation requests to stay under rate limit
+
 ## Deployment
 
 ### Deployment-Ready Configuration
@@ -305,7 +314,7 @@ This project is configured for deployment to **Vertex AI Agent Engine**:
 
 ```bash
 # Verify deployment readiness
-python verify_deployment_ready.py
+python3 verify_deployment_ready.py
 
 # Deploy to Vertex AI Agent Engine
 cd brand_studio_agent
@@ -343,5 +352,5 @@ MIT
 
 **Start creating your brand identity:**
 ```bash
-python -m src.cli
+python3 -m src.cli
 ```
